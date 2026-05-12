@@ -667,7 +667,7 @@ const pricingCards: PricingCard[] = [
   {
     badge: '推荐',
     model: 'Pro 5X',
-    price: '¥909',
+    price: '¥560',
     badgeClass: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-300',
     borderClass: 'border-emerald-300/80 dark:border-emerald-500/30',
     featured: true,
@@ -687,7 +687,7 @@ const pricingCards: PricingCard[] = [
   {
     badge: '顶级',
     model: 'Pro 20X',
-    price: '¥2667',
+    price: '¥1800',
     badgeClass: 'bg-teal-100 text-teal-700 dark:bg-teal-500/10 dark:text-teal-300',
     borderClass: 'border-teal-200/80 dark:border-teal-500/20',
     facts: [
