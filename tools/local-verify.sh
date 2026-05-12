@@ -55,11 +55,11 @@ const host = process.env.MOCK_BACKEND_HOST || '127.0.0.1'
 const port = Number(process.env.MOCK_BACKEND_PORT || '18080')
 
 const publicSettings = {
-  site_name: 'CodexHub',
+  site_name: 'tocodex',
   site_subtitle: 'GPT Codex Gateway',
   site_logo: '',
   site_version: 'local',
-  api_base_url: 'https://codexhub.cc',
+  api_base_url: 'https://tocodex.cc',
   contact_info: 'Icanmeetu',
   doc_url: '',
   home_content: '',

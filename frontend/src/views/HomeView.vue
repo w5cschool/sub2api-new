@@ -39,8 +39,8 @@
           </div>
           <div class="leading-none">
             <div class="text-[1.35rem] font-black tracking-[-0.08em]">
-              <span class="text-emerald-600 dark:text-emerald-300">Codex</span>
-              <span>Hub</span>
+              <span class="text-emerald-600 dark:text-emerald-300">to</span>
+              <span>codex</span>
             </div>
             <div class="mt-1 text-[11px] uppercase tracking-[0.24em] text-stone-500 dark:text-stone-400">
               GPT Codex Gateway
@@ -127,7 +127,7 @@
 
           <div class="mt-6 max-w-xl space-y-4">
             <p class="reveal-item text-base leading-8 text-stone-600 dark:text-stone-300 md:text-lg">
-              CodexHub，提供高速、稳定的 Codex 中转服务代理能力，让团队更顺畅地使用 GPT-5.5 与 GPT-5.4 完成开发工作。
+              tocodex，提供高速、稳定的 Codex 中转服务代理能力，让团队更顺畅地使用 GPT-5.5 与 GPT-5.4 完成开发工作。
             </p>
             <p class="reveal-item max-w-lg text-sm font-semibold uppercase tracking-[0.18em] text-stone-700 dark:text-stone-200 md:text-[0.95rem]">
               无需魔法，无需官方账号，无需国外信用卡/手机号。
@@ -176,7 +176,7 @@
                 </div>
                 <div class="rounded-2xl border border-white/5 bg-white/5 px-4 py-3 text-stone-300">
                   <div class="text-emerald-300">◆ Codex CLI · GPT-5.5 ready</div>
-                  <div class="mt-1 text-stone-400">✓ 已连接至 CodexHub 中转节点</div>
+                  <div class="mt-1 text-stone-400">✓ 已连接至 tocodex 中转节点</div>
                 </div>
                 <div class="text-stone-400">
                   <span class="mr-2 text-emerald-300">›</span>
@@ -363,11 +363,11 @@
                   <span class="h-2.5 w-2.5 rounded-full bg-stone-300 dark:bg-stone-700"></span>
                   <span class="h-2.5 w-2.5 rounded-full bg-stone-300 dark:bg-stone-700"></span>
                   <span class="h-2.5 w-2.5 rounded-full bg-stone-300 dark:bg-stone-700"></span>
-                  <span class="ml-2">codexhub/register</span>
+                  <span class="ml-2">tocodex/register</span>
                 </div>
                 <div class="space-y-4 p-5">
                   <div class="text-2xl font-black tracking-[-0.06em]">
-                    <span class="text-emerald-600 dark:text-emerald-300">Codex</span>Hub
+                    <span class="text-emerald-600 dark:text-emerald-300">to</span>codex
                   </div>
                   <div>
                     <div class="mb-2 text-xs uppercase tracking-[0.18em] text-stone-400">邮箱</div>
@@ -426,7 +426,7 @@
                   <div class="text-stone-500"><span class="mr-2 text-emerald-300">$</span>export OPENAI_BASE_URL="{{ gatewayBaseUrl }}"</div>
                   <div class="text-stone-500"><span class="mr-2 text-emerald-300">$</span>codex --model gpt-5.5</div>
                   <div class="text-emerald-300">◆ Codex CLI · GPT-5.5 ready</div>
-                  <div class="text-stone-400">✓ 已连接至 CodexHub 中转节点</div>
+                  <div class="text-stone-400">✓ 已连接至 tocodex 中转节点</div>
                   <div class="text-stone-400"><span class="mr-2 text-emerald-300">›</span>帮我重构这个模块的...</div>
                   <div><span class="mr-2 text-emerald-300">$</span><span class="cursor-blink inline-block h-5 w-2 rounded-sm bg-emerald-300/80 align-middle"></span></div>
                 </div>
@@ -537,7 +537,7 @@
             <div class="text-xs font-semibold uppercase tracking-[0.32em] text-stone-900/70">准备好了吗</div>
             <h2 class="mt-4 text-3xl font-black tracking-[-0.06em] md:text-5xl">现在就开始一键接入 GPT-5.5 与 GPT-5.4 Codex 模型</h2>
             <p class="mx-auto mt-4 max-w-2xl text-base leading-8 text-stone-900/80">
-              注册账号并配置好环境变量，就能直接开始使用 CodexHub。
+              注册账号并配置好环境变量，就能直接开始使用 tocodex。
             </p>
             <router-link
               :to="heroPrimaryTarget"
@@ -554,7 +554,7 @@
     </main>
 
     <footer class="relative z-10 border-t border-stone-200/70 px-6 py-8 text-center text-sm text-stone-500 dark:border-stone-800 dark:text-stone-400">
-      © {{ currentYear }} CodexHub. {{ t('home.footer.allRightsReserved') }}
+      © {{ currentYear }} tocodex. {{ t('home.footer.allRightsReserved') }}
     </footer>
 
     <Transition name="modal-fade">
@@ -673,10 +673,9 @@ const pricingCards: PricingCard[] = [
     featured: true,
     facts: [
       { label: '使用体验：', value: '每天8小时高强度使用' },
-      { label: '每日限制：', value: '100美元/日' },
-      { label: '每周限制：', value: '500美元/周' },
-      { label: '每月限制：', value: '2000美元/月' },
-      { label: '价值换算：', value: '¥1 = $2.2' }
+      { label: '每日限制：', value: '60美元/日' },
+      { label: '每周限制：', value: '360美元/周' },
+      { label: '每月限制：', value: '1440美元/月' }
     ],
     features: [
       'GPT-5.5 可用',
@@ -692,10 +691,9 @@ const pricingCards: PricingCard[] = [
     borderClass: 'border-teal-200/80 dark:border-teal-500/20',
     facts: [
       { label: '使用体验：', value: '肆无忌惮的高强度使用' },
-      { label: '每日限制：', value: '400美元/日' },
-      { label: '每周限制：', value: '2000美元/周' },
-      { label: '每月限制：', value: '8000美元/月' },
-      { label: '价值换算：', value: '¥1 = $3' }
+      { label: '每日限制：', value: '240美元/日' },
+      { label: '每周限制：', value: '1440美元/周' },
+      { label: '每月限制：', value: '5760美元/月' }
     ],
     features: [
       'GPT-5.5 可用',
@@ -709,7 +707,7 @@ const stepItems: StepItem[] = [
   {
     badge: '步骤 01',
     title: '注册账号',
-    description: '访问 CodexHub 首页，填写邮箱和密码即可完成注册，全程不超过 1 分钟。',
+    description: '访问 tocodex 首页，填写邮箱和密码即可完成注册，全程不超过 1 分钟。',
     checks: ['无需信用卡，免费注册', '支持邮箱一键登录'],
     mockType: 'register'
   },
@@ -764,14 +762,14 @@ const featureCards: FeatureCard[] = [
 ]
 
 const mockKeys = [
-  { name: '我的第一个 Key', value: 'sk-codexhub-Kx9m••••••••••••' },
-  { name: '项目 B', value: 'sk-codexhub-Rp3n••••••••••••' }
+  { name: '我的第一个 Key', value: 'sk-tocodex-Kx9m••••••••••••' },
+  { name: '项目 B', value: 'sk-tocodex-Rp3n••••••••••••' }
 ]
 
 const siteLogo = computed(() => appStore.cachedPublicSettings?.site_logo || appStore.siteLogo || '')
 const docUrl = computed(() => appStore.cachedPublicSettings?.doc_url || appStore.docUrl || '')
 const homeContent = computed(() => appStore.cachedPublicSettings?.home_content || '')
-const gatewayBaseUrl = computed(() => appStore.cachedPublicSettings?.api_base_url || appStore.apiBaseUrl || 'https://codexhub.cc')
+const gatewayBaseUrl = computed(() => appStore.cachedPublicSettings?.api_base_url || appStore.apiBaseUrl || 'https://tocodex.cc')
 const contactValue = computed(() => appStore.cachedPublicSettings?.contact_info?.trim() || 'Icanmeetu')
 
 const isHomeContentUrl = computed(() => {
