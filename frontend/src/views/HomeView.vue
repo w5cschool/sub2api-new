@@ -265,7 +265,7 @@
           <div class="text-xs font-semibold uppercase tracking-[0.3em] text-stone-500 dark:text-stone-400">透明定价</div>
         </div>
 
-        <div class="mx-auto mt-8 grid max-w-5xl gap-5 lg:grid-cols-2">
+        <div class="mx-auto mt-8 grid max-w-6xl gap-5 lg:grid-cols-3">
           <article
             v-for="card in pricingCards"
             :key="card.model"
@@ -676,6 +676,24 @@ const pricingCards: PricingCard[] = [
       { label: '每日限制：', value: '60美元/日' },
       { label: '每周限制：', value: '360美元/周' },
       { label: '每月限制：', value: '1440美元/月' }
+    ],
+    features: [
+      'GPT-5.5 可用',
+      'GPT-5.4 可用',
+      '独享API Key & 高速通道'
+    ]
+  },
+  {
+    badge: '进阶',
+    model: 'Pro 10X',
+    price: '¥900',
+    badgeClass: 'bg-lime-100 text-lime-700 dark:bg-lime-500/10 dark:text-lime-300',
+    borderClass: 'border-lime-200/80 dark:border-lime-500/20',
+    facts: [
+      { label: '使用体验：', value: '每天16小时高强度使用' },
+      { label: '每日限制：', value: '120美元/日' },
+      { label: '每周限制：', value: '720美元/周' },
+      { label: '每月限制：', value: '2880美元/月' }
     ],
     features: [
       'GPT-5.5 可用',
