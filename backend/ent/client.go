@@ -41,6 +41,7 @@ import (
 	"github.com/Wei-Shaw/sub2api/ent/securitysecret"
 	"github.com/Wei-Shaw/sub2api/ent/setting"
 	"github.com/Wei-Shaw/sub2api/ent/subscriptionplan"
+	"github.com/Wei-Shaw/sub2api/ent/subscriptionrecord"
 	"github.com/Wei-Shaw/sub2api/ent/tlsfingerprintprofile"
 	"github.com/Wei-Shaw/sub2api/ent/usagecleanuptask"
 	"github.com/Wei-Shaw/sub2api/ent/usagelog"
@@ -111,6 +112,8 @@ type Client struct {
 	Setting *SettingClient
 	// SubscriptionPlan is the client for interacting with the SubscriptionPlan builders.
 	SubscriptionPlan *SubscriptionPlanClient
+	// SubscriptionRecord is the client for interacting with the SubscriptionRecord builders.
+	SubscriptionRecord *SubscriptionRecordClient
 	// TLSFingerprintProfile is the client for interacting with the TLSFingerprintProfile builders.
 	TLSFingerprintProfile *TLSFingerprintProfileClient
 	// UsageCleanupTask is the client for interacting with the UsageCleanupTask builders.
@@ -166,6 +169,7 @@ func (c *Client) init() {
 	c.SecuritySecret = NewSecuritySecretClient(c.config)
 	c.Setting = NewSettingClient(c.config)
 	c.SubscriptionPlan = NewSubscriptionPlanClient(c.config)
+	c.SubscriptionRecord = NewSubscriptionRecordClient(c.config)
 	c.TLSFingerprintProfile = NewTLSFingerprintProfileClient(c.config)
 	c.UsageCleanupTask = NewUsageCleanupTaskClient(c.config)
 	c.UsageLog = NewUsageLogClient(c.config)
@@ -293,6 +297,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		SecuritySecret:                NewSecuritySecretClient(cfg),
 		Setting:                       NewSettingClient(cfg),
 		SubscriptionPlan:              NewSubscriptionPlanClient(cfg),
+		SubscriptionRecord:            NewSubscriptionRecordClient(cfg),
 		TLSFingerprintProfile:         NewTLSFingerprintProfileClient(cfg),
 		UsageCleanupTask:              NewUsageCleanupTaskClient(cfg),
 		UsageLog:                      NewUsageLogClient(cfg),
@@ -347,6 +352,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		SecuritySecret:                NewSecuritySecretClient(cfg),
 		Setting:                       NewSettingClient(cfg),
 		SubscriptionPlan:              NewSubscriptionPlanClient(cfg),
+		SubscriptionRecord:            NewSubscriptionRecordClient(cfg),
 		TLSFingerprintProfile:         NewTLSFingerprintProfileClient(cfg),
 		UsageCleanupTask:              NewUsageCleanupTaskClient(cfg),
 		UsageLog:                      NewUsageLogClient(cfg),
@@ -392,9 +398,10 @@ func (c *Client) Use(hooks ...Hook) {
 		c.IdempotencyRecord, c.IdentityAdoptionDecision, c.PaymentAuditLog,
 		c.PaymentOrder, c.PaymentProviderInstance, c.PendingAuthSession, c.PromoCode,
 		c.PromoCodeUsage, c.Proxy, c.RedeemCode, c.SecuritySecret, c.Setting,
-		c.SubscriptionPlan, c.TLSFingerprintProfile, c.UsageCleanupTask, c.UsageLog,
-		c.User, c.UserAllowedGroup, c.UserAttributeDefinition, c.UserAttributeValue,
-		c.UserPlatformQuota, c.UserSubscription,
+		c.SubscriptionPlan, c.SubscriptionRecord, c.TLSFingerprintProfile,
+		c.UsageCleanupTask, c.UsageLog, c.User, c.UserAllowedGroup,
+		c.UserAttributeDefinition, c.UserAttributeValue, c.UserPlatformQuota,
+		c.UserSubscription,
 	} {
 		n.Use(hooks...)
 	}
@@ -411,9 +418,10 @@ func (c *Client) Intercept(interceptors ...Interceptor) {
 		c.IdempotencyRecord, c.IdentityAdoptionDecision, c.PaymentAuditLog,
 		c.PaymentOrder, c.PaymentProviderInstance, c.PendingAuthSession, c.PromoCode,
 		c.PromoCodeUsage, c.Proxy, c.RedeemCode, c.SecuritySecret, c.Setting,
-		c.SubscriptionPlan, c.TLSFingerprintProfile, c.UsageCleanupTask, c.UsageLog,
-		c.User, c.UserAllowedGroup, c.UserAttributeDefinition, c.UserAttributeValue,
-		c.UserPlatformQuota, c.UserSubscription,
+		c.SubscriptionPlan, c.SubscriptionRecord, c.TLSFingerprintProfile,
+		c.UsageCleanupTask, c.UsageLog, c.User, c.UserAllowedGroup,
+		c.UserAttributeDefinition, c.UserAttributeValue, c.UserPlatformQuota,
+		c.UserSubscription,
 	} {
 		n.Intercept(interceptors...)
 	}
@@ -474,6 +482,8 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.Setting.mutate(ctx, m)
 	case *SubscriptionPlanMutation:
 		return c.SubscriptionPlan.mutate(ctx, m)
+	case *SubscriptionRecordMutation:
+		return c.SubscriptionRecord.mutate(ctx, m)
 	case *TLSFingerprintProfileMutation:
 		return c.TLSFingerprintProfile.mutate(ctx, m)
 	case *UsageCleanupTaskMutation:
@@ -2556,6 +2566,22 @@ func (c *GroupClient) QuerySubscriptions(_m *Group) *UserSubscriptionQuery {
 	return query
 }
 
+// QuerySubscriptionRecords queries the subscription_records edge of a Group.
+func (c *GroupClient) QuerySubscriptionRecords(_m *Group) *SubscriptionRecordQuery {
+	query := (&SubscriptionRecordClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(group.Table, group.FieldID, id),
+			sqlgraph.To(subscriptionrecord.Table, subscriptionrecord.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, group.SubscriptionRecordsTable, group.SubscriptionRecordsColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // QueryUsageLogs queries the usage_logs edge of a Group.
 func (c *GroupClient) QueryUsageLogs(_m *Group) *UsageLogQuery {
 	query := (&UsageLogClient{config: c.config}).Query()
@@ -4570,6 +4596,203 @@ func (c *SubscriptionPlanClient) mutate(ctx context.Context, m *SubscriptionPlan
 	}
 }
 
+// SubscriptionRecordClient is a client for the SubscriptionRecord schema.
+type SubscriptionRecordClient struct {
+	config
+}
+
+// NewSubscriptionRecordClient returns a client for the SubscriptionRecord from the given config.
+func NewSubscriptionRecordClient(c config) *SubscriptionRecordClient {
+	return &SubscriptionRecordClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `subscriptionrecord.Hooks(f(g(h())))`.
+func (c *SubscriptionRecordClient) Use(hooks ...Hook) {
+	c.hooks.SubscriptionRecord = append(c.hooks.SubscriptionRecord, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `subscriptionrecord.Intercept(f(g(h())))`.
+func (c *SubscriptionRecordClient) Intercept(interceptors ...Interceptor) {
+	c.inters.SubscriptionRecord = append(c.inters.SubscriptionRecord, interceptors...)
+}
+
+// Create returns a builder for creating a SubscriptionRecord entity.
+func (c *SubscriptionRecordClient) Create() *SubscriptionRecordCreate {
+	mutation := newSubscriptionRecordMutation(c.config, OpCreate)
+	return &SubscriptionRecordCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of SubscriptionRecord entities.
+func (c *SubscriptionRecordClient) CreateBulk(builders ...*SubscriptionRecordCreate) *SubscriptionRecordCreateBulk {
+	return &SubscriptionRecordCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *SubscriptionRecordClient) MapCreateBulk(slice any, setFunc func(*SubscriptionRecordCreate, int)) *SubscriptionRecordCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &SubscriptionRecordCreateBulk{err: fmt.Errorf("calling to SubscriptionRecordClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*SubscriptionRecordCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &SubscriptionRecordCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for SubscriptionRecord.
+func (c *SubscriptionRecordClient) Update() *SubscriptionRecordUpdate {
+	mutation := newSubscriptionRecordMutation(c.config, OpUpdate)
+	return &SubscriptionRecordUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *SubscriptionRecordClient) UpdateOne(_m *SubscriptionRecord) *SubscriptionRecordUpdateOne {
+	mutation := newSubscriptionRecordMutation(c.config, OpUpdateOne, withSubscriptionRecord(_m))
+	return &SubscriptionRecordUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *SubscriptionRecordClient) UpdateOneID(id int64) *SubscriptionRecordUpdateOne {
+	mutation := newSubscriptionRecordMutation(c.config, OpUpdateOne, withSubscriptionRecordID(id))
+	return &SubscriptionRecordUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for SubscriptionRecord.
+func (c *SubscriptionRecordClient) Delete() *SubscriptionRecordDelete {
+	mutation := newSubscriptionRecordMutation(c.config, OpDelete)
+	return &SubscriptionRecordDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *SubscriptionRecordClient) DeleteOne(_m *SubscriptionRecord) *SubscriptionRecordDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *SubscriptionRecordClient) DeleteOneID(id int64) *SubscriptionRecordDeleteOne {
+	builder := c.Delete().Where(subscriptionrecord.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &SubscriptionRecordDeleteOne{builder}
+}
+
+// Query returns a query builder for SubscriptionRecord.
+func (c *SubscriptionRecordClient) Query() *SubscriptionRecordQuery {
+	return &SubscriptionRecordQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeSubscriptionRecord},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a SubscriptionRecord entity by its id.
+func (c *SubscriptionRecordClient) Get(ctx context.Context, id int64) (*SubscriptionRecord, error) {
+	return c.Query().Where(subscriptionrecord.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *SubscriptionRecordClient) GetX(ctx context.Context, id int64) *SubscriptionRecord {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryUser queries the user edge of a SubscriptionRecord.
+func (c *SubscriptionRecordClient) QueryUser(_m *SubscriptionRecord) *UserQuery {
+	query := (&UserClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(subscriptionrecord.Table, subscriptionrecord.FieldID, id),
+			sqlgraph.To(user.Table, user.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, subscriptionrecord.UserTable, subscriptionrecord.UserColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryGroup queries the group edge of a SubscriptionRecord.
+func (c *SubscriptionRecordClient) QueryGroup(_m *SubscriptionRecord) *GroupQuery {
+	query := (&GroupClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(subscriptionrecord.Table, subscriptionrecord.FieldID, id),
+			sqlgraph.To(group.Table, group.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, subscriptionrecord.GroupTable, subscriptionrecord.GroupColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QuerySubscription queries the subscription edge of a SubscriptionRecord.
+func (c *SubscriptionRecordClient) QuerySubscription(_m *SubscriptionRecord) *UserSubscriptionQuery {
+	query := (&UserSubscriptionClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(subscriptionrecord.Table, subscriptionrecord.FieldID, id),
+			sqlgraph.To(usersubscription.Table, usersubscription.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, subscriptionrecord.SubscriptionTable, subscriptionrecord.SubscriptionColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryAssignedByUser queries the assigned_by_user edge of a SubscriptionRecord.
+func (c *SubscriptionRecordClient) QueryAssignedByUser(_m *SubscriptionRecord) *UserQuery {
+	query := (&UserClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(subscriptionrecord.Table, subscriptionrecord.FieldID, id),
+			sqlgraph.To(user.Table, user.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, subscriptionrecord.AssignedByUserTable, subscriptionrecord.AssignedByUserColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *SubscriptionRecordClient) Hooks() []Hook {
+	return c.hooks.SubscriptionRecord
+}
+
+// Interceptors returns the client interceptors.
+func (c *SubscriptionRecordClient) Interceptors() []Interceptor {
+	return c.inters.SubscriptionRecord
+}
+
+func (c *SubscriptionRecordClient) mutate(ctx context.Context, m *SubscriptionRecordMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&SubscriptionRecordCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&SubscriptionRecordUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&SubscriptionRecordUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&SubscriptionRecordDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown SubscriptionRecord mutation op: %q", m.Op())
+	}
+}
+
 // TLSFingerprintProfileClient is a client for the TLSFingerprintProfile schema.
 type TLSFingerprintProfileClient struct {
 	config
@@ -5214,6 +5437,38 @@ func (c *UserClient) QueryAssignedSubscriptions(_m *User) *UserSubscriptionQuery
 			sqlgraph.From(user.Table, user.FieldID, id),
 			sqlgraph.To(usersubscription.Table, usersubscription.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, user.AssignedSubscriptionsTable, user.AssignedSubscriptionsColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QuerySubscriptionRecords queries the subscription_records edge of a User.
+func (c *UserClient) QuerySubscriptionRecords(_m *User) *SubscriptionRecordQuery {
+	query := (&SubscriptionRecordClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(user.Table, user.FieldID, id),
+			sqlgraph.To(subscriptionrecord.Table, subscriptionrecord.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.SubscriptionRecordsTable, user.SubscriptionRecordsColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryAssignedSubscriptionRecords queries the assigned_subscription_records edge of a User.
+func (c *UserClient) QueryAssignedSubscriptionRecords(_m *User) *SubscriptionRecordQuery {
+	query := (&SubscriptionRecordClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(user.Table, user.FieldID, id),
+			sqlgraph.To(subscriptionrecord.Table, subscriptionrecord.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.AssignedSubscriptionRecordsTable, user.AssignedSubscriptionRecordsColumn),
 		)
 		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
 		return fromV, nil
@@ -6147,6 +6402,22 @@ func (c *UserSubscriptionClient) QueryAssignedByUser(_m *UserSubscription) *User
 	return query
 }
 
+// QuerySubscriptionRecords queries the subscription_records edge of a UserSubscription.
+func (c *UserSubscriptionClient) QuerySubscriptionRecords(_m *UserSubscription) *SubscriptionRecordQuery {
+	query := (&SubscriptionRecordClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(usersubscription.Table, usersubscription.FieldID, id),
+			sqlgraph.To(subscriptionrecord.Table, subscriptionrecord.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, usersubscription.SubscriptionRecordsTable, usersubscription.SubscriptionRecordsColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // QueryUsageLogs queries the usage_logs edge of a UserSubscription.
 func (c *UserSubscriptionClient) QueryUsageLogs(_m *UserSubscription) *UsageLogQuery {
 	query := (&UsageLogClient{config: c.config}).Query()
@@ -6199,9 +6470,9 @@ type (
 		Group, IdempotencyRecord, IdentityAdoptionDecision, PaymentAuditLog,
 		PaymentOrder, PaymentProviderInstance, PendingAuthSession, PromoCode,
 		PromoCodeUsage, Proxy, RedeemCode, SecuritySecret, Setting, SubscriptionPlan,
-		TLSFingerprintProfile, UsageCleanupTask, UsageLog, User, UserAllowedGroup,
-		UserAttributeDefinition, UserAttributeValue, UserPlatformQuota,
-		UserSubscription []ent.Hook
+		SubscriptionRecord, TLSFingerprintProfile, UsageCleanupTask, UsageLog, User,
+		UserAllowedGroup, UserAttributeDefinition, UserAttributeValue,
+		UserPlatformQuota, UserSubscription []ent.Hook
 	}
 	inters struct {
 		APIKey, Account, AccountGroup, Announcement, AnnouncementRead, AuthIdentity,
@@ -6210,9 +6481,9 @@ type (
 		Group, IdempotencyRecord, IdentityAdoptionDecision, PaymentAuditLog,
 		PaymentOrder, PaymentProviderInstance, PendingAuthSession, PromoCode,
 		PromoCodeUsage, Proxy, RedeemCode, SecuritySecret, Setting, SubscriptionPlan,
-		TLSFingerprintProfile, UsageCleanupTask, UsageLog, User, UserAllowedGroup,
-		UserAttributeDefinition, UserAttributeValue, UserPlatformQuota,
-		UserSubscription []ent.Interceptor
+		SubscriptionRecord, TLSFingerprintProfile, UsageCleanupTask, UsageLog, User,
+		UserAllowedGroup, UserAttributeDefinition, UserAttributeValue,
+		UserPlatformQuota, UserSubscription []ent.Interceptor
 	}
 )
 

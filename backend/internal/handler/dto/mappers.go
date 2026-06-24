@@ -178,6 +178,7 @@ func groupFromServiceBase(g *service.Group) Group {
 		DailyLimitUSD:                   g.DailyLimitUSD,
 		WeeklyLimitUSD:                  g.WeeklyLimitUSD,
 		MonthlyLimitUSD:                 g.MonthlyLimitUSD,
+		DefaultPriceUSD:                 g.DefaultPriceUSD,
 		AllowImageGeneration:            g.AllowImageGeneration,
 		ImageRateIndependent:            g.ImageRateIndependent,
 		ImageRateMultiplier:             g.ImageRateMultiplier,
@@ -770,6 +771,41 @@ func BulkAssignResultFromService(r *service.BulkAssignResult) *BulkAssignResult 
 		Subscriptions: subs,
 		Errors:        r.Errors,
 		Statuses:      statuses,
+	}
+}
+
+func SubscriptionRecordFromService(record *service.SubscriptionRecord) *SubscriptionRecord {
+	if record == nil {
+		return nil
+	}
+	return &SubscriptionRecord{
+		ID:             record.ID,
+		UserID:         record.UserID,
+		GroupID:        record.GroupID,
+		SubscriptionID: record.SubscriptionID,
+		PriceUSD:       record.PriceUSD,
+		ValidityDays:   record.ValidityDays,
+		StartsAt:       record.StartsAt,
+		ExpiresAt:      record.ExpiresAt,
+		AssignedBy:     record.AssignedBy,
+		AssignedAt:     record.AssignedAt,
+		Notes:          record.Notes,
+		CreatedAt:      record.CreatedAt,
+		UpdatedAt:      record.UpdatedAt,
+		User:           UserFromServiceShallow(record.User),
+		Group:          GroupFromServiceShallow(record.Group),
+		Subscription:   UserSubscriptionFromServiceAdmin(record.Subscription),
+		AssignedByUser: UserFromServiceShallow(record.AssignedByUser),
+	}
+}
+
+func SubscriptionRecordStatsFromService(stats *service.SubscriptionRecordStats) *SubscriptionRecordStats {
+	if stats == nil {
+		return nil
+	}
+	return &SubscriptionRecordStats{
+		TotalAmountUSD: stats.TotalAmountUSD,
+		RecordCount:    stats.RecordCount,
 	}
 }
 

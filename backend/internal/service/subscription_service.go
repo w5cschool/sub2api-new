@@ -43,6 +43,7 @@ var (
 type SubscriptionService struct {
 	groupRepo           GroupRepository
 	userSubRepo         UserSubscriptionRepository
+	subRecordRepo       SubscriptionRecordRepository
 	billingCacheService *BillingCacheService
 	entClient           *dbent.Client
 
@@ -56,10 +57,11 @@ type SubscriptionService struct {
 }
 
 // NewSubscriptionService 创建订阅服务
-func NewSubscriptionService(groupRepo GroupRepository, userSubRepo UserSubscriptionRepository, billingCacheService *BillingCacheService, entClient *dbent.Client, cfg *config.Config) *SubscriptionService {
+func NewSubscriptionService(groupRepo GroupRepository, userSubRepo UserSubscriptionRepository, subRecordRepo SubscriptionRecordRepository, billingCacheService *BillingCacheService, entClient *dbent.Client, cfg *config.Config) *SubscriptionService {
 	svc := &SubscriptionService{
 		groupRepo:           groupRepo,
 		userSubRepo:         userSubRepo,
+		subRecordRepo:       subRecordRepo,
 		billingCacheService: billingCacheService,
 		entClient:           entClient,
 	}
@@ -149,6 +151,7 @@ type AssignSubscriptionInput struct {
 	ValidityDays int
 	AssignedBy   int64
 	Notes        string
+	PriceUSD     *float64
 }
 
 // AssignSubscription 分配订阅给用户（不允许重复分配）
@@ -385,6 +388,7 @@ type BulkAssignSubscriptionInput struct {
 	ValidityDays int
 	AssignedBy   int64
 	Notes        string
+	PriceUSD     *float64
 }
 
 // BulkAssignResult 批量分配结果
@@ -413,6 +417,7 @@ func (s *SubscriptionService) BulkAssignSubscription(ctx context.Context, input 
 			ValidityDays: input.ValidityDays,
 			AssignedBy:   input.AssignedBy,
 			Notes:        input.Notes,
+			PriceUSD:     input.PriceUSD,
 		})
 		if err != nil {
 			result.FailedCount++
@@ -462,7 +467,7 @@ func (s *SubscriptionService) assignSubscriptionWithReuse(ctx context.Context, i
 		return sub, true, nil
 	}
 
-	sub, err := s.createSubscription(ctx, input)
+	sub, err := s.createSubscriptionWithAdminRecord(ctx, input, group)
 	if err != nil {
 		return nil, false, err
 	}
@@ -479,6 +484,59 @@ func (s *SubscriptionService) assignSubscriptionWithReuse(ctx context.Context, i
 	}
 
 	return sub, false, nil
+}
+
+func (s *SubscriptionService) createSubscriptionWithAdminRecord(ctx context.Context, input *AssignSubscriptionInput, group *Group) (*UserSubscription, error) {
+	if s.subRecordRepo == nil {
+		return s.createSubscription(ctx, input)
+	}
+
+	var sub *UserSubscription
+	err := s.withSubscriptionUpdateTx(ctx, func(txCtx context.Context) error {
+		created, err := s.createSubscription(txCtx, input)
+		if err != nil {
+			return err
+		}
+		sub = created
+		return s.createAdminSubscriptionRecord(txCtx, input, group, created)
+	})
+	if err != nil {
+		return nil, err
+	}
+	return sub, nil
+}
+
+func (s *SubscriptionService) createAdminSubscriptionRecord(ctx context.Context, input *AssignSubscriptionInput, group *Group, sub *UserSubscription) error {
+	if input == nil || sub == nil || s.subRecordRepo == nil {
+		return nil
+	}
+
+	priceUSD := 0.0
+	if group != nil {
+		priceUSD = group.DefaultPriceUSD
+	}
+	if input.PriceUSD != nil {
+		priceUSD = *input.PriceUSD
+	}
+	if priceUSD < 0 {
+		return infraerrors.BadRequest("INVALID_SUBSCRIPTION_PRICE", "subscription price must be >= 0")
+	}
+
+	validityDays := normalizeAssignValidityDays(input.ValidityDays)
+	subscriptionID := sub.ID
+	record := &SubscriptionRecord{
+		UserID:         sub.UserID,
+		GroupID:        sub.GroupID,
+		SubscriptionID: &subscriptionID,
+		PriceUSD:       priceUSD,
+		ValidityDays:   validityDays,
+		StartsAt:       sub.StartsAt,
+		ExpiresAt:      sub.ExpiresAt,
+		AssignedBy:     sub.AssignedBy,
+		AssignedAt:     sub.AssignedAt,
+		Notes:          input.Notes,
+	}
+	return s.subRecordRepo.Create(ctx, record)
 }
 
 func detectAssignSemanticConflict(existing *UserSubscription, input *AssignSubscriptionInput) (string, bool) {
@@ -697,6 +755,21 @@ func (s *SubscriptionService) List(ctx context.Context, page, pageSize int, user
 	normalizeExpiredWindows(subs)
 	normalizeSubscriptionStatus(subs)
 	return subs, pag, nil
+}
+
+func (s *SubscriptionService) ListSubscriptionRecords(ctx context.Context, page, pageSize int, filters SubscriptionRecordFilters) ([]SubscriptionRecord, *pagination.PaginationResult, error) {
+	if s.subRecordRepo == nil {
+		return nil, nil, infraerrors.InternalServer("SUBSCRIPTION_RECORD_REPOSITORY_UNAVAILABLE", "subscription record repository is not configured")
+	}
+	params := pagination.PaginationParams{Page: page, PageSize: pageSize}
+	return s.subRecordRepo.List(ctx, params, filters)
+}
+
+func (s *SubscriptionService) GetSubscriptionRecordStats(ctx context.Context, filters SubscriptionRecordFilters) (*SubscriptionRecordStats, error) {
+	if s.subRecordRepo == nil {
+		return nil, infraerrors.InternalServer("SUBSCRIPTION_RECORD_REPOSITORY_UNAVAILABLE", "subscription record repository is not configured")
+	}
+	return s.subRecordRepo.Stats(ctx, filters)
 }
 
 // normalizeExpiredWindows 将已过期窗口的数据清零（仅影响返回数据，不影响数据库）

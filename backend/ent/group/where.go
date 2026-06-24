@@ -125,6 +125,11 @@ func DefaultValidityDays(v int) predicate.Group {
 	return predicate.Group(sql.FieldEQ(FieldDefaultValidityDays, v))
 }
 
+// DefaultPriceUsd applies equality check predicate on the "default_price_usd" field. It's identical to DefaultPriceUsdEQ.
+func DefaultPriceUsd(v float64) predicate.Group {
+	return predicate.Group(sql.FieldEQ(FieldDefaultPriceUsd, v))
+}
+
 // AllowImageGeneration applies equality check predicate on the "allow_image_generation" field. It's identical to AllowImageGenerationEQ.
 func AllowImageGeneration(v bool) predicate.Group {
 	return predicate.Group(sql.FieldEQ(FieldAllowImageGeneration, v))
@@ -915,6 +920,46 @@ func DefaultValidityDaysLTE(v int) predicate.Group {
 	return predicate.Group(sql.FieldLTE(FieldDefaultValidityDays, v))
 }
 
+// DefaultPriceUsdEQ applies the EQ predicate on the "default_price_usd" field.
+func DefaultPriceUsdEQ(v float64) predicate.Group {
+	return predicate.Group(sql.FieldEQ(FieldDefaultPriceUsd, v))
+}
+
+// DefaultPriceUsdNEQ applies the NEQ predicate on the "default_price_usd" field.
+func DefaultPriceUsdNEQ(v float64) predicate.Group {
+	return predicate.Group(sql.FieldNEQ(FieldDefaultPriceUsd, v))
+}
+
+// DefaultPriceUsdIn applies the In predicate on the "default_price_usd" field.
+func DefaultPriceUsdIn(vs ...float64) predicate.Group {
+	return predicate.Group(sql.FieldIn(FieldDefaultPriceUsd, vs...))
+}
+
+// DefaultPriceUsdNotIn applies the NotIn predicate on the "default_price_usd" field.
+func DefaultPriceUsdNotIn(vs ...float64) predicate.Group {
+	return predicate.Group(sql.FieldNotIn(FieldDefaultPriceUsd, vs...))
+}
+
+// DefaultPriceUsdGT applies the GT predicate on the "default_price_usd" field.
+func DefaultPriceUsdGT(v float64) predicate.Group {
+	return predicate.Group(sql.FieldGT(FieldDefaultPriceUsd, v))
+}
+
+// DefaultPriceUsdGTE applies the GTE predicate on the "default_price_usd" field.
+func DefaultPriceUsdGTE(v float64) predicate.Group {
+	return predicate.Group(sql.FieldGTE(FieldDefaultPriceUsd, v))
+}
+
+// DefaultPriceUsdLT applies the LT predicate on the "default_price_usd" field.
+func DefaultPriceUsdLT(v float64) predicate.Group {
+	return predicate.Group(sql.FieldLT(FieldDefaultPriceUsd, v))
+}
+
+// DefaultPriceUsdLTE applies the LTE predicate on the "default_price_usd" field.
+func DefaultPriceUsdLTE(v float64) predicate.Group {
+	return predicate.Group(sql.FieldLTE(FieldDefaultPriceUsd, v))
+}
+
 // AllowImageGenerationEQ applies the EQ predicate on the "allow_image_generation" field.
 func AllowImageGenerationEQ(v bool) predicate.Group {
 	return predicate.Group(sql.FieldEQ(FieldAllowImageGeneration, v))
@@ -1501,6 +1546,29 @@ func HasSubscriptions() predicate.Group {
 func HasSubscriptionsWith(preds ...predicate.UserSubscription) predicate.Group {
 	return predicate.Group(func(s *sql.Selector) {
 		step := newSubscriptionsStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasSubscriptionRecords applies the HasEdge predicate on the "subscription_records" edge.
+func HasSubscriptionRecords() predicate.Group {
+	return predicate.Group(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, SubscriptionRecordsTable, SubscriptionRecordsColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasSubscriptionRecordsWith applies the HasEdge predicate on the "subscription_records" edge with a given conditions (other predicates).
+func HasSubscriptionRecordsWith(preds ...predicate.SubscriptionRecord) predicate.Group {
+	return predicate.Group(func(s *sql.Selector) {
+		step := newSubscriptionRecordsStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

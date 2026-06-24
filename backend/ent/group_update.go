@@ -17,6 +17,7 @@ import (
 	"github.com/Wei-Shaw/sub2api/ent/group"
 	"github.com/Wei-Shaw/sub2api/ent/predicate"
 	"github.com/Wei-Shaw/sub2api/ent/redeemcode"
+	"github.com/Wei-Shaw/sub2api/ent/subscriptionrecord"
 	"github.com/Wei-Shaw/sub2api/ent/usagelog"
 	"github.com/Wei-Shaw/sub2api/ent/user"
 	"github.com/Wei-Shaw/sub2api/ent/usersubscription"
@@ -272,6 +273,27 @@ func (_u *GroupUpdate) SetNillableDefaultValidityDays(v *int) *GroupUpdate {
 // AddDefaultValidityDays adds value to the "default_validity_days" field.
 func (_u *GroupUpdate) AddDefaultValidityDays(v int) *GroupUpdate {
 	_u.mutation.AddDefaultValidityDays(v)
+	return _u
+}
+
+// SetDefaultPriceUsd sets the "default_price_usd" field.
+func (_u *GroupUpdate) SetDefaultPriceUsd(v float64) *GroupUpdate {
+	_u.mutation.ResetDefaultPriceUsd()
+	_u.mutation.SetDefaultPriceUsd(v)
+	return _u
+}
+
+// SetNillableDefaultPriceUsd sets the "default_price_usd" field if the given value is not nil.
+func (_u *GroupUpdate) SetNillableDefaultPriceUsd(v *float64) *GroupUpdate {
+	if v != nil {
+		_u.SetDefaultPriceUsd(*v)
+	}
+	return _u
+}
+
+// AddDefaultPriceUsd adds value to the "default_price_usd" field.
+func (_u *GroupUpdate) AddDefaultPriceUsd(v float64) *GroupUpdate {
+	_u.mutation.AddDefaultPriceUsd(v)
 	return _u
 }
 
@@ -696,6 +718,21 @@ func (_u *GroupUpdate) AddSubscriptions(v ...*UserSubscription) *GroupUpdate {
 	return _u.AddSubscriptionIDs(ids...)
 }
 
+// AddSubscriptionRecordIDs adds the "subscription_records" edge to the SubscriptionRecord entity by IDs.
+func (_u *GroupUpdate) AddSubscriptionRecordIDs(ids ...int64) *GroupUpdate {
+	_u.mutation.AddSubscriptionRecordIDs(ids...)
+	return _u
+}
+
+// AddSubscriptionRecords adds the "subscription_records" edges to the SubscriptionRecord entity.
+func (_u *GroupUpdate) AddSubscriptionRecords(v ...*SubscriptionRecord) *GroupUpdate {
+	ids := make([]int64, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddSubscriptionRecordIDs(ids...)
+}
+
 // AddUsageLogIDs adds the "usage_logs" edge to the UsageLog entity by IDs.
 func (_u *GroupUpdate) AddUsageLogIDs(ids ...int64) *GroupUpdate {
 	_u.mutation.AddUsageLogIDs(ids...)
@@ -807,6 +844,27 @@ func (_u *GroupUpdate) RemoveSubscriptions(v ...*UserSubscription) *GroupUpdate 
 		ids[i] = v[i].ID
 	}
 	return _u.RemoveSubscriptionIDs(ids...)
+}
+
+// ClearSubscriptionRecords clears all "subscription_records" edges to the SubscriptionRecord entity.
+func (_u *GroupUpdate) ClearSubscriptionRecords() *GroupUpdate {
+	_u.mutation.ClearSubscriptionRecords()
+	return _u
+}
+
+// RemoveSubscriptionRecordIDs removes the "subscription_records" edge to SubscriptionRecord entities by IDs.
+func (_u *GroupUpdate) RemoveSubscriptionRecordIDs(ids ...int64) *GroupUpdate {
+	_u.mutation.RemoveSubscriptionRecordIDs(ids...)
+	return _u
+}
+
+// RemoveSubscriptionRecords removes "subscription_records" edges to SubscriptionRecord entities.
+func (_u *GroupUpdate) RemoveSubscriptionRecords(v ...*SubscriptionRecord) *GroupUpdate {
+	ids := make([]int64, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveSubscriptionRecordIDs(ids...)
 }
 
 // ClearUsageLogs clears all "usage_logs" edges to the UsageLog entity.
@@ -1024,6 +1082,12 @@ func (_u *GroupUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	}
 	if value, ok := _u.mutation.AddedDefaultValidityDays(); ok {
 		_spec.AddField(group.FieldDefaultValidityDays, field.TypeInt, value)
+	}
+	if value, ok := _u.mutation.DefaultPriceUsd(); ok {
+		_spec.SetField(group.FieldDefaultPriceUsd, field.TypeFloat64, value)
+	}
+	if value, ok := _u.mutation.AddedDefaultPriceUsd(); ok {
+		_spec.AddField(group.FieldDefaultPriceUsd, field.TypeFloat64, value)
 	}
 	if value, ok := _u.mutation.AllowImageGeneration(); ok {
 		_spec.SetField(group.FieldAllowImageGeneration, field.TypeBool, value)
@@ -1263,6 +1327,51 @@ func (_u *GroupUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(usersubscription.FieldID, field.TypeInt64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if _u.mutation.SubscriptionRecordsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   group.SubscriptionRecordsTable,
+			Columns: []string{group.SubscriptionRecordsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(subscriptionrecord.FieldID, field.TypeInt64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedSubscriptionRecordsIDs(); len(nodes) > 0 && !_u.mutation.SubscriptionRecordsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   group.SubscriptionRecordsTable,
+			Columns: []string{group.SubscriptionRecordsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(subscriptionrecord.FieldID, field.TypeInt64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.SubscriptionRecordsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   group.SubscriptionRecordsTable,
+			Columns: []string{group.SubscriptionRecordsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(subscriptionrecord.FieldID, field.TypeInt64),
 			},
 		}
 		for _, k := range nodes {
@@ -1688,6 +1797,27 @@ func (_u *GroupUpdateOne) AddDefaultValidityDays(v int) *GroupUpdateOne {
 	return _u
 }
 
+// SetDefaultPriceUsd sets the "default_price_usd" field.
+func (_u *GroupUpdateOne) SetDefaultPriceUsd(v float64) *GroupUpdateOne {
+	_u.mutation.ResetDefaultPriceUsd()
+	_u.mutation.SetDefaultPriceUsd(v)
+	return _u
+}
+
+// SetNillableDefaultPriceUsd sets the "default_price_usd" field if the given value is not nil.
+func (_u *GroupUpdateOne) SetNillableDefaultPriceUsd(v *float64) *GroupUpdateOne {
+	if v != nil {
+		_u.SetDefaultPriceUsd(*v)
+	}
+	return _u
+}
+
+// AddDefaultPriceUsd adds value to the "default_price_usd" field.
+func (_u *GroupUpdateOne) AddDefaultPriceUsd(v float64) *GroupUpdateOne {
+	_u.mutation.AddDefaultPriceUsd(v)
+	return _u
+}
+
 // SetAllowImageGeneration sets the "allow_image_generation" field.
 func (_u *GroupUpdateOne) SetAllowImageGeneration(v bool) *GroupUpdateOne {
 	_u.mutation.SetAllowImageGeneration(v)
@@ -2109,6 +2239,21 @@ func (_u *GroupUpdateOne) AddSubscriptions(v ...*UserSubscription) *GroupUpdateO
 	return _u.AddSubscriptionIDs(ids...)
 }
 
+// AddSubscriptionRecordIDs adds the "subscription_records" edge to the SubscriptionRecord entity by IDs.
+func (_u *GroupUpdateOne) AddSubscriptionRecordIDs(ids ...int64) *GroupUpdateOne {
+	_u.mutation.AddSubscriptionRecordIDs(ids...)
+	return _u
+}
+
+// AddSubscriptionRecords adds the "subscription_records" edges to the SubscriptionRecord entity.
+func (_u *GroupUpdateOne) AddSubscriptionRecords(v ...*SubscriptionRecord) *GroupUpdateOne {
+	ids := make([]int64, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddSubscriptionRecordIDs(ids...)
+}
+
 // AddUsageLogIDs adds the "usage_logs" edge to the UsageLog entity by IDs.
 func (_u *GroupUpdateOne) AddUsageLogIDs(ids ...int64) *GroupUpdateOne {
 	_u.mutation.AddUsageLogIDs(ids...)
@@ -2220,6 +2365,27 @@ func (_u *GroupUpdateOne) RemoveSubscriptions(v ...*UserSubscription) *GroupUpda
 		ids[i] = v[i].ID
 	}
 	return _u.RemoveSubscriptionIDs(ids...)
+}
+
+// ClearSubscriptionRecords clears all "subscription_records" edges to the SubscriptionRecord entity.
+func (_u *GroupUpdateOne) ClearSubscriptionRecords() *GroupUpdateOne {
+	_u.mutation.ClearSubscriptionRecords()
+	return _u
+}
+
+// RemoveSubscriptionRecordIDs removes the "subscription_records" edge to SubscriptionRecord entities by IDs.
+func (_u *GroupUpdateOne) RemoveSubscriptionRecordIDs(ids ...int64) *GroupUpdateOne {
+	_u.mutation.RemoveSubscriptionRecordIDs(ids...)
+	return _u
+}
+
+// RemoveSubscriptionRecords removes "subscription_records" edges to SubscriptionRecord entities.
+func (_u *GroupUpdateOne) RemoveSubscriptionRecords(v ...*SubscriptionRecord) *GroupUpdateOne {
+	ids := make([]int64, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveSubscriptionRecordIDs(ids...)
 }
 
 // ClearUsageLogs clears all "usage_logs" edges to the UsageLog entity.
@@ -2468,6 +2634,12 @@ func (_u *GroupUpdateOne) sqlSave(ctx context.Context) (_node *Group, err error)
 	if value, ok := _u.mutation.AddedDefaultValidityDays(); ok {
 		_spec.AddField(group.FieldDefaultValidityDays, field.TypeInt, value)
 	}
+	if value, ok := _u.mutation.DefaultPriceUsd(); ok {
+		_spec.SetField(group.FieldDefaultPriceUsd, field.TypeFloat64, value)
+	}
+	if value, ok := _u.mutation.AddedDefaultPriceUsd(); ok {
+		_spec.AddField(group.FieldDefaultPriceUsd, field.TypeFloat64, value)
+	}
 	if value, ok := _u.mutation.AllowImageGeneration(); ok {
 		_spec.SetField(group.FieldAllowImageGeneration, field.TypeBool, value)
 	}
@@ -2706,6 +2878,51 @@ func (_u *GroupUpdateOne) sqlSave(ctx context.Context) (_node *Group, err error)
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(usersubscription.FieldID, field.TypeInt64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if _u.mutation.SubscriptionRecordsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   group.SubscriptionRecordsTable,
+			Columns: []string{group.SubscriptionRecordsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(subscriptionrecord.FieldID, field.TypeInt64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedSubscriptionRecordsIDs(); len(nodes) > 0 && !_u.mutation.SubscriptionRecordsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   group.SubscriptionRecordsTable,
+			Columns: []string{group.SubscriptionRecordsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(subscriptionrecord.FieldID, field.TypeInt64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.SubscriptionRecordsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   group.SubscriptionRecordsTable,
+			Columns: []string{group.SubscriptionRecordsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(subscriptionrecord.FieldID, field.TypeInt64),
 			},
 		}
 		for _, k := range nodes {

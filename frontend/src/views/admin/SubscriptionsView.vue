@@ -2,8 +2,26 @@
   <AppLayout>
     <TablePageLayout>
       <template #filters>
+        <div class="mb-4 flex flex-wrap gap-2 border-b border-gray-200 pb-3 dark:border-gray-700">
+          <button
+            type="button"
+            class="btn btn-sm"
+            :class="activeTab === 'subscriptions' ? 'btn-primary' : 'btn-secondary'"
+            @click="switchTab('subscriptions')"
+          >
+            {{ t('admin.subscriptions.tabs.management') }}
+          </button>
+          <button
+            type="button"
+            class="btn btn-sm"
+            :class="activeTab === 'records' ? 'btn-primary' : 'btn-secondary'"
+            @click="switchTab('records')"
+          >
+            {{ t('admin.subscriptions.tabs.records') }}
+          </button>
+        </div>
         <!-- Top Toolbar: Left (search + filters) / Right (actions) -->
-        <div class="flex flex-wrap items-start justify-between gap-4">
+        <div v-if="activeTab === 'subscriptions'" class="flex flex-wrap items-start justify-between gap-4">
           <!-- Left: Fuzzy user search + filters (wrap to multiple lines) -->
           <div class="flex flex-1 flex-wrap items-center gap-3">
             <!-- User Search -->
@@ -165,11 +183,55 @@
             </button>
           </div>
         </div>
+        <div v-else class="flex flex-wrap items-start justify-between gap-4">
+          <div class="flex flex-1 flex-wrap items-center gap-3">
+            <div class="w-full sm:w-40">
+              <input
+                v-model.number="recordFilters.user_id"
+                type="number"
+                min="1"
+                class="input"
+                :placeholder="t('admin.subscriptions.records.userId')"
+                @change="applyRecordFilters"
+              />
+            </div>
+            <div class="w-full sm:w-48">
+              <Select
+                v-model="recordFilters.group_id"
+                :options="groupOptions"
+                :placeholder="t('admin.subscriptions.allGroups')"
+                @change="applyRecordFilters"
+              />
+            </div>
+            <div class="w-full sm:w-44">
+              <input v-model="recordFilters.start_date" type="date" class="input" @change="applyRecordFilters" />
+            </div>
+            <div class="w-full sm:w-44">
+              <input v-model="recordFilters.end_date" type="date" class="input" @change="applyRecordFilters" />
+            </div>
+          </div>
+          <div class="ml-auto flex flex-wrap items-center justify-end gap-3">
+            <div class="rounded-lg bg-gray-50 px-3 py-2 text-sm dark:bg-dark-700">
+              <span class="text-gray-500 dark:text-gray-400">{{ t('admin.subscriptions.records.totalAmount') }}</span>
+              <span class="ml-2 font-semibold text-gray-900 dark:text-white">${{ recordStats.total_amount_usd.toFixed(2) }}</span>
+              <span class="ml-3 text-gray-500 dark:text-gray-400">{{ t('admin.subscriptions.records.recordCount', { count: recordStats.record_count }) }}</span>
+            </div>
+            <button
+              @click="loadSubscriptionRecords"
+              :disabled="recordLoading"
+              class="btn btn-secondary"
+              :title="t('common.refresh')"
+            >
+              <Icon name="refresh" size="md" :class="recordLoading ? 'animate-spin' : ''" />
+            </button>
+          </div>
+        </div>
       </template>
 
       <!-- Subscriptions Table -->
       <template #table>
         <DataTable
+          v-if="activeTab === 'subscriptions'"
           :columns="columns"
           :data="subscriptions"
           :loading="loading"
@@ -416,17 +478,64 @@
             />
           </template>
         </DataTable>
+        <DataTable
+          v-else
+          :columns="recordColumns"
+          :data="subscriptionRecords"
+          :loading="recordLoading"
+        >
+          <template #cell-user="{ row }">
+            <span class="font-medium text-gray-900 dark:text-white">
+              {{ row.user?.email || t('admin.redeem.userPrefix', { id: row.user_id }) }}
+            </span>
+          </template>
+          <template #cell-group="{ row }">
+            <GroupBadge
+              v-if="row.group"
+              :name="row.group.name"
+              :platform="row.group.platform"
+              :subscription-type="row.group.subscription_type"
+              :rate-multiplier="row.group.rate_multiplier"
+              :show-rate="false"
+            />
+            <span v-else class="text-sm text-gray-400 dark:text-dark-500">-</span>
+          </template>
+          <template #cell-price_usd="{ value }">
+            <span class="font-medium text-gray-900 dark:text-white">${{ Number(value || 0).toFixed(2) }}</span>
+          </template>
+          <template #cell-validity_days="{ value }">
+            <span>{{ value }} {{ t('admin.subscriptions.days') }}</span>
+          </template>
+          <template #cell-starts_at="{ value }">
+            <span>{{ formatDateOnly(value) }}</span>
+          </template>
+          <template #cell-expires_at="{ value }">
+            <span>{{ formatDateOnly(value) }}</span>
+          </template>
+          <template #cell-assigned_by="{ row }">
+            <span>{{ row.assigned_by_user?.email || (row.assigned_by ? `#${row.assigned_by}` : '-') }}</span>
+          </template>
+          <template #cell-created_at="{ value }">
+            <span>{{ formatDateOnly(value) }}</span>
+          </template>
+          <template #empty>
+            <EmptyState
+              :title="t('admin.subscriptions.records.emptyTitle')"
+              :description="t('admin.subscriptions.records.emptyDescription')"
+            />
+          </template>
+        </DataTable>
       </template>
 
       <!-- Pagination -->
       <template #pagination>
       <Pagination
-        v-if="pagination.total > 0"
-        :page="pagination.page"
-        :total="pagination.total"
-        :page-size="pagination.page_size"
-        @update:page="handlePageChange"
-        @update:pageSize="handlePageSizeChange"
+        v-if="activeTab === 'subscriptions' ? pagination.total > 0 : recordPagination.total > 0"
+        :page="activeTab === 'subscriptions' ? pagination.page : recordPagination.page"
+        :total="activeTab === 'subscriptions' ? pagination.total : recordPagination.total"
+        :page-size="activeTab === 'subscriptions' ? pagination.page_size : recordPagination.page_size"
+        @update:page="activeTab === 'subscriptions' ? handlePageChange($event) : handleRecordPageChange($event)"
+        @update:pageSize="activeTab === 'subscriptions' ? handlePageSizeChange($event) : handleRecordPageSizeChange($event)"
       />
       </template>
     </TablePageLayout>
@@ -498,6 +607,7 @@
             v-model="assignForm.group_id"
             :options="subscriptionGroupOptions"
             :placeholder="t('admin.subscriptions.selectGroup')"
+            @change="handleAssignGroupChange"
           >
             <template #selected="{ option }">
               <GroupBadge
@@ -526,6 +636,11 @@
           <label class="input-label">{{ t('admin.subscriptions.form.validityDays') }}</label>
           <input v-model.number="assignForm.validity_days" type="number" min="1" class="input" />
           <p class="input-hint">{{ t('admin.subscriptions.validityHint') }}</p>
+        </div>
+        <div>
+          <label class="input-label">{{ t('admin.subscriptions.form.priceUsd') }}</label>
+          <input v-model.number="assignForm.price_usd" type="number" min="0" step="0.01" class="input" />
+          <p class="input-hint">{{ t('admin.subscriptions.priceHint') }}</p>
         </div>
       </form>
       <template #footer>
@@ -742,7 +857,7 @@ import { ref, reactive, computed, onMounted, onUnmounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useAppStore } from '@/stores/app'
 import { adminAPI } from '@/api/admin'
-import type { UserSubscription, Group, GroupPlatform, SubscriptionType } from '@/types'
+import type { UserSubscription, SubscriptionRecord, SubscriptionRecordStats, Group, GroupPlatform, SubscriptionType } from '@/types'
 import type { SimpleUser } from '@/api/admin/usage'
 import type { Column } from '@/components/common/types'
 import { formatDateOnly } from '@/utils/format'
@@ -770,7 +885,10 @@ interface GroupOption {
   platform: GroupPlatform
   subscriptionType: SubscriptionType
   rate: number
+  defaultPrice: number
 }
+
+type SubscriptionTab = 'subscriptions' | 'records'
 
 // Guide modal state
 const showGuideModal = ref(false)
@@ -897,9 +1015,17 @@ const statusOptions = computed(() => [
 ])
 
 const subscriptions = ref<UserSubscription[]>([])
+const subscriptionRecords = ref<SubscriptionRecord[]>([])
+const recordStats = reactive<SubscriptionRecordStats>({
+  total_amount_usd: 0,
+  record_count: 0
+})
 const groups = ref<Group[]>([])
 const loading = ref(false)
+const recordLoading = ref(false)
 let abortController: AbortController | null = null
+let recordAbortController: AbortController | null = null
+const activeTab = ref<SubscriptionTab>('subscriptions')
 
 // Toolbar user filter (fuzzy search -> select user_id)
 const filterUserKeyword = ref('')
@@ -937,6 +1063,13 @@ const pagination = reactive({
   pages: 0
 })
 
+const recordPagination = reactive({
+  page: 1,
+  page_size: getPersistedPageSize(),
+  total: 0,
+  pages: 0
+})
+
 const showAssignModal = ref(false)
 const showExtendModal = ref(false)
 const showRevokeDialog = ref(false)
@@ -950,7 +1083,8 @@ const revokingSubscription = ref<UserSubscription | null>(null)
 const assignForm = reactive({
   user_id: null as number | null,
   group_id: null as number | null,
-  validity_days: 30
+  validity_days: 30,
+  price_usd: 0
 })
 
 const extendForm = reactive({
@@ -981,13 +1115,55 @@ const subscriptionGroupOptions = computed(() =>
       description: g.description,
       platform: g.platform,
       subscriptionType: g.subscription_type,
-      rate: g.rate_multiplier
+      rate: g.rate_multiplier,
+      defaultPrice: g.default_price_usd ?? 0
     }))
 )
+
+const recordColumns = computed<Column[]>(() => [
+  { key: 'user', label: t('admin.subscriptions.records.columns.user'), sortable: false },
+  { key: 'group', label: t('admin.subscriptions.records.columns.group'), sortable: false },
+  { key: 'price_usd', label: t('admin.subscriptions.records.columns.price'), sortable: false },
+  { key: 'validity_days', label: t('admin.subscriptions.records.columns.validityDays'), sortable: false },
+  { key: 'starts_at', label: t('admin.subscriptions.records.columns.startsAt'), sortable: false },
+  { key: 'expires_at', label: t('admin.subscriptions.records.columns.expiresAt'), sortable: false },
+  { key: 'assigned_by', label: t('admin.subscriptions.records.columns.assignedBy'), sortable: false },
+  { key: 'created_at', label: t('admin.subscriptions.records.columns.createdAt'), sortable: false }
+])
+
+const recordFilters = reactive({
+  user_id: null as number | null,
+  group_id: '',
+  start_date: '',
+  end_date: ''
+})
+
+const switchTab = (tab: SubscriptionTab) => {
+  activeTab.value = tab
+  if (tab === 'records' && subscriptionRecords.value.length === 0) {
+    loadSubscriptionRecords()
+  }
+}
 
 const applyFilters = () => {
   pagination.page = 1
   loadSubscriptions()
+}
+
+const buildRecordFilterParams = () => ({
+  user_id: recordFilters.user_id || undefined,
+  group_id: recordFilters.group_id ? parseInt(recordFilters.group_id) : undefined,
+  start_time: recordFilters.start_date
+    ? new Date(`${recordFilters.start_date}T00:00:00`).toISOString()
+    : undefined,
+  end_time: recordFilters.end_date
+    ? new Date(`${recordFilters.end_date}T23:59:59.999`).toISOString()
+    : undefined
+})
+
+const applyRecordFilters = () => {
+  recordPagination.page = 1
+  loadSubscriptionRecords()
 }
 
 const loadSubscriptions = async () => {
@@ -1029,6 +1205,46 @@ const loadSubscriptions = async () => {
     if (abortController === requestController) {
       loading.value = false
       abortController = null
+    }
+  }
+}
+
+const loadSubscriptionRecords = async () => {
+  if (recordAbortController) {
+    recordAbortController.abort()
+  }
+  const requestController = new AbortController()
+  recordAbortController = requestController
+  const { signal } = requestController
+
+  recordLoading.value = true
+  try {
+    const params = buildRecordFilterParams()
+    const [response, stats] = await Promise.all([
+      adminAPI.subscriptions.listRecords(
+        recordPagination.page,
+        recordPagination.page_size,
+        params,
+        { signal }
+      ),
+      adminAPI.subscriptions.recordStats(params)
+    ])
+    if (signal.aborted || recordAbortController !== requestController) return
+    subscriptionRecords.value = response.items
+    recordPagination.total = response.total
+    recordPagination.pages = response.pages
+    recordStats.total_amount_usd = stats.total_amount_usd || 0
+    recordStats.record_count = stats.record_count || 0
+  } catch (error: any) {
+    if (signal.aborted || error?.name === 'AbortError' || error?.code === 'ERR_CANCELED') {
+      return
+    }
+    appStore.showError(t('admin.subscriptions.records.failedToLoad'))
+    console.error('Error loading subscription records:', error)
+  } finally {
+    if (recordAbortController === requestController) {
+      recordLoading.value = false
+      recordAbortController = null
     }
   }
 }
@@ -1150,6 +1366,17 @@ const handlePageSizeChange = (pageSize: number) => {
   loadSubscriptions()
 }
 
+const handleRecordPageChange = (page: number) => {
+  recordPagination.page = page
+  loadSubscriptionRecords()
+}
+
+const handleRecordPageSizeChange = (pageSize: number) => {
+  recordPagination.page_size = pageSize
+  recordPagination.page = 1
+  loadSubscriptionRecords()
+}
+
 const handleSort = (key: string, order: 'asc' | 'desc') => {
   sortState.sort_by = key
   sortState.sort_order = order
@@ -1162,11 +1389,18 @@ const closeAssignModal = () => {
   assignForm.user_id = null
   assignForm.group_id = null
   assignForm.validity_days = 30
+  assignForm.price_usd = 0
   // Clear user search state
   selectedUser.value = null
   userSearchKeyword.value = ''
   userSearchResults.value = []
   showUserDropdown.value = false
+}
+
+const handleAssignGroupChange = (groupID: string | number | boolean | null) => {
+  const numericGroupID = typeof groupID === 'number' ? groupID : Number(groupID)
+  const group = groups.value.find((g) => g.id === numericGroupID)
+  assignForm.price_usd = group?.default_price_usd ?? 0
 }
 
 const handleAssignSubscription = async () => {
@@ -1188,11 +1422,15 @@ const handleAssignSubscription = async () => {
     await adminAPI.subscriptions.assign({
       user_id: assignForm.user_id,
       group_id: assignForm.group_id,
-      validity_days: assignForm.validity_days
+      validity_days: assignForm.validity_days,
+      price_usd: Math.max(0, Number(assignForm.price_usd) || 0)
     })
     appStore.showSuccess(t('admin.subscriptions.subscriptionAssigned'))
     closeAssignModal()
     loadSubscriptions()
+    if (activeTab.value === 'records') {
+      loadSubscriptionRecords()
+    }
   } catch (error: any) {
     appStore.showError(error.response?.data?.detail || t('admin.subscriptions.failedToAssign'))
     console.error('Error assigning subscription:', error)
@@ -1398,6 +1636,12 @@ onUnmounted(() => {
   }
   if (userSearchTimeout) {
     clearTimeout(userSearchTimeout)
+  }
+  if (abortController) {
+    abortController.abort()
+  }
+  if (recordAbortController) {
+    recordAbortController.abort()
   }
 })
 </script>

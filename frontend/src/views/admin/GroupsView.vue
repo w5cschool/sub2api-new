@@ -643,6 +643,19 @@
                 :placeholder="t('admin.groups.subscription.noLimit')"
               />
             </div>
+            <div>
+              <label class="input-label">{{
+                t("admin.groups.subscription.defaultPrice")
+              }}</label>
+              <input
+                v-model.number="createForm.default_price_usd"
+                type="number"
+                step="0.01"
+                min="0"
+                class="input"
+                :placeholder="t('admin.groups.subscription.defaultPricePlaceholder')"
+              />
+            </div>
           </div>
         </div>
 
@@ -1929,6 +1942,19 @@
                 min="0"
                 class="input"
                 :placeholder="t('admin.groups.subscription.noLimit')"
+              />
+            </div>
+            <div>
+              <label class="input-label">{{
+                t("admin.groups.subscription.defaultPrice")
+              }}</label>
+              <input
+                v-model.number="editForm.default_price_usd"
+                type="number"
+                step="0.01"
+                min="0"
+                class="input"
+                :placeholder="t('admin.groups.subscription.defaultPricePlaceholder')"
               />
             </div>
           </div>
@@ -3333,6 +3359,7 @@ const createForm = reactive({
   daily_limit_usd: null as number | null,
   weekly_limit_usd: null as number | null,
   monthly_limit_usd: null as number | null,
+  default_price_usd: 0,
   // 图片生成计费配置
   allow_image_generation: false,
   image_rate_independent: false,
@@ -3664,6 +3691,7 @@ const editForm = reactive({
   daily_limit_usd: null as number | null,
   weekly_limit_usd: null as number | null,
   monthly_limit_usd: null as number | null,
+  default_price_usd: 0,
   // 图片生成计费配置
   allow_image_generation: false,
   image_rate_independent: false,
@@ -3916,6 +3944,7 @@ const closeCreateModal = () => {
   createForm.daily_limit_usd = null;
   createForm.weekly_limit_usd = null;
   createForm.monthly_limit_usd = null;
+  createForm.default_price_usd = 0;
   createForm.allow_image_generation = false;
   createForm.image_rate_independent = false;
   createForm.image_rate_multiplier = 1;
@@ -3984,6 +4013,7 @@ const handleCreateGroup = async () => {
       monthly_limit_usd: normalizeOptionalLimit(
         createForm.monthly_limit_usd as number | string | null,
       ),
+      default_price_usd: Math.max(0, Number(createForm.default_price_usd) || 0),
       model_routing: convertRoutingRulesToApiFormat(
         createModelRoutingRules.value,
       ),
@@ -4042,6 +4072,7 @@ const handleEdit = async (group: AdminGroup) => {
   editForm.daily_limit_usd = group.daily_limit_usd;
   editForm.weekly_limit_usd = group.weekly_limit_usd;
   editForm.monthly_limit_usd = group.monthly_limit_usd;
+  editForm.default_price_usd = group.default_price_usd ?? 0;
   editForm.allow_image_generation = group.allow_image_generation ?? false;
   editForm.image_rate_independent = group.image_rate_independent ?? false;
   editForm.image_rate_multiplier = group.image_rate_multiplier ?? 1;
@@ -4117,6 +4148,7 @@ const handleUpdateGroup = async () => {
       monthly_limit_usd: normalizeOptionalLimit(
         editForm.monthly_limit_usd as number | string | null,
       ),
+      default_price_usd: Math.max(0, Number(editForm.default_price_usd) || 0),
       fallback_group_id:
         editForm.fallback_group_id === null ? 0 : editForm.fallback_group_id,
       fallback_group_id_on_invalid_request:

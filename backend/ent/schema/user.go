@@ -121,6 +121,8 @@ func (User) Edges() []ent.Edge {
 		edge.To("redeem_codes", RedeemCode.Type),
 		edge.To("subscriptions", UserSubscription.Type),
 		edge.To("assigned_subscriptions", UserSubscription.Type),
+		edge.To("subscription_records", SubscriptionRecord.Type),
+		edge.To("assigned_subscription_records", SubscriptionRecord.Type),
 		edge.To("announcement_reads", AnnouncementRead.Type),
 		edge.To("allowed_groups", Group.Type).
 			Through("user_allowed_groups", UserAllowedGroup.Type),

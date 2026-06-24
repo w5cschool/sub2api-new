@@ -44,6 +44,8 @@ const (
 	FieldMonthlyLimitUsd = "monthly_limit_usd"
 	// FieldDefaultValidityDays holds the string denoting the default_validity_days field in the database.
 	FieldDefaultValidityDays = "default_validity_days"
+	// FieldDefaultPriceUsd holds the string denoting the default_price_usd field in the database.
+	FieldDefaultPriceUsd = "default_price_usd"
 	// FieldAllowImageGeneration holds the string denoting the allow_image_generation field in the database.
 	FieldAllowImageGeneration = "allow_image_generation"
 	// FieldImageRateIndependent holds the string denoting the image_rate_independent field in the database.
@@ -92,6 +94,8 @@ const (
 	EdgeRedeemCodes = "redeem_codes"
 	// EdgeSubscriptions holds the string denoting the subscriptions edge name in mutations.
 	EdgeSubscriptions = "subscriptions"
+	// EdgeSubscriptionRecords holds the string denoting the subscription_records edge name in mutations.
+	EdgeSubscriptionRecords = "subscription_records"
 	// EdgeUsageLogs holds the string denoting the usage_logs edge name in mutations.
 	EdgeUsageLogs = "usage_logs"
 	// EdgeAccounts holds the string denoting the accounts edge name in mutations.
@@ -125,6 +129,13 @@ const (
 	SubscriptionsInverseTable = "user_subscriptions"
 	// SubscriptionsColumn is the table column denoting the subscriptions relation/edge.
 	SubscriptionsColumn = "group_id"
+	// SubscriptionRecordsTable is the table that holds the subscription_records relation/edge.
+	SubscriptionRecordsTable = "subscription_records"
+	// SubscriptionRecordsInverseTable is the table name for the SubscriptionRecord entity.
+	// It exists in this package in order to avoid circular dependency with the "subscriptionrecord" package.
+	SubscriptionRecordsInverseTable = "subscription_records"
+	// SubscriptionRecordsColumn is the table column denoting the subscription_records relation/edge.
+	SubscriptionRecordsColumn = "group_id"
 	// UsageLogsTable is the table that holds the usage_logs relation/edge.
 	UsageLogsTable = "usage_logs"
 	// UsageLogsInverseTable is the table name for the UsageLog entity.
@@ -175,6 +186,7 @@ var Columns = []string{
 	FieldWeeklyLimitUsd,
 	FieldMonthlyLimitUsd,
 	FieldDefaultValidityDays,
+	FieldDefaultPriceUsd,
 	FieldAllowImageGeneration,
 	FieldImageRateIndependent,
 	FieldImageRateMultiplier,
@@ -251,6 +263,8 @@ var (
 	SubscriptionTypeValidator func(string) error
 	// DefaultDefaultValidityDays holds the default value on creation for the "default_validity_days" field.
 	DefaultDefaultValidityDays int
+	// DefaultDefaultPriceUsd holds the default value on creation for the "default_price_usd" field.
+	DefaultDefaultPriceUsd float64
 	// DefaultAllowImageGeneration holds the default value on creation for the "allow_image_generation" field.
 	DefaultAllowImageGeneration bool
 	// DefaultImageRateIndependent holds the default value on creation for the "image_rate_independent" field.
@@ -361,6 +375,11 @@ func ByMonthlyLimitUsd(opts ...sql.OrderTermOption) OrderOption {
 // ByDefaultValidityDays orders the results by the default_validity_days field.
 func ByDefaultValidityDays(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldDefaultValidityDays, opts...).ToFunc()
+}
+
+// ByDefaultPriceUsd orders the results by the default_price_usd field.
+func ByDefaultPriceUsd(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldDefaultPriceUsd, opts...).ToFunc()
 }
 
 // ByAllowImageGeneration orders the results by the allow_image_generation field.
@@ -490,6 +509,20 @@ func BySubscriptions(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 	}
 }
 
+// BySubscriptionRecordsCount orders the results by subscription_records count.
+func BySubscriptionRecordsCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newSubscriptionRecordsStep(), opts...)
+	}
+}
+
+// BySubscriptionRecords orders the results by subscription_records terms.
+func BySubscriptionRecords(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newSubscriptionRecordsStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
 // ByUsageLogsCount orders the results by usage_logs count.
 func ByUsageLogsCount(opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
@@ -578,6 +611,13 @@ func newSubscriptionsStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(SubscriptionsInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.O2M, false, SubscriptionsTable, SubscriptionsColumn),
+	)
+}
+func newSubscriptionRecordsStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(SubscriptionRecordsInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, SubscriptionRecordsTable, SubscriptionRecordsColumn),
 	)
 }
 func newUsageLogsStep() *sqlgraph.Step {

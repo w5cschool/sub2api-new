@@ -511,6 +511,7 @@ export interface Group {
   daily_limit_usd: number | null
   weekly_limit_usd: number | null
   monthly_limit_usd: number | null
+  default_price_usd: number
   // 图片生成计费配置
   allow_image_generation: boolean
   image_rate_independent: boolean
@@ -630,6 +631,7 @@ export interface CreateGroupRequest {
   daily_limit_usd?: number | null
   weekly_limit_usd?: number | null
   monthly_limit_usd?: number | null
+  default_price_usd?: number
   allow_image_generation?: boolean
   image_rate_independent?: boolean
   image_rate_multiplier?: number
@@ -665,6 +667,7 @@ export interface UpdateGroupRequest {
   daily_limit_usd?: number | null
   weekly_limit_usd?: number | null
   monthly_limit_usd?: number | null
+  default_price_usd?: number
   allow_image_generation?: boolean
   image_rate_independent?: boolean
   image_rate_multiplier?: number
@@ -1584,16 +1587,43 @@ export interface AssignSubscriptionRequest {
   user_id: number
   group_id: number
   validity_days?: number
+  price_usd?: number
 }
 
 export interface BulkAssignSubscriptionRequest {
   user_ids: number[]
   group_id: number
   validity_days?: number
+  price_usd?: number
 }
 
 export interface ExtendSubscriptionRequest {
   days: number
+}
+
+export interface SubscriptionRecord {
+  id: number
+  user_id: number
+  group_id: number
+  subscription_id?: number | null
+  price_usd: number
+  validity_days: number
+  starts_at: string
+  expires_at: string
+  assigned_by?: number | null
+  assigned_at: string
+  notes: string
+  created_at: string
+  updated_at: string
+  user?: User
+  group?: Group
+  subscription?: UserSubscription
+  assigned_by_user?: User
+}
+
+export interface SubscriptionRecordStats {
+  total_amount_usd: number
+  record_count: number
 }
 
 // ==================== Query Parameters ====================

@@ -7,6 +7,8 @@ import { apiClient } from '../client'
 import type {
   UserSubscription,
   SubscriptionProgress,
+  SubscriptionRecord,
+  SubscriptionRecordStats,
   AssignSubscriptionRequest,
   BulkAssignSubscriptionRequest,
   ExtendSubscriptionRequest,
@@ -44,6 +46,48 @@ export async function list(
         ...filters
       },
       signal: options?.signal
+    }
+  )
+  return data
+}
+
+export async function listRecords(
+  page: number = 1,
+  pageSize: number = 20,
+  filters?: {
+    user_id?: number
+    group_id?: number
+    start_time?: string
+    end_time?: string
+  },
+  options?: {
+    signal?: AbortSignal
+  }
+): Promise<PaginatedResponse<SubscriptionRecord>> {
+  const { data } = await apiClient.get<PaginatedResponse<SubscriptionRecord>>(
+    '/admin/subscription-records',
+    {
+      params: {
+        page,
+        page_size: pageSize,
+        ...filters
+      },
+      signal: options?.signal
+    }
+  )
+  return data
+}
+
+export async function recordStats(filters?: {
+  user_id?: number
+  group_id?: number
+  start_time?: string
+  end_time?: string
+}): Promise<SubscriptionRecordStats> {
+  const { data } = await apiClient.get<SubscriptionRecordStats>(
+    '/admin/subscription-records/stats',
+    {
+      params: filters
     }
   )
   return data
@@ -182,6 +226,8 @@ export async function listByUser(
 
 export const subscriptionsAPI = {
   list,
+  listRecords,
+  recordStats,
   getById,
   getProgress,
   assign,

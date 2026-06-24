@@ -2270,6 +2270,8 @@ export default {
         dailyLimit: '每日限额（USD）',
         weeklyLimit: '每周限额（USD）',
         monthlyLimit: '每月限额（USD）',
+        defaultPrice: '默认订阅价格（USD）',
+        defaultPricePlaceholder: '0.00',
         defaultValidityDays: '默认有效期（天）',
         validityHint: '分配给用户时订阅的有效天数',
         noLimit: '无限制'
@@ -2948,6 +2950,7 @@ export default {
       allStatus: '全部状态',
       allGroups: '全部分组',
       allPlatforms: '全部平台',
+      days: '天',
       daily: '每日',
       weekly: '每周',
       monthly: '每月',
@@ -2981,12 +2984,18 @@ export default {
         user: '用户',
         group: '订阅分组',
         validityDays: '有效期（天）',
+        priceUsd: '订阅价格（USD）',
         adjustDays: '调整天数'
+      },
+      tabs: {
+        management: '订阅管理',
+        records: '订阅记录'
       },
       selectUser: '选择用户',
       selectGroup: '选择订阅分组',
       groupHint: '仅显示订阅计费类型的分组',
       validityHint: '订阅的有效天数',
+      priceHint: '默认使用所选分组价格，并保存到订阅记录',
       adjustingFor: '为以下用户调整订阅',
       currentExpiration: '当前到期时间',
       adjustDaysPlaceholder: '正数延长，负数缩短',
@@ -3016,6 +3025,24 @@ export default {
       pleaseSelectGroup: '请选择分组',
       validityDaysRequired: '请输入有效的天数（至少1天）',
       revokeConfirm: "确定要撤销 '{user}' 的订阅吗？此操作无法撤销。",
+      records: {
+        userId: '用户 ID',
+        totalAmount: '总金额',
+        recordCount: '{count} 条记录',
+        failedToLoad: '加载订阅记录失败',
+        emptyTitle: '暂无订阅记录',
+        emptyDescription: '后台分配订阅后会记录在这里。',
+        columns: {
+          user: '用户',
+          group: '分组',
+          price: '价格',
+          validityDays: '有效期',
+          startsAt: '开始时间',
+          expiresAt: '到期时间',
+          assignedBy: '分配人',
+          createdAt: '记录时间'
+        }
+      },
       guide: {
         title: '订阅管理教程',
         subtitle: '订阅模式允许你按时间周期为用户分配使用额度，支持日/周/月配额限制。按照以下步骤即可完成配置。',

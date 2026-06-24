@@ -2187,6 +2187,8 @@ export default {
         dailyLimit: 'Daily Limit (USD)',
         weeklyLimit: 'Weekly Limit (USD)',
         monthlyLimit: 'Monthly Limit (USD)',
+        defaultPrice: 'Default Subscription Price (USD)',
+        defaultPricePlaceholder: '0.00',
         defaultValidityDays: 'Default Validity (Days)',
         validityHint: 'Number of days the subscription is valid when assigned to a user',
         noLimit: 'No limit'
@@ -2871,6 +2873,7 @@ export default {
       allStatus: 'All Status',
       allGroups: 'All Groups',
       allPlatforms: 'All Platforms',
+      days: 'days',
       daily: 'Daily',
       weekly: 'Weekly',
       monthly: 'Monthly',
@@ -2904,12 +2907,18 @@ export default {
         user: 'User',
         group: 'Subscription Group',
         validityDays: 'Validity (Days)',
+        priceUsd: 'Subscription Price (USD)',
         adjustDays: 'Adjust by (Days)'
+      },
+      tabs: {
+        management: 'Subscription Management',
+        records: 'Subscription Records'
       },
       selectUser: 'Select a user',
       selectGroup: 'Select a subscription group',
       groupHint: 'Only groups with subscription billing type are shown',
       validityHint: 'Number of days the subscription will be valid',
+      priceHint: 'Defaults to the selected group price and is saved to the subscription record',
       adjustingFor: 'Adjusting subscription for',
       currentExpiration: 'Current expiration',
       adjustDaysPlaceholder: 'Positive to extend, negative to shorten',
@@ -2940,6 +2949,24 @@ export default {
       validityDaysRequired: 'Please enter a valid number of days (at least 1)',
       revokeConfirm:
         "Are you sure you want to revoke the subscription for '{user}'? This action cannot be undone.",
+      records: {
+        userId: 'User ID',
+        totalAmount: 'Total amount',
+        recordCount: '{count} records',
+        failedToLoad: 'Failed to load subscription records',
+        emptyTitle: 'No subscription records',
+        emptyDescription: 'Admin-assigned subscriptions will appear here.',
+        columns: {
+          user: 'User',
+          group: 'Group',
+          price: 'Price',
+          validityDays: 'Validity',
+          startsAt: 'Starts',
+          expiresAt: 'Expires',
+          assignedBy: 'Assigned By',
+          createdAt: 'Recorded At'
+        }
+      },
       guide: {
         title: 'Subscription Management Guide',
         subtitle: 'Subscription mode lets you assign time-based usage quotas to users, with daily/weekly/monthly limits. Follow these steps to get started.',

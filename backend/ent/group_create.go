@@ -15,6 +15,7 @@ import (
 	"github.com/Wei-Shaw/sub2api/ent/apikey"
 	"github.com/Wei-Shaw/sub2api/ent/group"
 	"github.com/Wei-Shaw/sub2api/ent/redeemcode"
+	"github.com/Wei-Shaw/sub2api/ent/subscriptionrecord"
 	"github.com/Wei-Shaw/sub2api/ent/usagelog"
 	"github.com/Wei-Shaw/sub2api/ent/user"
 	"github.com/Wei-Shaw/sub2api/ent/usersubscription"
@@ -213,6 +214,20 @@ func (_c *GroupCreate) SetDefaultValidityDays(v int) *GroupCreate {
 func (_c *GroupCreate) SetNillableDefaultValidityDays(v *int) *GroupCreate {
 	if v != nil {
 		_c.SetDefaultValidityDays(*v)
+	}
+	return _c
+}
+
+// SetDefaultPriceUsd sets the "default_price_usd" field.
+func (_c *GroupCreate) SetDefaultPriceUsd(v float64) *GroupCreate {
+	_c.mutation.SetDefaultPriceUsd(v)
+	return _c
+}
+
+// SetNillableDefaultPriceUsd sets the "default_price_usd" field if the given value is not nil.
+func (_c *GroupCreate) SetNillableDefaultPriceUsd(v *float64) *GroupCreate {
+	if v != nil {
+		_c.SetDefaultPriceUsd(*v)
 	}
 	return _c
 }
@@ -540,6 +555,21 @@ func (_c *GroupCreate) AddSubscriptions(v ...*UserSubscription) *GroupCreate {
 	return _c.AddSubscriptionIDs(ids...)
 }
 
+// AddSubscriptionRecordIDs adds the "subscription_records" edge to the SubscriptionRecord entity by IDs.
+func (_c *GroupCreate) AddSubscriptionRecordIDs(ids ...int64) *GroupCreate {
+	_c.mutation.AddSubscriptionRecordIDs(ids...)
+	return _c
+}
+
+// AddSubscriptionRecords adds the "subscription_records" edges to the SubscriptionRecord entity.
+func (_c *GroupCreate) AddSubscriptionRecords(v ...*SubscriptionRecord) *GroupCreate {
+	ids := make([]int64, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _c.AddSubscriptionRecordIDs(ids...)
+}
+
 // AddUsageLogIDs adds the "usage_logs" edge to the UsageLog entity by IDs.
 func (_c *GroupCreate) AddUsageLogIDs(ids ...int64) *GroupCreate {
 	_c.mutation.AddUsageLogIDs(ids...)
@@ -660,6 +690,10 @@ func (_c *GroupCreate) defaults() error {
 		v := group.DefaultDefaultValidityDays
 		_c.mutation.SetDefaultValidityDays(v)
 	}
+	if _, ok := _c.mutation.DefaultPriceUsd(); !ok {
+		v := group.DefaultDefaultPriceUsd
+		_c.mutation.SetDefaultPriceUsd(v)
+	}
 	if _, ok := _c.mutation.AllowImageGeneration(); !ok {
 		v := group.DefaultAllowImageGeneration
 		_c.mutation.SetAllowImageGeneration(v)
@@ -771,6 +805,9 @@ func (_c *GroupCreate) check() error {
 	}
 	if _, ok := _c.mutation.DefaultValidityDays(); !ok {
 		return &ValidationError{Name: "default_validity_days", err: errors.New(`ent: missing required field "Group.default_validity_days"`)}
+	}
+	if _, ok := _c.mutation.DefaultPriceUsd(); !ok {
+		return &ValidationError{Name: "default_price_usd", err: errors.New(`ent: missing required field "Group.default_price_usd"`)}
 	}
 	if _, ok := _c.mutation.AllowImageGeneration(); !ok {
 		return &ValidationError{Name: "allow_image_generation", err: errors.New(`ent: missing required field "Group.allow_image_generation"`)}
@@ -905,6 +942,10 @@ func (_c *GroupCreate) createSpec() (*Group, *sqlgraph.CreateSpec) {
 		_spec.SetField(group.FieldDefaultValidityDays, field.TypeInt, value)
 		_node.DefaultValidityDays = value
 	}
+	if value, ok := _c.mutation.DefaultPriceUsd(); ok {
+		_spec.SetField(group.FieldDefaultPriceUsd, field.TypeFloat64, value)
+		_node.DefaultPriceUsd = value
+	}
 	if value, ok := _c.mutation.AllowImageGeneration(); ok {
 		_spec.SetField(group.FieldAllowImageGeneration, field.TypeBool, value)
 		_node.AllowImageGeneration = value
@@ -1030,6 +1071,22 @@ func (_c *GroupCreate) createSpec() (*Group, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(usersubscription.FieldID, field.TypeInt64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := _c.mutation.SubscriptionRecordsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   group.SubscriptionRecordsTable,
+			Columns: []string{group.SubscriptionRecordsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(subscriptionrecord.FieldID, field.TypeInt64),
 			},
 		}
 		for _, k := range nodes {
@@ -1358,6 +1415,24 @@ func (u *GroupUpsert) UpdateDefaultValidityDays() *GroupUpsert {
 // AddDefaultValidityDays adds v to the "default_validity_days" field.
 func (u *GroupUpsert) AddDefaultValidityDays(v int) *GroupUpsert {
 	u.Add(group.FieldDefaultValidityDays, v)
+	return u
+}
+
+// SetDefaultPriceUsd sets the "default_price_usd" field.
+func (u *GroupUpsert) SetDefaultPriceUsd(v float64) *GroupUpsert {
+	u.Set(group.FieldDefaultPriceUsd, v)
+	return u
+}
+
+// UpdateDefaultPriceUsd sets the "default_price_usd" field to the value that was provided on create.
+func (u *GroupUpsert) UpdateDefaultPriceUsd() *GroupUpsert {
+	u.SetExcluded(group.FieldDefaultPriceUsd)
+	return u
+}
+
+// AddDefaultPriceUsd adds v to the "default_price_usd" field.
+func (u *GroupUpsert) AddDefaultPriceUsd(v float64) *GroupUpsert {
+	u.Add(group.FieldDefaultPriceUsd, v)
 	return u
 }
 
@@ -1991,6 +2066,27 @@ func (u *GroupUpsertOne) AddDefaultValidityDays(v int) *GroupUpsertOne {
 func (u *GroupUpsertOne) UpdateDefaultValidityDays() *GroupUpsertOne {
 	return u.Update(func(s *GroupUpsert) {
 		s.UpdateDefaultValidityDays()
+	})
+}
+
+// SetDefaultPriceUsd sets the "default_price_usd" field.
+func (u *GroupUpsertOne) SetDefaultPriceUsd(v float64) *GroupUpsertOne {
+	return u.Update(func(s *GroupUpsert) {
+		s.SetDefaultPriceUsd(v)
+	})
+}
+
+// AddDefaultPriceUsd adds v to the "default_price_usd" field.
+func (u *GroupUpsertOne) AddDefaultPriceUsd(v float64) *GroupUpsertOne {
+	return u.Update(func(s *GroupUpsert) {
+		s.AddDefaultPriceUsd(v)
+	})
+}
+
+// UpdateDefaultPriceUsd sets the "default_price_usd" field to the value that was provided on create.
+func (u *GroupUpsertOne) UpdateDefaultPriceUsd() *GroupUpsertOne {
+	return u.Update(func(s *GroupUpsert) {
+		s.UpdateDefaultPriceUsd()
 	})
 }
 
@@ -2846,6 +2942,27 @@ func (u *GroupUpsertBulk) AddDefaultValidityDays(v int) *GroupUpsertBulk {
 func (u *GroupUpsertBulk) UpdateDefaultValidityDays() *GroupUpsertBulk {
 	return u.Update(func(s *GroupUpsert) {
 		s.UpdateDefaultValidityDays()
+	})
+}
+
+// SetDefaultPriceUsd sets the "default_price_usd" field.
+func (u *GroupUpsertBulk) SetDefaultPriceUsd(v float64) *GroupUpsertBulk {
+	return u.Update(func(s *GroupUpsert) {
+		s.SetDefaultPriceUsd(v)
+	})
+}
+
+// AddDefaultPriceUsd adds v to the "default_price_usd" field.
+func (u *GroupUpsertBulk) AddDefaultPriceUsd(v float64) *GroupUpsertBulk {
+	return u.Update(func(s *GroupUpsert) {
+		s.AddDefaultPriceUsd(v)
+	})
+}
+
+// UpdateDefaultPriceUsd sets the "default_price_usd" field to the value that was provided on create.
+func (u *GroupUpsertBulk) UpdateDefaultPriceUsd() *GroupUpsertBulk {
+	return u.Update(func(s *GroupUpsert) {
+		s.UpdateDefaultPriceUsd()
 	})
 }
 

@@ -514,6 +514,12 @@ func registerSystemRoutes(admin *gin.RouterGroup, h *handler.Handlers) {
 }
 
 func registerSubscriptionRoutes(admin *gin.RouterGroup, h *handler.Handlers) {
+	records := admin.Group("/subscription-records")
+	{
+		records.GET("", h.Admin.Subscription.ListRecords)
+		records.GET("/stats", h.Admin.Subscription.RecordStats)
+	}
+
 	subscriptions := admin.Group("/subscriptions")
 	{
 		subscriptions.GET("", h.Admin.Subscription.List)

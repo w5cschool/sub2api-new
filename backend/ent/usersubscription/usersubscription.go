@@ -55,6 +55,8 @@ const (
 	EdgeGroup = "group"
 	// EdgeAssignedByUser holds the string denoting the assigned_by_user edge name in mutations.
 	EdgeAssignedByUser = "assigned_by_user"
+	// EdgeSubscriptionRecords holds the string denoting the subscription_records edge name in mutations.
+	EdgeSubscriptionRecords = "subscription_records"
 	// EdgeUsageLogs holds the string denoting the usage_logs edge name in mutations.
 	EdgeUsageLogs = "usage_logs"
 	// Table holds the table name of the usersubscription in the database.
@@ -80,6 +82,13 @@ const (
 	AssignedByUserInverseTable = "users"
 	// AssignedByUserColumn is the table column denoting the assigned_by_user relation/edge.
 	AssignedByUserColumn = "assigned_by"
+	// SubscriptionRecordsTable is the table that holds the subscription_records relation/edge.
+	SubscriptionRecordsTable = "subscription_records"
+	// SubscriptionRecordsInverseTable is the table name for the SubscriptionRecord entity.
+	// It exists in this package in order to avoid circular dependency with the "subscriptionrecord" package.
+	SubscriptionRecordsInverseTable = "subscription_records"
+	// SubscriptionRecordsColumn is the table column denoting the subscription_records relation/edge.
+	SubscriptionRecordsColumn = "subscription_id"
 	// UsageLogsTable is the table that holds the usage_logs relation/edge.
 	UsageLogsTable = "usage_logs"
 	// UsageLogsInverseTable is the table name for the UsageLog entity.
@@ -263,6 +272,20 @@ func ByAssignedByUserField(field string, opts ...sql.OrderTermOption) OrderOptio
 	}
 }
 
+// BySubscriptionRecordsCount orders the results by subscription_records count.
+func BySubscriptionRecordsCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newSubscriptionRecordsStep(), opts...)
+	}
+}
+
+// BySubscriptionRecords orders the results by subscription_records terms.
+func BySubscriptionRecords(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newSubscriptionRecordsStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
 // ByUsageLogsCount orders the results by usage_logs count.
 func ByUsageLogsCount(opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
@@ -295,6 +318,13 @@ func newAssignedByUserStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(AssignedByUserInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.M2O, true, AssignedByUserTable, AssignedByUserColumn),
+	)
+}
+func newSubscriptionRecordsStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(SubscriptionRecordsInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, SubscriptionRecordsTable, SubscriptionRecordsColumn),
 	)
 }
 func newUsageLogsStep() *sqlgraph.Step {

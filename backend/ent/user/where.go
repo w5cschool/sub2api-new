@@ -1432,6 +1432,52 @@ func HasAssignedSubscriptionsWith(preds ...predicate.UserSubscription) predicate
 	})
 }
 
+// HasSubscriptionRecords applies the HasEdge predicate on the "subscription_records" edge.
+func HasSubscriptionRecords() predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, SubscriptionRecordsTable, SubscriptionRecordsColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasSubscriptionRecordsWith applies the HasEdge predicate on the "subscription_records" edge with a given conditions (other predicates).
+func HasSubscriptionRecordsWith(preds ...predicate.SubscriptionRecord) predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		step := newSubscriptionRecordsStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasAssignedSubscriptionRecords applies the HasEdge predicate on the "assigned_subscription_records" edge.
+func HasAssignedSubscriptionRecords() predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, AssignedSubscriptionRecordsTable, AssignedSubscriptionRecordsColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasAssignedSubscriptionRecordsWith applies the HasEdge predicate on the "assigned_subscription_records" edge with a given conditions (other predicates).
+func HasAssignedSubscriptionRecordsWith(preds ...predicate.SubscriptionRecord) predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		step := newAssignedSubscriptionRecordsStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // HasAnnouncementReads applies the HasEdge predicate on the "announcement_reads" edge.
 func HasAnnouncementReads() predicate.User {
 	return predicate.User(func(s *sql.Selector) {

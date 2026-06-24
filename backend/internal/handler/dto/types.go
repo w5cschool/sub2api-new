@@ -95,6 +95,7 @@ type Group struct {
 	DailyLimitUSD    *float64 `json:"daily_limit_usd"`
 	WeeklyLimitUSD   *float64 `json:"weekly_limit_usd"`
 	MonthlyLimitUSD  *float64 `json:"monthly_limit_usd"`
+	DefaultPriceUSD  float64  `json:"default_price_usd"`
 
 	// 图片生成计费配置（仅 antigravity 平台使用）
 	AllowImageGeneration bool     `json:"allow_image_generation"`
@@ -601,6 +602,32 @@ type BulkAssignResult struct {
 	Subscriptions []AdminUserSubscription `json:"subscriptions"`
 	Errors        []string                `json:"errors"`
 	Statuses      map[string]string       `json:"statuses,omitempty"`
+}
+
+type SubscriptionRecord struct {
+	ID             int64     `json:"id"`
+	UserID         int64     `json:"user_id"`
+	GroupID        int64     `json:"group_id"`
+	SubscriptionID *int64    `json:"subscription_id,omitempty"`
+	PriceUSD       float64   `json:"price_usd"`
+	ValidityDays   int       `json:"validity_days"`
+	StartsAt       time.Time `json:"starts_at"`
+	ExpiresAt      time.Time `json:"expires_at"`
+	AssignedBy     *int64    `json:"assigned_by"`
+	AssignedAt     time.Time `json:"assigned_at"`
+	Notes          string    `json:"notes"`
+	CreatedAt      time.Time `json:"created_at"`
+	UpdatedAt      time.Time `json:"updated_at"`
+
+	User           *User                  `json:"user,omitempty"`
+	Group          *Group                 `json:"group,omitempty"`
+	Subscription   *AdminUserSubscription `json:"subscription,omitempty"`
+	AssignedByUser *User                  `json:"assigned_by_user,omitempty"`
+}
+
+type SubscriptionRecordStats struct {
+	TotalAmountUSD float64 `json:"total_amount_usd"`
+	RecordCount    int64   `json:"record_count"`
 }
 
 // PromoCode 注册优惠码

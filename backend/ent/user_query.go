@@ -22,6 +22,7 @@ import (
 	"github.com/Wei-Shaw/sub2api/ent/predicate"
 	"github.com/Wei-Shaw/sub2api/ent/promocodeusage"
 	"github.com/Wei-Shaw/sub2api/ent/redeemcode"
+	"github.com/Wei-Shaw/sub2api/ent/subscriptionrecord"
 	"github.com/Wei-Shaw/sub2api/ent/usagelog"
 	"github.com/Wei-Shaw/sub2api/ent/user"
 	"github.com/Wei-Shaw/sub2api/ent/userallowedgroup"
@@ -33,25 +34,27 @@ import (
 // UserQuery is the builder for querying User entities.
 type UserQuery struct {
 	config
-	ctx                       *QueryContext
-	order                     []user.OrderOption
-	inters                    []Interceptor
-	predicates                []predicate.User
-	withAPIKeys               *APIKeyQuery
-	withRedeemCodes           *RedeemCodeQuery
-	withSubscriptions         *UserSubscriptionQuery
-	withAssignedSubscriptions *UserSubscriptionQuery
-	withAnnouncementReads     *AnnouncementReadQuery
-	withAllowedGroups         *GroupQuery
-	withUsageLogs             *UsageLogQuery
-	withAttributeValues       *UserAttributeValueQuery
-	withPromoCodeUsages       *PromoCodeUsageQuery
-	withPaymentOrders         *PaymentOrderQuery
-	withAuthIdentities        *AuthIdentityQuery
-	withPendingAuthSessions   *PendingAuthSessionQuery
-	withPlatformQuotas        *UserPlatformQuotaQuery
-	withUserAllowedGroups     *UserAllowedGroupQuery
-	modifiers                 []func(*sql.Selector)
+	ctx                             *QueryContext
+	order                           []user.OrderOption
+	inters                          []Interceptor
+	predicates                      []predicate.User
+	withAPIKeys                     *APIKeyQuery
+	withRedeemCodes                 *RedeemCodeQuery
+	withSubscriptions               *UserSubscriptionQuery
+	withAssignedSubscriptions       *UserSubscriptionQuery
+	withSubscriptionRecords         *SubscriptionRecordQuery
+	withAssignedSubscriptionRecords *SubscriptionRecordQuery
+	withAnnouncementReads           *AnnouncementReadQuery
+	withAllowedGroups               *GroupQuery
+	withUsageLogs                   *UsageLogQuery
+	withAttributeValues             *UserAttributeValueQuery
+	withPromoCodeUsages             *PromoCodeUsageQuery
+	withPaymentOrders               *PaymentOrderQuery
+	withAuthIdentities              *AuthIdentityQuery
+	withPendingAuthSessions         *PendingAuthSessionQuery
+	withPlatformQuotas              *UserPlatformQuotaQuery
+	withUserAllowedGroups           *UserAllowedGroupQuery
+	modifiers                       []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -169,6 +172,50 @@ func (_q *UserQuery) QueryAssignedSubscriptions() *UserSubscriptionQuery {
 			sqlgraph.From(user.Table, user.FieldID, selector),
 			sqlgraph.To(usersubscription.Table, usersubscription.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, user.AssignedSubscriptionsTable, user.AssignedSubscriptionsColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QuerySubscriptionRecords chains the current query on the "subscription_records" edge.
+func (_q *UserQuery) QuerySubscriptionRecords() *SubscriptionRecordQuery {
+	query := (&SubscriptionRecordClient{config: _q.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := _q.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := _q.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(user.Table, user.FieldID, selector),
+			sqlgraph.To(subscriptionrecord.Table, subscriptionrecord.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.SubscriptionRecordsTable, user.SubscriptionRecordsColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryAssignedSubscriptionRecords chains the current query on the "assigned_subscription_records" edge.
+func (_q *UserQuery) QueryAssignedSubscriptionRecords() *SubscriptionRecordQuery {
+	query := (&SubscriptionRecordClient{config: _q.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := _q.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := _q.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(user.Table, user.FieldID, selector),
+			sqlgraph.To(subscriptionrecord.Table, subscriptionrecord.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.AssignedSubscriptionRecordsTable, user.AssignedSubscriptionRecordsColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
 		return fromU, nil
@@ -583,25 +630,27 @@ func (_q *UserQuery) Clone() *UserQuery {
 		return nil
 	}
 	return &UserQuery{
-		config:                    _q.config,
-		ctx:                       _q.ctx.Clone(),
-		order:                     append([]user.OrderOption{}, _q.order...),
-		inters:                    append([]Interceptor{}, _q.inters...),
-		predicates:                append([]predicate.User{}, _q.predicates...),
-		withAPIKeys:               _q.withAPIKeys.Clone(),
-		withRedeemCodes:           _q.withRedeemCodes.Clone(),
-		withSubscriptions:         _q.withSubscriptions.Clone(),
-		withAssignedSubscriptions: _q.withAssignedSubscriptions.Clone(),
-		withAnnouncementReads:     _q.withAnnouncementReads.Clone(),
-		withAllowedGroups:         _q.withAllowedGroups.Clone(),
-		withUsageLogs:             _q.withUsageLogs.Clone(),
-		withAttributeValues:       _q.withAttributeValues.Clone(),
-		withPromoCodeUsages:       _q.withPromoCodeUsages.Clone(),
-		withPaymentOrders:         _q.withPaymentOrders.Clone(),
-		withAuthIdentities:        _q.withAuthIdentities.Clone(),
-		withPendingAuthSessions:   _q.withPendingAuthSessions.Clone(),
-		withPlatformQuotas:        _q.withPlatformQuotas.Clone(),
-		withUserAllowedGroups:     _q.withUserAllowedGroups.Clone(),
+		config:                          _q.config,
+		ctx:                             _q.ctx.Clone(),
+		order:                           append([]user.OrderOption{}, _q.order...),
+		inters:                          append([]Interceptor{}, _q.inters...),
+		predicates:                      append([]predicate.User{}, _q.predicates...),
+		withAPIKeys:                     _q.withAPIKeys.Clone(),
+		withRedeemCodes:                 _q.withRedeemCodes.Clone(),
+		withSubscriptions:               _q.withSubscriptions.Clone(),
+		withAssignedSubscriptions:       _q.withAssignedSubscriptions.Clone(),
+		withSubscriptionRecords:         _q.withSubscriptionRecords.Clone(),
+		withAssignedSubscriptionRecords: _q.withAssignedSubscriptionRecords.Clone(),
+		withAnnouncementReads:           _q.withAnnouncementReads.Clone(),
+		withAllowedGroups:               _q.withAllowedGroups.Clone(),
+		withUsageLogs:                   _q.withUsageLogs.Clone(),
+		withAttributeValues:             _q.withAttributeValues.Clone(),
+		withPromoCodeUsages:             _q.withPromoCodeUsages.Clone(),
+		withPaymentOrders:               _q.withPaymentOrders.Clone(),
+		withAuthIdentities:              _q.withAuthIdentities.Clone(),
+		withPendingAuthSessions:         _q.withPendingAuthSessions.Clone(),
+		withPlatformQuotas:              _q.withPlatformQuotas.Clone(),
+		withUserAllowedGroups:           _q.withUserAllowedGroups.Clone(),
 		// clone intermediate query.
 		sql:  _q.sql.Clone(),
 		path: _q.path,
@@ -649,6 +698,28 @@ func (_q *UserQuery) WithAssignedSubscriptions(opts ...func(*UserSubscriptionQue
 		opt(query)
 	}
 	_q.withAssignedSubscriptions = query
+	return _q
+}
+
+// WithSubscriptionRecords tells the query-builder to eager-load the nodes that are connected to
+// the "subscription_records" edge. The optional arguments are used to configure the query builder of the edge.
+func (_q *UserQuery) WithSubscriptionRecords(opts ...func(*SubscriptionRecordQuery)) *UserQuery {
+	query := (&SubscriptionRecordClient{config: _q.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	_q.withSubscriptionRecords = query
+	return _q
+}
+
+// WithAssignedSubscriptionRecords tells the query-builder to eager-load the nodes that are connected to
+// the "assigned_subscription_records" edge. The optional arguments are used to configure the query builder of the edge.
+func (_q *UserQuery) WithAssignedSubscriptionRecords(opts ...func(*SubscriptionRecordQuery)) *UserQuery {
+	query := (&SubscriptionRecordClient{config: _q.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	_q.withAssignedSubscriptionRecords = query
 	return _q
 }
 
@@ -840,11 +911,13 @@ func (_q *UserQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*User, e
 	var (
 		nodes       = []*User{}
 		_spec       = _q.querySpec()
-		loadedTypes = [14]bool{
+		loadedTypes = [16]bool{
 			_q.withAPIKeys != nil,
 			_q.withRedeemCodes != nil,
 			_q.withSubscriptions != nil,
 			_q.withAssignedSubscriptions != nil,
+			_q.withSubscriptionRecords != nil,
+			_q.withAssignedSubscriptionRecords != nil,
 			_q.withAnnouncementReads != nil,
 			_q.withAllowedGroups != nil,
 			_q.withUsageLogs != nil,
@@ -904,6 +977,24 @@ func (_q *UserQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*User, e
 			func(n *User) { n.Edges.AssignedSubscriptions = []*UserSubscription{} },
 			func(n *User, e *UserSubscription) {
 				n.Edges.AssignedSubscriptions = append(n.Edges.AssignedSubscriptions, e)
+			}); err != nil {
+			return nil, err
+		}
+	}
+	if query := _q.withSubscriptionRecords; query != nil {
+		if err := _q.loadSubscriptionRecords(ctx, query, nodes,
+			func(n *User) { n.Edges.SubscriptionRecords = []*SubscriptionRecord{} },
+			func(n *User, e *SubscriptionRecord) {
+				n.Edges.SubscriptionRecords = append(n.Edges.SubscriptionRecords, e)
+			}); err != nil {
+			return nil, err
+		}
+	}
+	if query := _q.withAssignedSubscriptionRecords; query != nil {
+		if err := _q.loadAssignedSubscriptionRecords(ctx, query, nodes,
+			func(n *User) { n.Edges.AssignedSubscriptionRecords = []*SubscriptionRecord{} },
+			func(n *User, e *SubscriptionRecord) {
+				n.Edges.AssignedSubscriptionRecords = append(n.Edges.AssignedSubscriptionRecords, e)
 			}); err != nil {
 			return nil, err
 		}
@@ -1091,6 +1182,69 @@ func (_q *UserQuery) loadAssignedSubscriptions(ctx context.Context, query *UserS
 	}
 	query.Where(predicate.UserSubscription(func(s *sql.Selector) {
 		s.Where(sql.InValues(s.C(user.AssignedSubscriptionsColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.AssignedBy
+		if fk == nil {
+			return fmt.Errorf(`foreign-key "assigned_by" is nil for node %v`, n.ID)
+		}
+		node, ok := nodeids[*fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "assigned_by" returned %v for node %v`, *fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
+func (_q *UserQuery) loadSubscriptionRecords(ctx context.Context, query *SubscriptionRecordQuery, nodes []*User, init func(*User), assign func(*User, *SubscriptionRecord)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[int64]*User)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(subscriptionrecord.FieldUserID)
+	}
+	query.Where(predicate.SubscriptionRecord(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(user.SubscriptionRecordsColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.UserID
+		node, ok := nodeids[fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "user_id" returned %v for node %v`, fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
+func (_q *UserQuery) loadAssignedSubscriptionRecords(ctx context.Context, query *SubscriptionRecordQuery, nodes []*User, init func(*User), assign func(*User, *SubscriptionRecord)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[int64]*User)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(subscriptionrecord.FieldAssignedBy)
+	}
+	query.Where(predicate.SubscriptionRecord(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(user.AssignedSubscriptionRecordsColumn), fks...))
 	}))
 	neighbors, err := query.All(ctx)
 	if err != nil {

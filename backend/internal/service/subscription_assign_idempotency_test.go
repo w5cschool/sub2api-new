@@ -135,6 +135,29 @@ type subscriptionUserSubRepoStub struct {
 	createCalls int
 }
 
+type subscriptionRecordRepoStub struct {
+	records []SubscriptionRecord
+}
+
+func (s *subscriptionRecordRepoStub) Create(_ context.Context, record *SubscriptionRecord) error {
+	if record == nil {
+		return nil
+	}
+	cp := *record
+	cp.ID = int64(len(s.records) + 1)
+	s.records = append(s.records, cp)
+	record.ID = cp.ID
+	return nil
+}
+
+func (s *subscriptionRecordRepoStub) List(context.Context, pagination.PaginationParams, SubscriptionRecordFilters) ([]SubscriptionRecord, *pagination.PaginationResult, error) {
+	panic("unexpected List call")
+}
+
+func (s *subscriptionRecordRepoStub) Stats(context.Context, SubscriptionRecordFilters) (*SubscriptionRecordStats, error) {
+	panic("unexpected Stats call")
+}
+
 func newSubscriptionUserSubRepoStub() *subscriptionUserSubRepoStub {
 	return &subscriptionUserSubRepoStub{
 		nextID:      1,
@@ -232,7 +255,7 @@ func TestAssignSubscriptionReuseWhenSemanticsMatch(t *testing.T) {
 		Notes:     "init",
 	})
 
-	svc := NewSubscriptionService(groupRepo, subRepo, nil, nil, nil)
+	svc := NewSubscriptionService(groupRepo, subRepo, nil, nil, nil, nil)
 	sub, err := svc.AssignSubscription(context.Background(), &AssignSubscriptionInput{
 		UserID:       1001,
 		GroupID:      1,
@@ -242,6 +265,42 @@ func TestAssignSubscriptionReuseWhenSemanticsMatch(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, int64(10), sub.ID)
 	require.Equal(t, 0, subRepo.createCalls, "reuse should not create new subscription")
+}
+
+func TestAssignSubscriptionCreatesAdminRecordOnlyForNewSubscription(t *testing.T) {
+	groupRepo := &subscriptionGroupRepoStub{group: &Group{
+		ID:               10,
+		SubscriptionType: SubscriptionTypeSubscription,
+		DefaultPriceUSD:  19.99,
+	}}
+	subRepo := newSubscriptionUserSubRepoStub()
+	recordRepo := &subscriptionRecordRepoStub{}
+	svc := NewSubscriptionService(groupRepo, subRepo, recordRepo, nil, nil, nil)
+
+	sub, err := svc.AssignSubscription(context.Background(), &AssignSubscriptionInput{
+		UserID:       1,
+		GroupID:      10,
+		ValidityDays: 30,
+		AssignedBy:   99,
+		Notes:        "manual",
+	})
+	require.NoError(t, err)
+	require.NotNil(t, sub)
+	require.Len(t, recordRepo.records, 1)
+	require.Equal(t, sub.ID, *recordRepo.records[0].SubscriptionID)
+	require.InDelta(t, 19.99, recordRepo.records[0].PriceUSD, 0.0001)
+	require.Equal(t, 30, recordRepo.records[0].ValidityDays)
+
+	reused, err := svc.AssignSubscription(context.Background(), &AssignSubscriptionInput{
+		UserID:       1,
+		GroupID:      10,
+		ValidityDays: 30,
+		AssignedBy:   99,
+		Notes:        "manual",
+	})
+	require.NoError(t, err)
+	require.Equal(t, sub.ID, reused.ID)
+	require.Len(t, recordRepo.records, 1)
 }
 
 func TestAssignSubscriptionConflictWhenSemanticsMismatch(t *testing.T) {
@@ -259,7 +318,7 @@ func TestAssignSubscriptionConflictWhenSemanticsMismatch(t *testing.T) {
 		Notes:     "old-note",
 	})
 
-	svc := NewSubscriptionService(groupRepo, subRepo, nil, nil, nil)
+	svc := NewSubscriptionService(groupRepo, subRepo, nil, nil, nil, nil)
 	_, err := svc.AssignSubscription(context.Background(), &AssignSubscriptionInput{
 		UserID:       2001,
 		GroupID:      1,
@@ -296,7 +355,7 @@ func TestBulkAssignSubscriptionCreatedReusedAndConflict(t *testing.T) {
 		Notes:     "same-note",
 	})
 
-	svc := NewSubscriptionService(groupRepo, subRepo, nil, nil, nil)
+	svc := NewSubscriptionService(groupRepo, subRepo, nil, nil, nil, nil)
 	result, err := svc.BulkAssignSubscription(context.Background(), &BulkAssignSubscriptionInput{
 		UserIDs:      []int64{1, 2, 3},
 		GroupID:      1,
@@ -325,7 +384,7 @@ func TestAssignSubscriptionKeepsWorkingWhenIdempotencyStoreUnavailable(t *testin
 		SetDefaultIdempotencyCoordinator(nil)
 	})
 
-	svc := NewSubscriptionService(groupRepo, subRepo, nil, nil, nil)
+	svc := NewSubscriptionService(groupRepo, subRepo, nil, nil, nil, nil)
 	sub, err := svc.AssignSubscription(context.Background(), &AssignSubscriptionInput{
 		UserID:       9001,
 		GroupID:      1,
@@ -387,7 +446,7 @@ func TestAssignSubscriptionGroupTypeValidation(t *testing.T) {
 		group: &Group{ID: 1, SubscriptionType: SubscriptionTypeStandard},
 	}
 	subRepo := newSubscriptionUserSubRepoStub()
-	svc := NewSubscriptionService(groupRepo, subRepo, nil, nil, nil)
+	svc := NewSubscriptionService(groupRepo, subRepo, nil, nil, nil, nil)
 
 	_, err := svc.AssignSubscription(context.Background(), &AssignSubscriptionInput{
 		UserID:       1,

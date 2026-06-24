@@ -69,6 +69,10 @@ const (
 	EdgeSubscriptions = "subscriptions"
 	// EdgeAssignedSubscriptions holds the string denoting the assigned_subscriptions edge name in mutations.
 	EdgeAssignedSubscriptions = "assigned_subscriptions"
+	// EdgeSubscriptionRecords holds the string denoting the subscription_records edge name in mutations.
+	EdgeSubscriptionRecords = "subscription_records"
+	// EdgeAssignedSubscriptionRecords holds the string denoting the assigned_subscription_records edge name in mutations.
+	EdgeAssignedSubscriptionRecords = "assigned_subscription_records"
 	// EdgeAnnouncementReads holds the string denoting the announcement_reads edge name in mutations.
 	EdgeAnnouncementReads = "announcement_reads"
 	// EdgeAllowedGroups holds the string denoting the allowed_groups edge name in mutations.
@@ -119,6 +123,20 @@ const (
 	AssignedSubscriptionsInverseTable = "user_subscriptions"
 	// AssignedSubscriptionsColumn is the table column denoting the assigned_subscriptions relation/edge.
 	AssignedSubscriptionsColumn = "assigned_by"
+	// SubscriptionRecordsTable is the table that holds the subscription_records relation/edge.
+	SubscriptionRecordsTable = "subscription_records"
+	// SubscriptionRecordsInverseTable is the table name for the SubscriptionRecord entity.
+	// It exists in this package in order to avoid circular dependency with the "subscriptionrecord" package.
+	SubscriptionRecordsInverseTable = "subscription_records"
+	// SubscriptionRecordsColumn is the table column denoting the subscription_records relation/edge.
+	SubscriptionRecordsColumn = "user_id"
+	// AssignedSubscriptionRecordsTable is the table that holds the assigned_subscription_records relation/edge.
+	AssignedSubscriptionRecordsTable = "subscription_records"
+	// AssignedSubscriptionRecordsInverseTable is the table name for the SubscriptionRecord entity.
+	// It exists in this package in order to avoid circular dependency with the "subscriptionrecord" package.
+	AssignedSubscriptionRecordsInverseTable = "subscription_records"
+	// AssignedSubscriptionRecordsColumn is the table column denoting the assigned_subscription_records relation/edge.
+	AssignedSubscriptionRecordsColumn = "assigned_by"
 	// AnnouncementReadsTable is the table that holds the announcement_reads relation/edge.
 	AnnouncementReadsTable = "announcement_reads"
 	// AnnouncementReadsInverseTable is the table name for the AnnouncementRead entity.
@@ -466,6 +484,34 @@ func ByAssignedSubscriptions(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOp
 	}
 }
 
+// BySubscriptionRecordsCount orders the results by subscription_records count.
+func BySubscriptionRecordsCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newSubscriptionRecordsStep(), opts...)
+	}
+}
+
+// BySubscriptionRecords orders the results by subscription_records terms.
+func BySubscriptionRecords(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newSubscriptionRecordsStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
+// ByAssignedSubscriptionRecordsCount orders the results by assigned_subscription_records count.
+func ByAssignedSubscriptionRecordsCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newAssignedSubscriptionRecordsStep(), opts...)
+	}
+}
+
+// ByAssignedSubscriptionRecords orders the results by assigned_subscription_records terms.
+func ByAssignedSubscriptionRecords(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newAssignedSubscriptionRecordsStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
 // ByAnnouncementReadsCount orders the results by announcement_reads count.
 func ByAnnouncementReadsCount(opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
@@ -631,6 +677,20 @@ func newAssignedSubscriptionsStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(AssignedSubscriptionsInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.O2M, false, AssignedSubscriptionsTable, AssignedSubscriptionsColumn),
+	)
+}
+func newSubscriptionRecordsStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(SubscriptionRecordsInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, SubscriptionRecordsTable, SubscriptionRecordsColumn),
+	)
+}
+func newAssignedSubscriptionRecordsStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(AssignedSubscriptionRecordsInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, AssignedSubscriptionRecordsTable, AssignedSubscriptionRecordsColumn),
 	)
 }
 func newAnnouncementReadsStep() *sqlgraph.Step {

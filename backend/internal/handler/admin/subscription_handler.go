@@ -3,6 +3,7 @@ package admin
 import (
 	"context"
 	"strconv"
+	"time"
 
 	"github.com/Wei-Shaw/sub2api/internal/handler/dto"
 	"github.com/Wei-Shaw/sub2api/internal/pkg/pagination"
@@ -40,18 +41,20 @@ func NewSubscriptionHandler(subscriptionService *service.SubscriptionService) *S
 
 // AssignSubscriptionRequest represents assign subscription request
 type AssignSubscriptionRequest struct {
-	UserID       int64  `json:"user_id" binding:"required"`
-	GroupID      int64  `json:"group_id" binding:"required"`
-	ValidityDays int    `json:"validity_days" binding:"omitempty,max=36500"` // max 100 years
-	Notes        string `json:"notes"`
+	UserID       int64    `json:"user_id" binding:"required"`
+	GroupID      int64    `json:"group_id" binding:"required"`
+	ValidityDays int      `json:"validity_days" binding:"omitempty,max=36500"` // max 100 years
+	Notes        string   `json:"notes"`
+	PriceUSD     *float64 `json:"price_usd" binding:"omitempty,min=0"`
 }
 
 // BulkAssignSubscriptionRequest represents bulk assign subscription request
 type BulkAssignSubscriptionRequest struct {
-	UserIDs      []int64 `json:"user_ids" binding:"required,min=1"`
-	GroupID      int64   `json:"group_id" binding:"required"`
-	ValidityDays int     `json:"validity_days" binding:"omitempty,max=36500"` // max 100 years
-	Notes        string  `json:"notes"`
+	UserIDs      []int64  `json:"user_ids" binding:"required,min=1"`
+	GroupID      int64    `json:"group_id" binding:"required"`
+	ValidityDays int      `json:"validity_days" binding:"omitempty,max=36500"` // max 100 years
+	Notes        string   `json:"notes"`
+	PriceUSD     *float64 `json:"price_usd" binding:"omitempty,min=0"`
 }
 
 // AdjustSubscriptionRequest represents adjust subscription request (extend or shorten)
@@ -94,6 +97,81 @@ func (h *SubscriptionHandler) List(c *gin.Context) {
 		out = append(out, *dto.UserSubscriptionFromServiceAdmin(&subscriptions[i]))
 	}
 	response.PaginatedWithResult(c, out, toResponsePagination(pagination))
+}
+
+// ListRecords handles listing admin subscription assignment records.
+// GET /api/v1/admin/subscription-records
+func (h *SubscriptionHandler) ListRecords(c *gin.Context) {
+	page, pageSize := response.ParsePagination(c)
+	filters, ok := parseSubscriptionRecordFilters(c)
+	if !ok {
+		return
+	}
+
+	records, pagination, err := h.subscriptionService.ListSubscriptionRecords(c.Request.Context(), page, pageSize, filters)
+	if err != nil {
+		response.ErrorFrom(c, err)
+		return
+	}
+
+	out := make([]dto.SubscriptionRecord, 0, len(records))
+	for i := range records {
+		out = append(out, *dto.SubscriptionRecordFromService(&records[i]))
+	}
+	response.PaginatedWithResult(c, out, toResponsePagination(pagination))
+}
+
+// RecordStats handles amount statistics for admin subscription assignment records.
+// GET /api/v1/admin/subscription-records/stats
+func (h *SubscriptionHandler) RecordStats(c *gin.Context) {
+	filters, ok := parseSubscriptionRecordFilters(c)
+	if !ok {
+		return
+	}
+
+	stats, err := h.subscriptionService.GetSubscriptionRecordStats(c.Request.Context(), filters)
+	if err != nil {
+		response.ErrorFrom(c, err)
+		return
+	}
+	response.Success(c, dto.SubscriptionRecordStatsFromService(stats))
+}
+
+func parseSubscriptionRecordFilters(c *gin.Context) (service.SubscriptionRecordFilters, bool) {
+	var filters service.SubscriptionRecordFilters
+	if userIDStr := c.Query("user_id"); userIDStr != "" {
+		id, err := strconv.ParseInt(userIDStr, 10, 64)
+		if err != nil {
+			response.BadRequest(c, "Invalid user_id")
+			return filters, false
+		}
+		filters.UserID = &id
+	}
+	if groupIDStr := c.Query("group_id"); groupIDStr != "" {
+		id, err := strconv.ParseInt(groupIDStr, 10, 64)
+		if err != nil {
+			response.BadRequest(c, "Invalid group_id")
+			return filters, false
+		}
+		filters.GroupID = &id
+	}
+	if startStr := c.Query("start_time"); startStr != "" {
+		t, err := time.Parse(time.RFC3339, startStr)
+		if err != nil {
+			response.BadRequest(c, "Invalid start_time")
+			return filters, false
+		}
+		filters.StartTime = &t
+	}
+	if endStr := c.Query("end_time"); endStr != "" {
+		t, err := time.Parse(time.RFC3339, endStr)
+		if err != nil {
+			response.BadRequest(c, "Invalid end_time")
+			return filters, false
+		}
+		filters.EndTime = &t
+	}
+	return filters, true
 }
 
 // GetByID handles getting a subscription by ID
@@ -150,6 +228,7 @@ func (h *SubscriptionHandler) Assign(c *gin.Context) {
 		ValidityDays: req.ValidityDays,
 		AssignedBy:   adminID,
 		Notes:        req.Notes,
+		PriceUSD:     req.PriceUSD,
 	})
 	if err != nil {
 		response.ErrorFrom(c, err)
@@ -177,6 +256,7 @@ func (h *SubscriptionHandler) BulkAssign(c *gin.Context) {
 		ValidityDays: req.ValidityDays,
 		AssignedBy:   adminID,
 		Notes:        req.Notes,
+		PriceUSD:     req.PriceUSD,
 	})
 	if err != nil {
 		response.ErrorFrom(c, err)

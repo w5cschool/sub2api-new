@@ -29,7 +29,6 @@ services:
       - "${BIND_HOST:-127.0.0.1}:${SERVER_PORT:-18080}:8080"
     volumes:
       - ./data-new:/app/data
-      - ./codex-instructions.md.tmpl:/app/data/codex-instructions.md.tmpl:ro
     environment:
       AUTO_SETUP: "true"
       SERVER_HOST: 0.0.0.0
