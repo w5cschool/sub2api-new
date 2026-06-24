@@ -90,6 +90,12 @@ type SubscriptionRecord func(*sql.Selector)
 // TLSFingerprintProfile is the predicate function for tlsfingerprintprofile builders.
 type TLSFingerprintProfile func(*sql.Selector)
 
+// Team is the predicate function for team builders.
+type Team func(*sql.Selector)
+
+// TeamMember is the predicate function for teammember builders.
+type TeamMember func(*sql.Selector)
+
 // UsageCleanupTask is the predicate function for usagecleanuptask builders.
 type UsageCleanupTask func(*sql.Selector)
 

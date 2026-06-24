@@ -691,6 +691,76 @@ export interface UpdateGroupRequest {
   copy_accounts_from_group_ids?: number[]
 }
 
+// ==================== User Teams Types ====================
+
+export type TeamRole = 'member' | 'leader'
+
+export interface TeamMember {
+  id: number
+  team_id: number
+  user_id: number
+  role: TeamRole
+  joined_at: string
+  updated_at: string
+  user?: User
+}
+
+export interface Team {
+  id: number
+  name: string
+  description?: string | null
+  status: 'active' | 'inactive' | string
+  created_at: string
+  updated_at: string
+  deleted_at?: string | null
+  members?: TeamMember[]
+}
+
+export interface TeamMe {
+  team: Team | null
+  membership: TeamMember | null
+  can_view_usage: boolean
+}
+
+export interface TeamMemberInput {
+  user_id: number
+  role: TeamRole
+}
+
+export interface CreateTeamRequest {
+  name: string
+  description?: string | null
+  status?: 'active' | 'inactive'
+  members?: TeamMemberInput[]
+}
+
+export interface UpdateTeamRequest {
+  name?: string
+  description?: string | null
+  status?: 'active' | 'inactive'
+}
+
+export interface ReplaceTeamMembersRequest {
+  members: TeamMemberInput[]
+}
+
+export interface TeamMemberUsageSummary {
+  user_id: number
+  email: string
+  username: string
+  role: TeamRole
+  today_actual_cost: number
+  total_actual_cost: number
+  today_requests: number
+  total_requests: number
+  today_tokens: number
+  total_tokens: number
+}
+
+export interface TeamUsageQueryParams extends UsageQueryParams {
+  member_id?: number
+}
+
 // ==================== Account & Proxy Types ====================
 
 export type AccountPlatform = 'anthropic' | 'openai' | 'gemini' | 'antigravity'

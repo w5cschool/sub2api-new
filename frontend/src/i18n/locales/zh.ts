@@ -268,6 +268,7 @@ export default {
     import: '导入',
     actions: '操作',
     status: '状态',
+    createdAt: '创建时间',
     name: '名称',
     email: '邮箱',
     password: '密码',
@@ -378,6 +379,7 @@ export default {
     announcements: '公告',
     apiKeys: 'API 密钥',
     usage: '使用记录',
+    teamUsage: '团队用量',
     redeem: '兑换',
     affiliate: '邀请返利',
     affiliateManagement: '邀请返利',
@@ -386,6 +388,7 @@ export default {
     affiliateTransferRecords: '提取记录',
     profile: '个人资料',
     users: '用户管理',
+    teams: '团队管理',
     groups: '分组管理',
     channels: '渠道管理',
     availableChannels: '可用渠道',
@@ -868,6 +871,20 @@ export default {
       quota_exhausted: '额度耗尽',
       expired: '已过期'
     }
+  },
+
+  // Team Usage
+  teamUsage: {
+    title: '团队用量',
+    description: '查看团队成员的历史用量和统计',
+    unavailableTitle: '暂无团队用量权限',
+    unavailableDescription: '只有团队 leader 可以查看团队成员用量。',
+    member: '成员',
+    allMembers: '全部成员',
+    membersSummary: '成员排行',
+    requests: '次请求',
+    noSummary: '暂无排行数据',
+    modelPlaceholder: '按模型筛选'
   },
 
   // Usage
@@ -2154,6 +2171,32 @@ export default {
         subscriptionWarning: '此用户有活跃订阅，平台限额仅在余额（标准）模式下生效，订阅模式请求不受此限额约束。',
         invalidNumber: '以下字段填写不是合法数字，请修正后再保存：{fields}',
       }
+    },
+
+    teams: {
+      title: '团队管理',
+      description: '管理用户团队和 leader 权限',
+      create: '创建团队',
+      edit: '编辑团队',
+      name: '团队名称',
+      descriptionLabel: '团队描述',
+      members: '成员',
+      leaders: 'leader',
+      member: '成员',
+      leader: 'Leader',
+      allStatus: '全部状态',
+      searchPlaceholder: '搜索团队名称或描述...',
+      searchUsers: '搜索用户邮箱或用户名...',
+      selectedMembers: '已选成员',
+      noMembers: '暂无成员',
+      noDescription: '暂无描述',
+      empty: '暂无团队',
+      nameRequired: '请输入团队名称',
+      created: '团队已创建',
+      updated: '团队已更新',
+      deleted: '团队已删除',
+      membersUpdated: '团队成员已更新',
+      deleteConfirm: '确定删除团队 {name} 吗？团队成员关系将被移除。'
     },
 
     // Groups Management

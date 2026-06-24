@@ -218,6 +218,18 @@ const routes: RouteRecordRaw[] = [
     }
   },
   {
+    path: '/team/usage',
+    name: 'TeamUsage',
+    component: () => import('@/views/user/TeamUsageView.vue'),
+    meta: {
+      requiresAuth: true,
+      requiresAdmin: false,
+      title: 'Team Usage',
+      titleKey: 'teamUsage.title',
+      descriptionKey: 'teamUsage.description'
+    }
+  },
+  {
     path: '/redeem',
     name: 'Redeem',
     component: () => import('@/views/user/RedeemView.vue'),
@@ -412,6 +424,18 @@ const routes: RouteRecordRaw[] = [
       title: 'User Management',
       titleKey: 'admin.users.title',
       descriptionKey: 'admin.users.description'
+    }
+  },
+  {
+    path: '/admin/teams',
+    name: 'AdminTeams',
+    component: () => import('@/views/admin/TeamsView.vue'),
+    meta: {
+      requiresAuth: true,
+      requiresAdmin: true,
+      title: 'Team Management',
+      titleKey: 'admin.teams.title',
+      descriptionKey: 'admin.teams.description'
     }
   },
   {

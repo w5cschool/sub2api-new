@@ -33,6 +33,8 @@ import (
 	"github.com/Wei-Shaw/sub2api/ent/setting"
 	"github.com/Wei-Shaw/sub2api/ent/subscriptionplan"
 	"github.com/Wei-Shaw/sub2api/ent/subscriptionrecord"
+	"github.com/Wei-Shaw/sub2api/ent/team"
+	"github.com/Wei-Shaw/sub2api/ent/teammember"
 	"github.com/Wei-Shaw/sub2api/ent/tlsfingerprintprofile"
 	"github.com/Wei-Shaw/sub2api/ent/usagecleanuptask"
 	"github.com/Wei-Shaw/sub2api/ent/usagelog"
@@ -1612,6 +1614,67 @@ func init() {
 	tlsfingerprintprofileDescEnableGrease := tlsfingerprintprofileFields[2].Descriptor()
 	// tlsfingerprintprofile.DefaultEnableGrease holds the default value on creation for the enable_grease field.
 	tlsfingerprintprofile.DefaultEnableGrease = tlsfingerprintprofileDescEnableGrease.Default.(bool)
+	teamMixin := schema.Team{}.Mixin()
+	teamMixinHooks1 := teamMixin[1].Hooks()
+	team.Hooks[0] = teamMixinHooks1[0]
+	teamMixinInters1 := teamMixin[1].Interceptors()
+	team.Interceptors[0] = teamMixinInters1[0]
+	teamMixinFields0 := teamMixin[0].Fields()
+	_ = teamMixinFields0
+	teamFields := schema.Team{}.Fields()
+	_ = teamFields
+	// teamDescCreatedAt is the schema descriptor for created_at field.
+	teamDescCreatedAt := teamMixinFields0[0].Descriptor()
+	// team.DefaultCreatedAt holds the default value on creation for the created_at field.
+	team.DefaultCreatedAt = teamDescCreatedAt.Default.(func() time.Time)
+	// teamDescUpdatedAt is the schema descriptor for updated_at field.
+	teamDescUpdatedAt := teamMixinFields0[1].Descriptor()
+	// team.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	team.DefaultUpdatedAt = teamDescUpdatedAt.Default.(func() time.Time)
+	// team.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	team.UpdateDefaultUpdatedAt = teamDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// teamDescName is the schema descriptor for name field.
+	teamDescName := teamFields[0].Descriptor()
+	// team.NameValidator is a validator for the "name" field. It is called by the builders before save.
+	team.NameValidator = func() func(string) error {
+		validators := teamDescName.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(name string) error {
+			for _, fn := range fns {
+				if err := fn(name); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
+	// teamDescStatus is the schema descriptor for status field.
+	teamDescStatus := teamFields[2].Descriptor()
+	// team.DefaultStatus holds the default value on creation for the status field.
+	team.DefaultStatus = teamDescStatus.Default.(string)
+	// team.StatusValidator is a validator for the "status" field. It is called by the builders before save.
+	team.StatusValidator = teamDescStatus.Validators[0].(func(string) error)
+	teammemberFields := schema.TeamMember{}.Fields()
+	_ = teammemberFields
+	// teammemberDescRole is the schema descriptor for role field.
+	teammemberDescRole := teammemberFields[2].Descriptor()
+	// teammember.DefaultRole holds the default value on creation for the role field.
+	teammember.DefaultRole = teammemberDescRole.Default.(string)
+	// teammember.RoleValidator is a validator for the "role" field. It is called by the builders before save.
+	teammember.RoleValidator = teammemberDescRole.Validators[0].(func(string) error)
+	// teammemberDescJoinedAt is the schema descriptor for joined_at field.
+	teammemberDescJoinedAt := teammemberFields[3].Descriptor()
+	// teammember.DefaultJoinedAt holds the default value on creation for the joined_at field.
+	teammember.DefaultJoinedAt = teammemberDescJoinedAt.Default.(func() time.Time)
+	// teammemberDescUpdatedAt is the schema descriptor for updated_at field.
+	teammemberDescUpdatedAt := teammemberFields[4].Descriptor()
+	// teammember.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	teammember.DefaultUpdatedAt = teammemberDescUpdatedAt.Default.(func() time.Time)
+	// teammember.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	teammember.UpdateDefaultUpdatedAt = teammemberDescUpdatedAt.UpdateDefault.(func() time.Time)
 	usagecleanuptaskMixin := schema.UsageCleanupTask{}.Mixin()
 	usagecleanuptaskMixinFields0 := usagecleanuptaskMixin[0].Fields()
 	_ = usagecleanuptaskMixinFields0

@@ -268,6 +268,7 @@ export default {
     import: 'Import',
     actions: 'Actions',
     status: 'Status',
+    createdAt: 'Created At',
     name: 'Name',
     email: 'Email',
     password: 'Password',
@@ -378,6 +379,7 @@ export default {
     announcements: 'Announcements',
     apiKeys: 'API Keys',
     usage: 'Usage',
+    teamUsage: 'Team Usage',
     redeem: 'Redeem',
     affiliate: 'Affiliate Rebates',
     affiliateManagement: 'Affiliate Rebates',
@@ -386,6 +388,7 @@ export default {
     affiliateTransferRecords: 'Transfer Records',
     profile: 'Profile',
     users: 'Users',
+    teams: 'Teams',
     groups: 'Groups',
     channels: 'Channels',
     availableChannels: 'Available Channels',
@@ -864,6 +867,20 @@ export default {
       quota_exhausted: 'Quota Exhausted',
       expired: 'Expired',
     },
+  },
+
+  // Team Usage
+  teamUsage: {
+    title: 'Team Usage',
+    description: 'Review usage history and statistics for team members',
+    unavailableTitle: 'Team usage is unavailable',
+    unavailableDescription: 'Only team leaders can view member usage.',
+    member: 'Member',
+    allMembers: 'All Members',
+    membersSummary: 'Member Ranking',
+    requests: 'requests',
+    noSummary: 'No ranking data',
+    modelPlaceholder: 'Filter by model'
   },
 
   // Usage
@@ -2101,6 +2118,32 @@ export default {
         subscriptionWarning: 'This user has an active subscription. Platform quotas only apply to balance (standard) mode requests; subscription mode requests are not subject to these limits.',
         invalidNumber: 'The following fields contain invalid numbers. Please fix them before saving: {fields}',
       }
+    },
+
+    teams: {
+      title: 'Team Management',
+      description: 'Manage user teams and leader permissions',
+      create: 'Create Team',
+      edit: 'Edit Team',
+      name: 'Team Name',
+      descriptionLabel: 'Team Description',
+      members: 'Members',
+      leaders: 'leaders',
+      member: 'Member',
+      leader: 'Leader',
+      allStatus: 'All Status',
+      searchPlaceholder: 'Search team name or description...',
+      searchUsers: 'Search user email or username...',
+      selectedMembers: 'Selected Members',
+      noMembers: 'No members selected',
+      noDescription: 'No description',
+      empty: 'No teams yet',
+      nameRequired: 'Please enter a team name',
+      created: 'Team created',
+      updated: 'Team updated',
+      deleted: 'Team deleted',
+      membersUpdated: 'Team members updated',
+      deleteConfirm: 'Delete team {name}? Team memberships will be removed.'
     },
 
     // Groups

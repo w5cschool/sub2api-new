@@ -93,6 +93,16 @@ func RegisterUserRoutes(
 			usage.POST("/dashboard/api-keys-usage", h.Usage.DashboardAPIKeysUsage)
 		}
 
+		// 用户团队
+		team := authenticated.Group("/team")
+		{
+			team.GET("/me", h.Team.Me)
+			team.GET("/members", h.Team.Members)
+			team.GET("/usage", h.Team.Usage)
+			team.GET("/usage/stats", h.Team.Stats)
+			team.GET("/usage/members-summary", h.Team.MembersSummary)
+		}
+
 		// 公告（用户可见）
 		announcements := authenticated.Group("/announcements")
 		{

@@ -29,6 +29,9 @@ func RegisterAdminRoutes(
 		// 用户管理
 		registerUserManagementRoutes(admin, h)
 
+		// 用户团队管理
+		registerTeamRoutes(admin, h)
+
 		// 分组管理
 		registerGroupRoutes(admin, h)
 
@@ -262,6 +265,18 @@ func registerUserManagementRoutes(admin *gin.RouterGroup, h *handler.Handlers) {
 		// User attribute values
 		users.GET("/:id/attributes", h.Admin.UserAttribute.GetUserAttributes)
 		users.PUT("/:id/attributes", h.Admin.UserAttribute.UpdateUserAttributes)
+	}
+}
+
+func registerTeamRoutes(admin *gin.RouterGroup, h *handler.Handlers) {
+	teams := admin.Group("/teams")
+	{
+		teams.GET("", h.Admin.Team.List)
+		teams.POST("", h.Admin.Team.Create)
+		teams.GET("/:id", h.Admin.Team.GetByID)
+		teams.PUT("/:id", h.Admin.Team.Update)
+		teams.DELETE("/:id", h.Admin.Team.Delete)
+		teams.PUT("/:id/members", h.Admin.Team.ReplaceMembers)
 	}
 }
 

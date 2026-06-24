@@ -262,6 +262,7 @@ type PlatformDashboardStats struct {
 // UsageLogFilters represents filters for usage log queries
 type UsageLogFilters struct {
 	UserID      int64
+	UserIDs     []int64
 	APIKeyID    int64
 	AccountID   int64
 	GroupID     int64
@@ -307,6 +308,10 @@ type BatchUserUsageStats struct {
 	UserID          int64           `json:"user_id"`
 	TodayActualCost float64         `json:"today_actual_cost"`
 	TotalActualCost float64         `json:"total_actual_cost"`
+	TodayRequests   int64           `json:"today_requests"`
+	TotalRequests   int64           `json:"total_requests"`
+	TodayTokens     int64           `json:"today_tokens"`
+	TotalTokens     int64           `json:"total_tokens"`
 	ByPlatform      []PlatformUsage `json:"by_platform,omitempty"`
 }
 

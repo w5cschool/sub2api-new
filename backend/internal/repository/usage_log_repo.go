@@ -2790,7 +2790,10 @@ func (r *usageLogRepository) ListWithFilters(ctx context.Context, params paginat
 	conditions := make([]string, 0, 9)
 	args := make([]any, 0, 9)
 
-	if filters.UserID > 0 {
+	if normalizedUserIDs := normalizePositiveInt64IDs(filters.UserIDs); len(normalizedUserIDs) > 0 {
+		conditions = append(conditions, fmt.Sprintf("user_id = ANY($%d)", len(args)+1))
+		args = append(args, pq.Array(normalizedUserIDs))
+	} else if filters.UserID > 0 {
 		conditions = append(conditions, fmt.Sprintf("user_id = $%d", len(args)+1))
 		args = append(args, filters.UserID)
 	}
@@ -2848,7 +2851,7 @@ func shouldUseFastUsageLogTotal(filters UsageLogFilters) bool {
 		return false
 	}
 	// 强选择过滤下记录集通常较小，保留精确总数。
-	return filters.UserID == 0 && filters.APIKeyID == 0 && filters.AccountID == 0
+	return filters.UserID == 0 && len(filters.UserIDs) == 0 && filters.APIKeyID == 0 && filters.AccountID == 0
 }
 
 // UsageStats represents usage statistics
@@ -2907,7 +2910,11 @@ func (r *usageLogRepository) GetBatchUserUsageStats(ctx context.Context, userIDs
 			ul.user_id,
 			` + usageLogEffectivePlatformExpr + ` as platform,
 			COALESCE(SUM(ul.actual_cost) FILTER (WHERE ul.created_at >= $2 AND ul.created_at < $3), 0) as total_cost,
-			COALESCE(SUM(ul.actual_cost) FILTER (WHERE ul.created_at >= $4), 0) as today_cost
+			COALESCE(SUM(ul.actual_cost) FILTER (WHERE ul.created_at >= $4), 0) as today_cost,
+			COUNT(*) FILTER (WHERE ul.created_at >= $2 AND ul.created_at < $3) as total_requests,
+			COUNT(*) FILTER (WHERE ul.created_at >= $4) as today_requests,
+			COALESCE(SUM(ul.input_tokens + ul.output_tokens + ul.cache_creation_tokens + ul.cache_read_tokens) FILTER (WHERE ul.created_at >= $2 AND ul.created_at < $3), 0) as total_tokens,
+			COALESCE(SUM(ul.input_tokens + ul.output_tokens + ul.cache_creation_tokens + ul.cache_read_tokens) FILTER (WHERE ul.created_at >= $4), 0) as today_tokens
 		FROM usage_logs ul
 		LEFT JOIN groups g ON g.id = ul.group_id
 		LEFT JOIN accounts a ON a.id = ul.account_id
@@ -2926,7 +2933,11 @@ func (r *usageLogRepository) GetBatchUserUsageStats(ctx context.Context, userIDs
 		var platform sql.NullString
 		var total float64
 		var todayTotal float64
-		if err := rows.Scan(&userID, &platform, &total, &todayTotal); err != nil {
+		var totalRequests int64
+		var todayRequests int64
+		var totalTokens int64
+		var todayTokens int64
+		if err := rows.Scan(&userID, &platform, &total, &todayTotal, &totalRequests, &todayRequests, &totalTokens, &todayTokens); err != nil {
 			_ = rows.Close()
 			return nil, err
 		}
@@ -2936,6 +2947,10 @@ func (r *usageLogRepository) GetBatchUserUsageStats(ctx context.Context, userIDs
 		}
 		stats.TotalActualCost += total
 		stats.TodayActualCost += todayTotal
+		stats.TotalRequests += totalRequests
+		stats.TodayRequests += todayRequests
+		stats.TotalTokens += totalTokens
+		stats.TodayTokens += todayTokens
 		if platform.Valid && platform.String != "" {
 			stats.ByPlatform = append(stats.ByPlatform, PlatformUsage{
 				Platform:        platform.String,
@@ -3507,7 +3522,11 @@ func (r *usageLogRepository) GetStatsWithFilters(ctx context.Context, filters Us
 	conditions := make([]string, 0, 9)
 	args := make([]any, 0, 9)
 
-	if filters.UserID > 0 {
+	normalizedUserIDs := normalizePositiveInt64IDs(filters.UserIDs)
+	if len(normalizedUserIDs) > 0 {
+		conditions = append(conditions, fmt.Sprintf("user_id = ANY($%d)", len(args)+1))
+		args = append(args, pq.Array(normalizedUserIDs))
+	} else if filters.UserID > 0 {
 		conditions = append(conditions, fmt.Sprintf("user_id = $%d", len(args)+1))
 		args = append(args, filters.UserID)
 	}
@@ -3613,7 +3632,11 @@ func (r *usageLogRepository) GetStatsWithFilters(ctx context.Context, filters Us
 		endpointPaths = res
 	}
 
-	if r.db != nil {
+	if len(normalizedUserIDs) > 0 {
+		if err := runSummary(ctx); err != nil {
+			return nil, err
+		}
+	} else if r.db != nil {
 		// 生产路径:r.sql 是 *sql.DB 连接池,可并发。4 条查询并行,延迟取最大值。
 		g, gctx := errgroup.WithContext(ctx)
 		g.Go(func() error { return runSummary(gctx) })

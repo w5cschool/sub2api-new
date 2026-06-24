@@ -109,6 +109,32 @@ func TestMigrationsRunner_IsIdempotent_AndSchemaIsUpToDate(t *testing.T) {
 	// user_subscriptions: deleted_at for soft delete support (migration 012)
 	requireColumn(t, tx, "user_subscriptions", "deleted_at", "timestamp with time zone", 0, true)
 
+	// teams/team_members: user team visibility model
+	var teamsRegclass sql.NullString
+	require.NoError(t, tx.QueryRowContext(context.Background(), "SELECT to_regclass('public.teams')").Scan(&teamsRegclass))
+	require.True(t, teamsRegclass.Valid, "expected teams table to exist")
+	requireColumn(t, tx, "teams", "name", "character varying", 100, false)
+	requireColumn(t, tx, "teams", "description", "text", 0, true)
+	requireColumn(t, tx, "teams", "status", "character varying", 20, false)
+	requireColumn(t, tx, "teams", "deleted_at", "timestamp with time zone", 0, true)
+	requireIndex(t, tx, "teams", "teams_status")
+	requireIndex(t, tx, "teams", "teams_deleted_at")
+	requirePartialUniqueIndexDefinition(t, tx, "teams", "teams_name_unique_active", "name", "deleted_at IS NULL")
+
+	var teamMembersRegclass sql.NullString
+	require.NoError(t, tx.QueryRowContext(context.Background(), "SELECT to_regclass('public.team_members')").Scan(&teamMembersRegclass))
+	require.True(t, teamMembersRegclass.Valid, "expected team_members table to exist")
+	requireColumn(t, tx, "team_members", "team_id", "bigint", 0, false)
+	requireColumn(t, tx, "team_members", "user_id", "bigint", 0, false)
+	requireColumn(t, tx, "team_members", "role", "character varying", 20, false)
+	requireColumn(t, tx, "team_members", "joined_at", "timestamp with time zone", 0, false)
+	requireIndex(t, tx, "team_members", "team_members_team_id")
+	requireIndex(t, tx, "team_members", "team_members_team_role")
+	requirePartialUniqueIndexDefinition(t, tx, "team_members", "team_members_user_unique", "user_id")
+	requireConstraintDefinitionContains(t, tx, "team_members", "team_members_role_check", "role", "'member'", "'leader'")
+	requireForeignKeyOnDelete(t, tx, "team_members", "team_id", "teams", "CASCADE")
+	requireForeignKeyOnDelete(t, tx, "team_members", "user_id", "users", "CASCADE")
+
 	// orphan_allowed_groups_audit table should exist (migration 013)
 	var orphanAuditRegclass sql.NullString
 	require.NoError(t, tx.QueryRowContext(context.Background(), "SELECT to_regclass('public.orphan_allowed_groups_audit')").Scan(&orphanAuditRegclass))
