@@ -7,6 +7,7 @@ type SubscriptionRecord struct {
 	UserID         int64
 	GroupID        int64
 	SubscriptionID *int64
+	Operation      string
 	PriceUSD       float64
 	ValidityDays   int
 	StartsAt       time.Time
@@ -34,3 +35,10 @@ type SubscriptionRecordStats struct {
 	TotalAmountUSD float64
 	RecordCount    int64
 }
+
+const (
+	SubscriptionRecordOperationAssign     = "assign"
+	SubscriptionRecordOperationAdjust     = "adjust"
+	SubscriptionRecordOperationResetQuota = "reset_quota"
+	SubscriptionRecordOperationRevoke     = "revoke"
+)

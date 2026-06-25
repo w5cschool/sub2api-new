@@ -281,6 +281,7 @@ func (h *SubscriptionHandler) Extend(c *gin.Context) {
 		return
 	}
 
+	adminID := getAdminIDFromContext(c)
 	idempotencyPayload := struct {
 		SubscriptionID int64                     `json:"subscription_id"`
 		Body           AdjustSubscriptionRequest `json:"body"`
@@ -289,7 +290,7 @@ func (h *SubscriptionHandler) Extend(c *gin.Context) {
 		Body:           req,
 	}
 	executeAdminIdempotentJSON(c, "admin.subscriptions.extend", idempotencyPayload, service.DefaultWriteIdempotencyTTL(), func(ctx context.Context) (any, error) {
-		subscription, execErr := h.subscriptionService.ExtendSubscription(ctx, subscriptionID, req.Days)
+		subscription, execErr := h.subscriptionService.AdminAdjustSubscription(ctx, subscriptionID, req.Days, adminID)
 		if execErr != nil {
 			return nil, execErr
 		}
@@ -321,7 +322,8 @@ func (h *SubscriptionHandler) ResetQuota(c *gin.Context) {
 		response.BadRequest(c, "At least one of 'daily', 'weekly', or 'monthly' must be true")
 		return
 	}
-	sub, err := h.subscriptionService.AdminResetQuota(c.Request.Context(), subscriptionID, req.Daily, req.Weekly, req.Monthly)
+	adminID := getAdminIDFromContext(c)
+	sub, err := h.subscriptionService.AdminResetQuotaWithRecord(c.Request.Context(), subscriptionID, req.Daily, req.Weekly, req.Monthly, adminID)
 	if err != nil {
 		response.ErrorFrom(c, err)
 		return
@@ -338,7 +340,8 @@ func (h *SubscriptionHandler) Revoke(c *gin.Context) {
 		return
 	}
 
-	err = h.subscriptionService.RevokeSubscription(c.Request.Context(), subscriptionID)
+	adminID := getAdminIDFromContext(c)
+	err = h.subscriptionService.AdminRevokeSubscription(c.Request.Context(), subscriptionID, adminID)
 	if err != nil {
 		response.ErrorFrom(c, err)
 		return

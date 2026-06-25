@@ -32696,6 +32696,7 @@ type SubscriptionRecordMutation struct {
 	id                      *int64
 	created_at              *time.Time
 	updated_at              *time.Time
+	operation               *string
 	price_usd               *float64
 	addprice_usd            *float64
 	validity_days           *int
@@ -33007,6 +33008,42 @@ func (m *SubscriptionRecordMutation) SubscriptionIDCleared() bool {
 func (m *SubscriptionRecordMutation) ResetSubscriptionID() {
 	m.subscription = nil
 	delete(m.clearedFields, subscriptionrecord.FieldSubscriptionID)
+}
+
+// SetOperation sets the "operation" field.
+func (m *SubscriptionRecordMutation) SetOperation(s string) {
+	m.operation = &s
+}
+
+// Operation returns the value of the "operation" field in the mutation.
+func (m *SubscriptionRecordMutation) Operation() (r string, exists bool) {
+	v := m.operation
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldOperation returns the old "operation" field's value of the SubscriptionRecord entity.
+// If the SubscriptionRecord object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SubscriptionRecordMutation) OldOperation(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldOperation is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldOperation requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldOperation: %w", err)
+	}
+	return oldValue.Operation, nil
+}
+
+// ResetOperation resets all changes to the "operation" field.
+func (m *SubscriptionRecordMutation) ResetOperation() {
+	m.operation = nil
 }
 
 // SetPriceUsd sets the "price_usd" field.
@@ -33482,7 +33519,7 @@ func (m *SubscriptionRecordMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *SubscriptionRecordMutation) Fields() []string {
-	fields := make([]string, 0, 12)
+	fields := make([]string, 0, 13)
 	if m.created_at != nil {
 		fields = append(fields, subscriptionrecord.FieldCreatedAt)
 	}
@@ -33497,6 +33534,9 @@ func (m *SubscriptionRecordMutation) Fields() []string {
 	}
 	if m.subscription != nil {
 		fields = append(fields, subscriptionrecord.FieldSubscriptionID)
+	}
+	if m.operation != nil {
+		fields = append(fields, subscriptionrecord.FieldOperation)
 	}
 	if m.price_usd != nil {
 		fields = append(fields, subscriptionrecord.FieldPriceUsd)
@@ -33537,6 +33577,8 @@ func (m *SubscriptionRecordMutation) Field(name string) (ent.Value, bool) {
 		return m.GroupID()
 	case subscriptionrecord.FieldSubscriptionID:
 		return m.SubscriptionID()
+	case subscriptionrecord.FieldOperation:
+		return m.Operation()
 	case subscriptionrecord.FieldPriceUsd:
 		return m.PriceUsd()
 	case subscriptionrecord.FieldValidityDays:
@@ -33570,6 +33612,8 @@ func (m *SubscriptionRecordMutation) OldField(ctx context.Context, name string) 
 		return m.OldGroupID(ctx)
 	case subscriptionrecord.FieldSubscriptionID:
 		return m.OldSubscriptionID(ctx)
+	case subscriptionrecord.FieldOperation:
+		return m.OldOperation(ctx)
 	case subscriptionrecord.FieldPriceUsd:
 		return m.OldPriceUsd(ctx)
 	case subscriptionrecord.FieldValidityDays:
@@ -33627,6 +33671,13 @@ func (m *SubscriptionRecordMutation) SetField(name string, value ent.Value) erro
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetSubscriptionID(v)
+		return nil
+	case subscriptionrecord.FieldOperation:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetOperation(v)
 		return nil
 	case subscriptionrecord.FieldPriceUsd:
 		v, ok := value.(float64)
@@ -33788,6 +33839,9 @@ func (m *SubscriptionRecordMutation) ResetField(name string) error {
 		return nil
 	case subscriptionrecord.FieldSubscriptionID:
 		m.ResetSubscriptionID()
+		return nil
+	case subscriptionrecord.FieldOperation:
+		m.ResetOperation()
 		return nil
 	case subscriptionrecord.FieldPriceUsd:
 		m.ResetPriceUsd()

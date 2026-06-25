@@ -1690,6 +1690,7 @@ export interface SubscriptionRecord {
   user_id: number
   group_id: number
   subscription_id?: number | null
+  operation: 'assign' | 'adjust' | 'reset_quota' | 'revoke' | string
   price_usd: number
   validity_days: number
   starts_at: string

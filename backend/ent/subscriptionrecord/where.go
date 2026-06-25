@@ -80,6 +80,11 @@ func SubscriptionID(v int64) predicate.SubscriptionRecord {
 	return predicate.SubscriptionRecord(sql.FieldEQ(FieldSubscriptionID, v))
 }
 
+// Operation applies equality check predicate on the "operation" field. It's identical to OperationEQ.
+func Operation(v string) predicate.SubscriptionRecord {
+	return predicate.SubscriptionRecord(sql.FieldEQ(FieldOperation, v))
+}
+
 // PriceUsd applies equality check predicate on the "price_usd" field. It's identical to PriceUsdEQ.
 func PriceUsd(v float64) predicate.SubscriptionRecord {
 	return predicate.SubscriptionRecord(sql.FieldEQ(FieldPriceUsd, v))
@@ -263,6 +268,71 @@ func SubscriptionIDIsNil() predicate.SubscriptionRecord {
 // SubscriptionIDNotNil applies the NotNil predicate on the "subscription_id" field.
 func SubscriptionIDNotNil() predicate.SubscriptionRecord {
 	return predicate.SubscriptionRecord(sql.FieldNotNull(FieldSubscriptionID))
+}
+
+// OperationEQ applies the EQ predicate on the "operation" field.
+func OperationEQ(v string) predicate.SubscriptionRecord {
+	return predicate.SubscriptionRecord(sql.FieldEQ(FieldOperation, v))
+}
+
+// OperationNEQ applies the NEQ predicate on the "operation" field.
+func OperationNEQ(v string) predicate.SubscriptionRecord {
+	return predicate.SubscriptionRecord(sql.FieldNEQ(FieldOperation, v))
+}
+
+// OperationIn applies the In predicate on the "operation" field.
+func OperationIn(vs ...string) predicate.SubscriptionRecord {
+	return predicate.SubscriptionRecord(sql.FieldIn(FieldOperation, vs...))
+}
+
+// OperationNotIn applies the NotIn predicate on the "operation" field.
+func OperationNotIn(vs ...string) predicate.SubscriptionRecord {
+	return predicate.SubscriptionRecord(sql.FieldNotIn(FieldOperation, vs...))
+}
+
+// OperationGT applies the GT predicate on the "operation" field.
+func OperationGT(v string) predicate.SubscriptionRecord {
+	return predicate.SubscriptionRecord(sql.FieldGT(FieldOperation, v))
+}
+
+// OperationGTE applies the GTE predicate on the "operation" field.
+func OperationGTE(v string) predicate.SubscriptionRecord {
+	return predicate.SubscriptionRecord(sql.FieldGTE(FieldOperation, v))
+}
+
+// OperationLT applies the LT predicate on the "operation" field.
+func OperationLT(v string) predicate.SubscriptionRecord {
+	return predicate.SubscriptionRecord(sql.FieldLT(FieldOperation, v))
+}
+
+// OperationLTE applies the LTE predicate on the "operation" field.
+func OperationLTE(v string) predicate.SubscriptionRecord {
+	return predicate.SubscriptionRecord(sql.FieldLTE(FieldOperation, v))
+}
+
+// OperationContains applies the Contains predicate on the "operation" field.
+func OperationContains(v string) predicate.SubscriptionRecord {
+	return predicate.SubscriptionRecord(sql.FieldContains(FieldOperation, v))
+}
+
+// OperationHasPrefix applies the HasPrefix predicate on the "operation" field.
+func OperationHasPrefix(v string) predicate.SubscriptionRecord {
+	return predicate.SubscriptionRecord(sql.FieldHasPrefix(FieldOperation, v))
+}
+
+// OperationHasSuffix applies the HasSuffix predicate on the "operation" field.
+func OperationHasSuffix(v string) predicate.SubscriptionRecord {
+	return predicate.SubscriptionRecord(sql.FieldHasSuffix(FieldOperation, v))
+}
+
+// OperationEqualFold applies the EqualFold predicate on the "operation" field.
+func OperationEqualFold(v string) predicate.SubscriptionRecord {
+	return predicate.SubscriptionRecord(sql.FieldEqualFold(FieldOperation, v))
+}
+
+// OperationContainsFold applies the ContainsFold predicate on the "operation" field.
+func OperationContainsFold(v string) predicate.SubscriptionRecord {
+	return predicate.SubscriptionRecord(sql.FieldContainsFold(FieldOperation, v))
 }
 
 // PriceUsdEQ applies the EQ predicate on the "price_usd" field.

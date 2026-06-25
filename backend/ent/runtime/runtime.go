@@ -1569,12 +1569,18 @@ func init() {
 	subscriptionrecord.DefaultUpdatedAt = subscriptionrecordDescUpdatedAt.Default.(func() time.Time)
 	// subscriptionrecord.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	subscriptionrecord.UpdateDefaultUpdatedAt = subscriptionrecordDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// subscriptionrecordDescOperation is the schema descriptor for operation field.
+	subscriptionrecordDescOperation := subscriptionrecordFields[3].Descriptor()
+	// subscriptionrecord.DefaultOperation holds the default value on creation for the operation field.
+	subscriptionrecord.DefaultOperation = subscriptionrecordDescOperation.Default.(string)
+	// subscriptionrecord.OperationValidator is a validator for the "operation" field. It is called by the builders before save.
+	subscriptionrecord.OperationValidator = subscriptionrecordDescOperation.Validators[0].(func(string) error)
 	// subscriptionrecordDescPriceUsd is the schema descriptor for price_usd field.
-	subscriptionrecordDescPriceUsd := subscriptionrecordFields[3].Descriptor()
+	subscriptionrecordDescPriceUsd := subscriptionrecordFields[4].Descriptor()
 	// subscriptionrecord.DefaultPriceUsd holds the default value on creation for the price_usd field.
 	subscriptionrecord.DefaultPriceUsd = subscriptionrecordDescPriceUsd.Default.(float64)
 	// subscriptionrecordDescValidityDays is the schema descriptor for validity_days field.
-	subscriptionrecordDescValidityDays := subscriptionrecordFields[4].Descriptor()
+	subscriptionrecordDescValidityDays := subscriptionrecordFields[5].Descriptor()
 	// subscriptionrecord.DefaultValidityDays holds the default value on creation for the validity_days field.
 	subscriptionrecord.DefaultValidityDays = subscriptionrecordDescValidityDays.Default.(int)
 	tlsfingerprintprofileMixin := schema.TLSFingerprintProfile{}.Mixin()

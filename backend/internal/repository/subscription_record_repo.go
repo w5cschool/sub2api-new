@@ -29,6 +29,7 @@ func (r *subscriptionRecordRepository) Create(ctx context.Context, record *servi
 		SetUserID(record.UserID).
 		SetGroupID(record.GroupID).
 		SetNillableSubscriptionID(record.SubscriptionID).
+		SetOperation(normalizeSubscriptionRecordOperation(record.Operation)).
 		SetPriceUsd(record.PriceUSD).
 		SetValidityDays(record.ValidityDays).
 		SetStartsAt(record.StartsAt).
@@ -138,6 +139,7 @@ func subscriptionRecordEntityToService(m *dbent.SubscriptionRecord) *service.Sub
 		UserID:         m.UserID,
 		GroupID:        m.GroupID,
 		SubscriptionID: m.SubscriptionID,
+		Operation:      normalizeSubscriptionRecordOperation(m.Operation),
 		PriceUSD:       m.PriceUsd,
 		ValidityDays:   m.ValidityDays,
 		StartsAt:       m.StartsAt,
@@ -161,6 +163,13 @@ func subscriptionRecordEntityToService(m *dbent.SubscriptionRecord) *service.Sub
 		out.AssignedByUser = userEntityToService(m.Edges.AssignedByUser)
 	}
 	return out
+}
+
+func normalizeSubscriptionRecordOperation(operation string) string {
+	if operation == "" {
+		return service.SubscriptionRecordOperationAssign
+	}
+	return operation
 }
 
 func subscriptionRecordEntitiesToService(models []*dbent.SubscriptionRecord) []service.SubscriptionRecord {

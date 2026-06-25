@@ -3132,12 +3132,19 @@ export default {
         columns: {
           user: '用户',
           group: '分组',
+          operation: '操作',
           price: '价格',
           validityDays: '有效期',
           startsAt: '开始时间',
           expiresAt: '到期时间',
           assignedBy: '分配人',
           createdAt: '记录时间'
+        },
+        operations: {
+          assign: '分配',
+          adjust: '调整',
+          resetQuota: '重置配额',
+          revoke: '撤销'
         }
       },
       guide: {

@@ -79,6 +79,20 @@ func (_c *SubscriptionRecordCreate) SetNillableSubscriptionID(v *int64) *Subscri
 	return _c
 }
 
+// SetOperation sets the "operation" field.
+func (_c *SubscriptionRecordCreate) SetOperation(v string) *SubscriptionRecordCreate {
+	_c.mutation.SetOperation(v)
+	return _c
+}
+
+// SetNillableOperation sets the "operation" field if the given value is not nil.
+func (_c *SubscriptionRecordCreate) SetNillableOperation(v *string) *SubscriptionRecordCreate {
+	if v != nil {
+		_c.SetOperation(*v)
+	}
+	return _c
+}
+
 // SetPriceUsd sets the "price_usd" field.
 func (_c *SubscriptionRecordCreate) SetPriceUsd(v float64) *SubscriptionRecordCreate {
 	_c.mutation.SetPriceUsd(v)
@@ -230,6 +244,10 @@ func (_c *SubscriptionRecordCreate) defaults() {
 		v := subscriptionrecord.DefaultUpdatedAt()
 		_c.mutation.SetUpdatedAt(v)
 	}
+	if _, ok := _c.mutation.Operation(); !ok {
+		v := subscriptionrecord.DefaultOperation
+		_c.mutation.SetOperation(v)
+	}
 	if _, ok := _c.mutation.PriceUsd(); !ok {
 		v := subscriptionrecord.DefaultPriceUsd
 		_c.mutation.SetPriceUsd(v)
@@ -253,6 +271,14 @@ func (_c *SubscriptionRecordCreate) check() error {
 	}
 	if _, ok := _c.mutation.GroupID(); !ok {
 		return &ValidationError{Name: "group_id", err: errors.New(`ent: missing required field "SubscriptionRecord.group_id"`)}
+	}
+	if _, ok := _c.mutation.Operation(); !ok {
+		return &ValidationError{Name: "operation", err: errors.New(`ent: missing required field "SubscriptionRecord.operation"`)}
+	}
+	if v, ok := _c.mutation.Operation(); ok {
+		if err := subscriptionrecord.OperationValidator(v); err != nil {
+			return &ValidationError{Name: "operation", err: fmt.Errorf(`ent: validator failed for field "SubscriptionRecord.operation": %w`, err)}
+		}
 	}
 	if _, ok := _c.mutation.PriceUsd(); !ok {
 		return &ValidationError{Name: "price_usd", err: errors.New(`ent: missing required field "SubscriptionRecord.price_usd"`)}
@@ -309,6 +335,10 @@ func (_c *SubscriptionRecordCreate) createSpec() (*SubscriptionRecord, *sqlgraph
 	if value, ok := _c.mutation.UpdatedAt(); ok {
 		_spec.SetField(subscriptionrecord.FieldUpdatedAt, field.TypeTime, value)
 		_node.UpdatedAt = value
+	}
+	if value, ok := _c.mutation.Operation(); ok {
+		_spec.SetField(subscriptionrecord.FieldOperation, field.TypeString, value)
+		_node.Operation = value
 	}
 	if value, ok := _c.mutation.PriceUsd(); ok {
 		_spec.SetField(subscriptionrecord.FieldPriceUsd, field.TypeFloat64, value)
@@ -505,6 +535,18 @@ func (u *SubscriptionRecordUpsert) UpdateSubscriptionID() *SubscriptionRecordUps
 // ClearSubscriptionID clears the value of the "subscription_id" field.
 func (u *SubscriptionRecordUpsert) ClearSubscriptionID() *SubscriptionRecordUpsert {
 	u.SetNull(subscriptionrecord.FieldSubscriptionID)
+	return u
+}
+
+// SetOperation sets the "operation" field.
+func (u *SubscriptionRecordUpsert) SetOperation(v string) *SubscriptionRecordUpsert {
+	u.Set(subscriptionrecord.FieldOperation, v)
+	return u
+}
+
+// UpdateOperation sets the "operation" field to the value that was provided on create.
+func (u *SubscriptionRecordUpsert) UpdateOperation() *SubscriptionRecordUpsert {
+	u.SetExcluded(subscriptionrecord.FieldOperation)
 	return u
 }
 
@@ -721,6 +763,20 @@ func (u *SubscriptionRecordUpsertOne) UpdateSubscriptionID() *SubscriptionRecord
 func (u *SubscriptionRecordUpsertOne) ClearSubscriptionID() *SubscriptionRecordUpsertOne {
 	return u.Update(func(s *SubscriptionRecordUpsert) {
 		s.ClearSubscriptionID()
+	})
+}
+
+// SetOperation sets the "operation" field.
+func (u *SubscriptionRecordUpsertOne) SetOperation(v string) *SubscriptionRecordUpsertOne {
+	return u.Update(func(s *SubscriptionRecordUpsert) {
+		s.SetOperation(v)
+	})
+}
+
+// UpdateOperation sets the "operation" field to the value that was provided on create.
+func (u *SubscriptionRecordUpsertOne) UpdateOperation() *SubscriptionRecordUpsertOne {
+	return u.Update(func(s *SubscriptionRecordUpsert) {
+		s.UpdateOperation()
 	})
 }
 
@@ -1121,6 +1177,20 @@ func (u *SubscriptionRecordUpsertBulk) UpdateSubscriptionID() *SubscriptionRecor
 func (u *SubscriptionRecordUpsertBulk) ClearSubscriptionID() *SubscriptionRecordUpsertBulk {
 	return u.Update(func(s *SubscriptionRecordUpsert) {
 		s.ClearSubscriptionID()
+	})
+}
+
+// SetOperation sets the "operation" field.
+func (u *SubscriptionRecordUpsertBulk) SetOperation(v string) *SubscriptionRecordUpsertBulk {
+	return u.Update(func(s *SubscriptionRecordUpsert) {
+		s.SetOperation(v)
+	})
+}
+
+// UpdateOperation sets the "operation" field to the value that was provided on create.
+func (u *SubscriptionRecordUpsertBulk) UpdateOperation() *SubscriptionRecordUpsertBulk {
+	return u.Update(func(s *SubscriptionRecordUpsert) {
+		s.UpdateOperation()
 	})
 }
 

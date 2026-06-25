@@ -500,6 +500,14 @@
             />
             <span v-else class="text-sm text-gray-400 dark:text-dark-500">-</span>
           </template>
+          <template #cell-operation="{ value }">
+            <span
+              class="inline-flex items-center rounded px-2 py-0.5 text-xs font-medium"
+              :class="recordOperationClass(value)"
+            >
+              {{ formatRecordOperation(value) }}
+            </span>
+          </template>
           <template #cell-price_usd="{ value }">
             <span class="font-medium text-gray-900 dark:text-white">${{ Number(value || 0).toFixed(2) }}</span>
           </template>
@@ -1123,6 +1131,7 @@ const subscriptionGroupOptions = computed(() =>
 const recordColumns = computed<Column[]>(() => [
   { key: 'user', label: t('admin.subscriptions.records.columns.user'), sortable: false },
   { key: 'group', label: t('admin.subscriptions.records.columns.group'), sortable: false },
+  { key: 'operation', label: t('admin.subscriptions.records.columns.operation'), sortable: false },
   { key: 'price_usd', label: t('admin.subscriptions.records.columns.price'), sortable: false },
   { key: 'validity_days', label: t('admin.subscriptions.records.columns.validityDays'), sortable: false },
   { key: 'starts_at', label: t('admin.subscriptions.records.columns.startsAt'), sortable: false },
@@ -1523,6 +1532,34 @@ const confirmResetQuota = async () => {
 }
 
 // Helper functions
+const formatRecordOperation = (operation?: string) => {
+  switch (operation) {
+    case 'adjust':
+      return t('admin.subscriptions.records.operations.adjust')
+    case 'reset_quota':
+      return t('admin.subscriptions.records.operations.resetQuota')
+    case 'revoke':
+      return t('admin.subscriptions.records.operations.revoke')
+    case 'assign':
+    default:
+      return t('admin.subscriptions.records.operations.assign')
+  }
+}
+
+const recordOperationClass = (operation?: string) => {
+  switch (operation) {
+    case 'adjust':
+      return 'bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300'
+    case 'reset_quota':
+      return 'bg-amber-50 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300'
+    case 'revoke':
+      return 'bg-red-50 text-red-700 dark:bg-red-900/30 dark:text-red-300'
+    case 'assign':
+    default:
+      return 'bg-emerald-50 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300'
+  }
+}
+
 const getDaysRemaining = (expiresAt: string): number | null => {
   const now = new Date()
   const expires = new Date(expiresAt)

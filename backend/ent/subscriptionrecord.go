@@ -30,6 +30,8 @@ type SubscriptionRecord struct {
 	GroupID int64 `json:"group_id,omitempty"`
 	// SubscriptionID holds the value of the "subscription_id" field.
 	SubscriptionID *int64 `json:"subscription_id,omitempty"`
+	// Operation holds the value of the "operation" field.
+	Operation string `json:"operation,omitempty"`
 	// PriceUsd holds the value of the "price_usd" field.
 	PriceUsd float64 `json:"price_usd,omitempty"`
 	// ValidityDays holds the value of the "validity_days" field.
@@ -118,7 +120,7 @@ func (*SubscriptionRecord) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullFloat64)
 		case subscriptionrecord.FieldID, subscriptionrecord.FieldUserID, subscriptionrecord.FieldGroupID, subscriptionrecord.FieldSubscriptionID, subscriptionrecord.FieldValidityDays, subscriptionrecord.FieldAssignedBy:
 			values[i] = new(sql.NullInt64)
-		case subscriptionrecord.FieldNotes:
+		case subscriptionrecord.FieldOperation, subscriptionrecord.FieldNotes:
 			values[i] = new(sql.NullString)
 		case subscriptionrecord.FieldCreatedAt, subscriptionrecord.FieldUpdatedAt, subscriptionrecord.FieldStartsAt, subscriptionrecord.FieldExpiresAt, subscriptionrecord.FieldAssignedAt:
 			values[i] = new(sql.NullTime)
@@ -173,6 +175,12 @@ func (_m *SubscriptionRecord) assignValues(columns []string, values []any) error
 			} else if value.Valid {
 				_m.SubscriptionID = new(int64)
 				*_m.SubscriptionID = value.Int64
+			}
+		case subscriptionrecord.FieldOperation:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field operation", values[i])
+			} else if value.Valid {
+				_m.Operation = value.String
 			}
 		case subscriptionrecord.FieldPriceUsd:
 			if value, ok := values[i].(*sql.NullFloat64); !ok {
@@ -290,6 +298,9 @@ func (_m *SubscriptionRecord) String() string {
 		builder.WriteString("subscription_id=")
 		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
+	builder.WriteString(", ")
+	builder.WriteString("operation=")
+	builder.WriteString(_m.Operation)
 	builder.WriteString(", ")
 	builder.WriteString("price_usd=")
 	builder.WriteString(fmt.Sprintf("%v", _m.PriceUsd))

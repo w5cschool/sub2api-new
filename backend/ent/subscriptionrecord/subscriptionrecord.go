@@ -24,6 +24,8 @@ const (
 	FieldGroupID = "group_id"
 	// FieldSubscriptionID holds the string denoting the subscription_id field in the database.
 	FieldSubscriptionID = "subscription_id"
+	// FieldOperation holds the string denoting the operation field in the database.
+	FieldOperation = "operation"
 	// FieldPriceUsd holds the string denoting the price_usd field in the database.
 	FieldPriceUsd = "price_usd"
 	// FieldValidityDays holds the string denoting the validity_days field in the database.
@@ -86,6 +88,7 @@ var Columns = []string{
 	FieldUserID,
 	FieldGroupID,
 	FieldSubscriptionID,
+	FieldOperation,
 	FieldPriceUsd,
 	FieldValidityDays,
 	FieldStartsAt,
@@ -112,6 +115,10 @@ var (
 	DefaultUpdatedAt func() time.Time
 	// UpdateDefaultUpdatedAt holds the default value on update for the "updated_at" field.
 	UpdateDefaultUpdatedAt func() time.Time
+	// DefaultOperation holds the default value on creation for the "operation" field.
+	DefaultOperation string
+	// OperationValidator is a validator for the "operation" field. It is called by the builders before save.
+	OperationValidator func(string) error
 	// DefaultPriceUsd holds the default value on creation for the "price_usd" field.
 	DefaultPriceUsd float64
 	// DefaultValidityDays holds the default value on creation for the "validity_days" field.
@@ -149,6 +156,11 @@ func ByGroupID(opts ...sql.OrderTermOption) OrderOption {
 // BySubscriptionID orders the results by the subscription_id field.
 func BySubscriptionID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldSubscriptionID, opts...).ToFunc()
+}
+
+// ByOperation orders the results by the operation field.
+func ByOperation(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldOperation, opts...).ToFunc()
 }
 
 // ByPriceUsd orders the results by the price_usd field.

@@ -3056,12 +3056,19 @@ export default {
         columns: {
           user: 'User',
           group: 'Group',
+          operation: 'Operation',
           price: 'Price',
           validityDays: 'Validity',
           startsAt: 'Starts',
           expiresAt: 'Expires',
           assignedBy: 'Assigned By',
           createdAt: 'Recorded At'
+        },
+        operations: {
+          assign: 'Assign',
+          adjust: 'Adjust',
+          resetQuota: 'Reset Quota',
+          revoke: 'Revoke'
         }
       },
       guide: {

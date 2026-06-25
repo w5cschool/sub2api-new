@@ -528,6 +528,7 @@ func (s *SubscriptionService) createAdminSubscriptionRecord(ctx context.Context,
 		UserID:         sub.UserID,
 		GroupID:        sub.GroupID,
 		SubscriptionID: &subscriptionID,
+		Operation:      SubscriptionRecordOperationAssign,
 		PriceUSD:       priceUSD,
 		ValidityDays:   validityDays,
 		StartsAt:       sub.StartsAt,
@@ -537,6 +538,47 @@ func (s *SubscriptionService) createAdminSubscriptionRecord(ctx context.Context,
 		Notes:          input.Notes,
 	}
 	return s.subRecordRepo.Create(ctx, record)
+}
+
+func (s *SubscriptionService) createSubscriptionOperationRecord(ctx context.Context, operation string, sub *UserSubscription, actorID int64, validityDays int, operationAt time.Time, notes string) error {
+	if sub == nil || s.subRecordRepo == nil {
+		return nil
+	}
+
+	subscriptionID := sub.ID
+	var assignedBy *int64
+	if actorID > 0 {
+		assignedBy = &actorID
+	}
+
+	record := &SubscriptionRecord{
+		UserID:         sub.UserID,
+		GroupID:        sub.GroupID,
+		SubscriptionID: &subscriptionID,
+		Operation:      operation,
+		PriceUSD:       0,
+		ValidityDays:   validityDays,
+		StartsAt:       sub.StartsAt,
+		ExpiresAt:      sub.ExpiresAt,
+		AssignedBy:     assignedBy,
+		AssignedAt:     operationAt,
+		Notes:          notes,
+	}
+	return s.subRecordRepo.Create(ctx, record)
+}
+
+func resetQuotaRecordNotes(resetDaily, resetWeekly, resetMonthly bool) string {
+	windows := make([]string, 0, 3)
+	if resetDaily {
+		windows = append(windows, "daily")
+	}
+	if resetWeekly {
+		windows = append(windows, "weekly")
+	}
+	if resetMonthly {
+		windows = append(windows, "monthly")
+	}
+	return "reset windows: " + strings.Join(windows, ", ")
 }
 
 func detectAssignSemanticConflict(existing *UserSubscription, input *AssignSubscriptionInput) (string, bool) {
@@ -576,13 +618,32 @@ func normalizeAssignValidityDays(days int) int {
 
 // RevokeSubscription 撤销订阅
 func (s *SubscriptionService) RevokeSubscription(ctx context.Context, subscriptionID int64) error {
+	return s.revokeSubscription(ctx, subscriptionID, 0, false)
+}
+
+// AdminRevokeSubscription revokes a subscription and records the admin operation.
+func (s *SubscriptionService) AdminRevokeSubscription(ctx context.Context, subscriptionID, adminID int64) error {
+	return s.revokeSubscription(ctx, subscriptionID, adminID, true)
+}
+
+func (s *SubscriptionService) revokeSubscription(ctx context.Context, subscriptionID, adminID int64, recordOperation bool) error {
 	// 先获取订阅信息用于失效缓存
 	sub, err := s.userSubRepo.GetByID(ctx, subscriptionID)
 	if err != nil {
 		return err
 	}
 
-	if err := s.userSubRepo.Delete(ctx, subscriptionID); err != nil {
+	if err := s.withSubscriptionUpdateTx(ctx, func(txCtx context.Context) error {
+		if recordOperation {
+			if err := s.createSubscriptionOperationRecord(txCtx, SubscriptionRecordOperationRevoke, sub, adminID, 0, time.Now(), "subscription revoked"); err != nil {
+				return err
+			}
+		}
+		if err := s.userSubRepo.Delete(txCtx, subscriptionID); err != nil {
+			return err
+		}
+		return nil
+	}); err != nil {
 		return err
 	}
 
@@ -602,6 +663,15 @@ func (s *SubscriptionService) RevokeSubscription(ctx context.Context, subscripti
 
 // ExtendSubscription 调整订阅时长（正数延长，负数缩短）
 func (s *SubscriptionService) ExtendSubscription(ctx context.Context, subscriptionID int64, days int) (*UserSubscription, error) {
+	return s.extendSubscription(ctx, subscriptionID, days, 0, false)
+}
+
+// AdminAdjustSubscription adjusts subscription validity and records the admin operation.
+func (s *SubscriptionService) AdminAdjustSubscription(ctx context.Context, subscriptionID int64, days int, adminID int64) (*UserSubscription, error) {
+	return s.extendSubscription(ctx, subscriptionID, days, adminID, true)
+}
+
+func (s *SubscriptionService) extendSubscription(ctx context.Context, subscriptionID int64, days int, adminID int64, recordOperation bool) (*UserSubscription, error) {
 	sub, err := s.userSubRepo.GetByID(ctx, subscriptionID)
 	if err != nil {
 		return nil, ErrSubscriptionNotFound
@@ -642,15 +712,34 @@ func (s *SubscriptionService) ExtendSubscription(ctx context.Context, subscripti
 		return nil, ErrAdjustWouldExpire
 	}
 
-	if err := s.userSubRepo.ExtendExpiry(ctx, subscriptionID, newExpiresAt); err != nil {
-		return nil, err
+	updatedForRecord := *sub
+	updatedForRecord.ExpiresAt = newExpiresAt
+	if sub.Status == SubscriptionStatusExpired {
+		updatedForRecord.Status = SubscriptionStatusActive
 	}
 
-	// 如果订阅已过期，恢复为active状态
-	if sub.Status == SubscriptionStatusExpired {
-		if err := s.userSubRepo.UpdateStatus(ctx, subscriptionID, SubscriptionStatusActive); err != nil {
-			return nil, err
+	if err := s.withSubscriptionUpdateTx(ctx, func(txCtx context.Context) error {
+		if err := s.userSubRepo.ExtendExpiry(txCtx, subscriptionID, newExpiresAt); err != nil {
+			return err
 		}
+
+		// 如果订阅已过期，恢复为active状态
+		if sub.Status == SubscriptionStatusExpired {
+			if err := s.userSubRepo.UpdateStatus(txCtx, subscriptionID, SubscriptionStatusActive); err != nil {
+				return err
+			}
+		}
+
+		if recordOperation {
+			notes := fmt.Sprintf("adjust days: %d", days)
+			if err := s.createSubscriptionOperationRecord(txCtx, SubscriptionRecordOperationAdjust, &updatedForRecord, adminID, days, now, notes); err != nil {
+				return err
+			}
+		}
+
+		return nil
+	}); err != nil {
+		return nil, err
 	}
 
 	// 失效订阅缓存
@@ -826,6 +915,15 @@ func (s *SubscriptionService) CheckAndActivateWindow(ctx context.Context, sub *U
 // AdminResetQuota manually resets the daily, weekly, and/or monthly usage windows.
 // Uses startOfDay(now) as the new window start, matching automatic resets.
 func (s *SubscriptionService) AdminResetQuota(ctx context.Context, subscriptionID int64, resetDaily, resetWeekly, resetMonthly bool) (*UserSubscription, error) {
+	return s.adminResetQuota(ctx, subscriptionID, resetDaily, resetWeekly, resetMonthly, 0, false)
+}
+
+// AdminResetQuotaWithRecord resets quota windows and records the admin operation.
+func (s *SubscriptionService) AdminResetQuotaWithRecord(ctx context.Context, subscriptionID int64, resetDaily, resetWeekly, resetMonthly bool, adminID int64) (*UserSubscription, error) {
+	return s.adminResetQuota(ctx, subscriptionID, resetDaily, resetWeekly, resetMonthly, adminID, true)
+}
+
+func (s *SubscriptionService) adminResetQuota(ctx context.Context, subscriptionID int64, resetDaily, resetWeekly, resetMonthly bool, adminID int64, recordOperation bool) (*UserSubscription, error) {
 	if !resetDaily && !resetWeekly && !resetMonthly {
 		return nil, ErrInvalidInput
 	}
@@ -834,20 +932,30 @@ func (s *SubscriptionService) AdminResetQuota(ctx context.Context, subscriptionI
 		return nil, err
 	}
 	windowStart := startOfDay(time.Now())
-	if resetDaily {
-		if err := s.userSubRepo.ResetDailyUsage(ctx, sub.ID, windowStart); err != nil {
-			return nil, err
+	if err := s.withSubscriptionUpdateTx(ctx, func(txCtx context.Context) error {
+		if resetDaily {
+			if err := s.userSubRepo.ResetDailyUsage(txCtx, sub.ID, windowStart); err != nil {
+				return err
+			}
 		}
-	}
-	if resetWeekly {
-		if err := s.userSubRepo.ResetWeeklyUsage(ctx, sub.ID, windowStart); err != nil {
-			return nil, err
+		if resetWeekly {
+			if err := s.userSubRepo.ResetWeeklyUsage(txCtx, sub.ID, windowStart); err != nil {
+				return err
+			}
 		}
-	}
-	if resetMonthly {
-		if err := s.userSubRepo.ResetMonthlyUsage(ctx, sub.ID, windowStart); err != nil {
-			return nil, err
+		if resetMonthly {
+			if err := s.userSubRepo.ResetMonthlyUsage(txCtx, sub.ID, windowStart); err != nil {
+				return err
+			}
 		}
+		if recordOperation {
+			if err := s.createSubscriptionOperationRecord(txCtx, SubscriptionRecordOperationResetQuota, sub, adminID, 0, time.Now(), resetQuotaRecordNotes(resetDaily, resetWeekly, resetMonthly)); err != nil {
+				return err
+			}
+		}
+		return nil
+	}); err != nil {
+		return nil, err
 	}
 	// Invalidate L1 ristretto cache. Ristretto's Del() is asynchronous by design,
 	// so call Wait() immediately after to flush pending operations and guarantee

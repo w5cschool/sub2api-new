@@ -1272,6 +1272,7 @@ var (
 		{Name: "id", Type: field.TypeInt64, Increment: true},
 		{Name: "created_at", Type: field.TypeTime, SchemaType: map[string]string{"postgres": "timestamptz"}},
 		{Name: "updated_at", Type: field.TypeTime, SchemaType: map[string]string{"postgres": "timestamptz"}},
+		{Name: "operation", Type: field.TypeString, Size: 32, Default: "assign"},
 		{Name: "price_usd", Type: field.TypeFloat64, Default: 0, SchemaType: map[string]string{"postgres": "decimal(20,10)"}},
 		{Name: "validity_days", Type: field.TypeInt, Default: 30},
 		{Name: "starts_at", Type: field.TypeTime, SchemaType: map[string]string{"postgres": "timestamptz"}},
@@ -1291,25 +1292,25 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "subscription_records_groups_subscription_records",
-				Columns:    []*schema.Column{SubscriptionRecordsColumns[9]},
+				Columns:    []*schema.Column{SubscriptionRecordsColumns[10]},
 				RefColumns: []*schema.Column{GroupsColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "subscription_records_users_subscription_records",
-				Columns:    []*schema.Column{SubscriptionRecordsColumns[10]},
+				Columns:    []*schema.Column{SubscriptionRecordsColumns[11]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "subscription_records_users_assigned_subscription_records",
-				Columns:    []*schema.Column{SubscriptionRecordsColumns[11]},
+				Columns:    []*schema.Column{SubscriptionRecordsColumns[12]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "subscription_records_user_subscriptions_subscription_records",
-				Columns:    []*schema.Column{SubscriptionRecordsColumns[12]},
+				Columns:    []*schema.Column{SubscriptionRecordsColumns[13]},
 				RefColumns: []*schema.Column{UserSubscriptionsColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -1318,22 +1319,27 @@ var (
 			{
 				Name:    "subscriptionrecord_user_id",
 				Unique:  false,
-				Columns: []*schema.Column{SubscriptionRecordsColumns[10]},
+				Columns: []*schema.Column{SubscriptionRecordsColumns[11]},
 			},
 			{
 				Name:    "subscriptionrecord_group_id",
 				Unique:  false,
-				Columns: []*schema.Column{SubscriptionRecordsColumns[9]},
+				Columns: []*schema.Column{SubscriptionRecordsColumns[10]},
 			},
 			{
 				Name:    "subscriptionrecord_subscription_id",
 				Unique:  false,
-				Columns: []*schema.Column{SubscriptionRecordsColumns[12]},
+				Columns: []*schema.Column{SubscriptionRecordsColumns[13]},
+			},
+			{
+				Name:    "subscriptionrecord_operation",
+				Unique:  false,
+				Columns: []*schema.Column{SubscriptionRecordsColumns[3]},
 			},
 			{
 				Name:    "subscriptionrecord_assigned_by",
 				Unique:  false,
-				Columns: []*schema.Column{SubscriptionRecordsColumns[11]},
+				Columns: []*schema.Column{SubscriptionRecordsColumns[12]},
 			},
 			{
 				Name:    "subscriptionrecord_created_at",
@@ -1343,12 +1349,12 @@ var (
 			{
 				Name:    "subscriptionrecord_user_id_created_at",
 				Unique:  false,
-				Columns: []*schema.Column{SubscriptionRecordsColumns[10], SubscriptionRecordsColumns[1]},
+				Columns: []*schema.Column{SubscriptionRecordsColumns[11], SubscriptionRecordsColumns[1]},
 			},
 			{
 				Name:    "subscriptionrecord_group_id_created_at",
 				Unique:  false,
-				Columns: []*schema.Column{SubscriptionRecordsColumns[9], SubscriptionRecordsColumns[1]},
+				Columns: []*schema.Column{SubscriptionRecordsColumns[10], SubscriptionRecordsColumns[1]},
 			},
 		},
 	}

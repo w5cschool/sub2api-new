@@ -240,6 +240,66 @@ func (s *subscriptionUserSubRepoStub) Update(_ context.Context, sub *UserSubscri
 	return nil
 }
 
+func (s *subscriptionUserSubRepoStub) Delete(_ context.Context, id int64) error {
+	existing := s.byID[id]
+	if existing == nil {
+		return ErrSubscriptionNotFound
+	}
+	delete(s.byUserGroup, s.key(existing.UserID, existing.GroupID))
+	delete(s.byID, id)
+	return nil
+}
+
+func (s *subscriptionUserSubRepoStub) ExtendExpiry(_ context.Context, id int64, expiresAt time.Time) error {
+	existing := s.byID[id]
+	if existing == nil {
+		return ErrSubscriptionNotFound
+	}
+	existing.ExpiresAt = expiresAt
+	existing.UpdatedAt = time.Now()
+	return nil
+}
+
+func (s *subscriptionUserSubRepoStub) UpdateStatus(_ context.Context, id int64, status string) error {
+	existing := s.byID[id]
+	if existing == nil {
+		return ErrSubscriptionNotFound
+	}
+	existing.Status = status
+	existing.UpdatedAt = time.Now()
+	return nil
+}
+
+func (s *subscriptionUserSubRepoStub) ResetDailyUsage(_ context.Context, id int64, windowStart time.Time) error {
+	existing := s.byID[id]
+	if existing == nil {
+		return ErrSubscriptionNotFound
+	}
+	existing.DailyUsageUSD = 0
+	existing.DailyWindowStart = &windowStart
+	return nil
+}
+
+func (s *subscriptionUserSubRepoStub) ResetWeeklyUsage(_ context.Context, id int64, windowStart time.Time) error {
+	existing := s.byID[id]
+	if existing == nil {
+		return ErrSubscriptionNotFound
+	}
+	existing.WeeklyUsageUSD = 0
+	existing.WeeklyWindowStart = &windowStart
+	return nil
+}
+
+func (s *subscriptionUserSubRepoStub) ResetMonthlyUsage(_ context.Context, id int64, windowStart time.Time) error {
+	existing := s.byID[id]
+	if existing == nil {
+		return ErrSubscriptionNotFound
+	}
+	existing.MonthlyUsageUSD = 0
+	existing.MonthlyWindowStart = &windowStart
+	return nil
+}
+
 func TestAssignSubscriptionReuseWhenSemanticsMatch(t *testing.T) {
 	start := time.Date(2026, 2, 20, 10, 0, 0, 0, time.UTC)
 	groupRepo := &subscriptionGroupRepoStub{
@@ -288,6 +348,7 @@ func TestAssignSubscriptionCreatesAdminRecordOnlyForNewSubscription(t *testing.T
 	require.NotNil(t, sub)
 	require.Len(t, recordRepo.records, 1)
 	require.Equal(t, sub.ID, *recordRepo.records[0].SubscriptionID)
+	require.Equal(t, SubscriptionRecordOperationAssign, recordRepo.records[0].Operation)
 	require.InDelta(t, 19.99, recordRepo.records[0].PriceUSD, 0.0001)
 	require.Equal(t, 30, recordRepo.records[0].ValidityDays)
 
@@ -301,6 +362,88 @@ func TestAssignSubscriptionCreatesAdminRecordOnlyForNewSubscription(t *testing.T
 	require.NoError(t, err)
 	require.Equal(t, sub.ID, reused.ID)
 	require.Len(t, recordRepo.records, 1)
+}
+
+func TestAdminAdjustSubscriptionCreatesOperationRecord(t *testing.T) {
+	start := time.Date(2027, 2, 20, 10, 0, 0, 0, time.UTC)
+	subRepo := newSubscriptionUserSubRepoStub()
+	subRepo.seed(&UserSubscription{
+		ID:        30,
+		UserID:    1001,
+		GroupID:   10,
+		StartsAt:  start,
+		ExpiresAt: start.AddDate(0, 0, 30),
+		Status:    SubscriptionStatusActive,
+	})
+	recordRepo := &subscriptionRecordRepoStub{}
+	svc := NewSubscriptionService(groupRepoNoop{}, subRepo, recordRepo, nil, nil, nil)
+
+	sub, err := svc.AdminAdjustSubscription(context.Background(), 30, 5, 99)
+
+	require.NoError(t, err)
+	require.Equal(t, start.AddDate(0, 0, 35), sub.ExpiresAt)
+	require.Len(t, recordRepo.records, 1)
+	require.Equal(t, SubscriptionRecordOperationAdjust, recordRepo.records[0].Operation)
+	require.Equal(t, 5, recordRepo.records[0].ValidityDays)
+	require.Equal(t, int64(99), *recordRepo.records[0].AssignedBy)
+	require.InDelta(t, 0, recordRepo.records[0].PriceUSD, 0.0001)
+}
+
+func TestAdminResetQuotaCreatesOperationRecord(t *testing.T) {
+	start := time.Date(2026, 2, 20, 10, 0, 0, 0, time.UTC)
+	subRepo := newSubscriptionUserSubRepoStub()
+	subRepo.seed(&UserSubscription{
+		ID:              31,
+		UserID:          1001,
+		GroupID:         10,
+		StartsAt:        start,
+		ExpiresAt:       start.AddDate(0, 0, 30),
+		Status:          SubscriptionStatusActive,
+		DailyUsageUSD:   10,
+		WeeklyUsageUSD:  20,
+		MonthlyUsageUSD: 30,
+	})
+	recordRepo := &subscriptionRecordRepoStub{}
+	svc := NewSubscriptionService(groupRepoNoop{}, subRepo, recordRepo, nil, nil, nil)
+
+	sub, err := svc.AdminResetQuotaWithRecord(context.Background(), 31, true, true, true, 99)
+
+	require.NoError(t, err)
+	require.Equal(t, float64(0), sub.DailyUsageUSD)
+	require.Equal(t, float64(0), sub.WeeklyUsageUSD)
+	require.Equal(t, float64(0), sub.MonthlyUsageUSD)
+	require.Len(t, recordRepo.records, 1)
+	require.Equal(t, SubscriptionRecordOperationResetQuota, recordRepo.records[0].Operation)
+	require.Equal(t, 0, recordRepo.records[0].ValidityDays)
+	require.Equal(t, int64(99), *recordRepo.records[0].AssignedBy)
+	require.Contains(t, recordRepo.records[0].Notes, "daily")
+	require.Contains(t, recordRepo.records[0].Notes, "weekly")
+	require.Contains(t, recordRepo.records[0].Notes, "monthly")
+}
+
+func TestAdminRevokeSubscriptionCreatesOperationRecord(t *testing.T) {
+	start := time.Date(2026, 2, 20, 10, 0, 0, 0, time.UTC)
+	subRepo := newSubscriptionUserSubRepoStub()
+	subRepo.seed(&UserSubscription{
+		ID:        32,
+		UserID:    1001,
+		GroupID:   10,
+		StartsAt:  start,
+		ExpiresAt: start.AddDate(0, 0, 30),
+		Status:    SubscriptionStatusActive,
+	})
+	recordRepo := &subscriptionRecordRepoStub{}
+	svc := NewSubscriptionService(groupRepoNoop{}, subRepo, recordRepo, nil, nil, nil)
+
+	err := svc.AdminRevokeSubscription(context.Background(), 32, 99)
+
+	require.NoError(t, err)
+	_, getErr := subRepo.GetByID(context.Background(), 32)
+	require.ErrorIs(t, getErr, ErrSubscriptionNotFound)
+	require.Len(t, recordRepo.records, 1)
+	require.Equal(t, SubscriptionRecordOperationRevoke, recordRepo.records[0].Operation)
+	require.Equal(t, 0, recordRepo.records[0].ValidityDays)
+	require.Equal(t, int64(99), *recordRepo.records[0].AssignedBy)
 }
 
 func TestAssignSubscriptionConflictWhenSemanticsMismatch(t *testing.T) {

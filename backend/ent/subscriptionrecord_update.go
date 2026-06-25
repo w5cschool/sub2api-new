@@ -85,6 +85,20 @@ func (_u *SubscriptionRecordUpdate) ClearSubscriptionID() *SubscriptionRecordUpd
 	return _u
 }
 
+// SetOperation sets the "operation" field.
+func (_u *SubscriptionRecordUpdate) SetOperation(v string) *SubscriptionRecordUpdate {
+	_u.mutation.SetOperation(v)
+	return _u
+}
+
+// SetNillableOperation sets the "operation" field if the given value is not nil.
+func (_u *SubscriptionRecordUpdate) SetNillableOperation(v *string) *SubscriptionRecordUpdate {
+	if v != nil {
+		_u.SetOperation(*v)
+	}
+	return _u
+}
+
 // SetPriceUsd sets the "price_usd" field.
 func (_u *SubscriptionRecordUpdate) SetPriceUsd(v float64) *SubscriptionRecordUpdate {
 	_u.mutation.ResetPriceUsd()
@@ -310,6 +324,11 @@ func (_u *SubscriptionRecordUpdate) defaults() {
 
 // check runs all checks and user-defined validators on the builder.
 func (_u *SubscriptionRecordUpdate) check() error {
+	if v, ok := _u.mutation.Operation(); ok {
+		if err := subscriptionrecord.OperationValidator(v); err != nil {
+			return &ValidationError{Name: "operation", err: fmt.Errorf(`ent: validator failed for field "SubscriptionRecord.operation": %w`, err)}
+		}
+	}
 	if _u.mutation.UserCleared() && len(_u.mutation.UserIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "SubscriptionRecord.user"`)
 	}
@@ -333,6 +352,9 @@ func (_u *SubscriptionRecordUpdate) sqlSave(ctx context.Context) (_node int, err
 	}
 	if value, ok := _u.mutation.UpdatedAt(); ok {
 		_spec.SetField(subscriptionrecord.FieldUpdatedAt, field.TypeTime, value)
+	}
+	if value, ok := _u.mutation.Operation(); ok {
+		_spec.SetField(subscriptionrecord.FieldOperation, field.TypeString, value)
 	}
 	if value, ok := _u.mutation.PriceUsd(); ok {
 		_spec.SetField(subscriptionrecord.FieldPriceUsd, field.TypeFloat64, value)
@@ -548,6 +570,20 @@ func (_u *SubscriptionRecordUpdateOne) SetNillableSubscriptionID(v *int64) *Subs
 // ClearSubscriptionID clears the value of the "subscription_id" field.
 func (_u *SubscriptionRecordUpdateOne) ClearSubscriptionID() *SubscriptionRecordUpdateOne {
 	_u.mutation.ClearSubscriptionID()
+	return _u
+}
+
+// SetOperation sets the "operation" field.
+func (_u *SubscriptionRecordUpdateOne) SetOperation(v string) *SubscriptionRecordUpdateOne {
+	_u.mutation.SetOperation(v)
+	return _u
+}
+
+// SetNillableOperation sets the "operation" field if the given value is not nil.
+func (_u *SubscriptionRecordUpdateOne) SetNillableOperation(v *string) *SubscriptionRecordUpdateOne {
+	if v != nil {
+		_u.SetOperation(*v)
+	}
 	return _u
 }
 
@@ -789,6 +825,11 @@ func (_u *SubscriptionRecordUpdateOne) defaults() {
 
 // check runs all checks and user-defined validators on the builder.
 func (_u *SubscriptionRecordUpdateOne) check() error {
+	if v, ok := _u.mutation.Operation(); ok {
+		if err := subscriptionrecord.OperationValidator(v); err != nil {
+			return &ValidationError{Name: "operation", err: fmt.Errorf(`ent: validator failed for field "SubscriptionRecord.operation": %w`, err)}
+		}
+	}
 	if _u.mutation.UserCleared() && len(_u.mutation.UserIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "SubscriptionRecord.user"`)
 	}
@@ -829,6 +870,9 @@ func (_u *SubscriptionRecordUpdateOne) sqlSave(ctx context.Context) (_node *Subs
 	}
 	if value, ok := _u.mutation.UpdatedAt(); ok {
 		_spec.SetField(subscriptionrecord.FieldUpdatedAt, field.TypeTime, value)
+	}
+	if value, ok := _u.mutation.Operation(); ok {
+		_spec.SetField(subscriptionrecord.FieldOperation, field.TypeString, value)
 	}
 	if value, ok := _u.mutation.PriceUsd(); ok {
 		_spec.SetField(subscriptionrecord.FieldPriceUsd, field.TypeFloat64, value)

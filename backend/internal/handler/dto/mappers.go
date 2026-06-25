@@ -789,6 +789,7 @@ func SubscriptionRecordFromService(record *service.SubscriptionRecord) *Subscrip
 		UserID:         record.UserID,
 		GroupID:        record.GroupID,
 		SubscriptionID: record.SubscriptionID,
+		Operation:      record.Operation,
 		PriceUSD:       record.PriceUSD,
 		ValidityDays:   record.ValidityDays,
 		StartsAt:       record.StartsAt,

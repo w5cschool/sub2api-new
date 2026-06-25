@@ -616,6 +616,7 @@ type SubscriptionRecord struct {
 	UserID         int64     `json:"user_id"`
 	GroupID        int64     `json:"group_id"`
 	SubscriptionID *int64    `json:"subscription_id,omitempty"`
+	Operation      string    `json:"operation"`
 	PriceUSD       float64   `json:"price_usd"`
 	ValidityDays   int       `json:"validity_days"`
 	StartsAt       time.Time `json:"starts_at"`

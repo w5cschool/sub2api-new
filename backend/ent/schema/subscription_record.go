@@ -12,7 +12,7 @@ import (
 	"entgo.io/ent/schema/index"
 )
 
-// SubscriptionRecord holds immutable admin subscription assignment records.
+// SubscriptionRecord holds immutable admin subscription operation records.
 type SubscriptionRecord struct {
 	ent.Schema
 }
@@ -36,6 +36,9 @@ func (SubscriptionRecord) Fields() []ent.Field {
 		field.Int64("subscription_id").
 			Optional().
 			Nillable(),
+		field.String("operation").
+			Default("assign").
+			MaxLen(32),
 		field.Float("price_usd").
 			SchemaType(map[string]string{dialect.Postgres: "decimal(20,10)"}).
 			Default(0),
@@ -85,6 +88,7 @@ func (SubscriptionRecord) Indexes() []ent.Index {
 		index.Fields("user_id"),
 		index.Fields("group_id"),
 		index.Fields("subscription_id"),
+		index.Fields("operation"),
 		index.Fields("assigned_by"),
 		index.Fields("created_at"),
 		index.Fields("user_id", "created_at"),
