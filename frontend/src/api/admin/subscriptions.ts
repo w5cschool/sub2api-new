@@ -93,6 +93,22 @@ export async function recordStats(filters?: {
   return data
 }
 
+export async function exportRecords(filters?: {
+  user_id?: number
+  group_id?: number
+  start_time?: string
+  end_time?: string
+}): Promise<Blob> {
+  const { data } = await apiClient.get<Blob>(
+    '/admin/subscription-records/export',
+    {
+      params: filters,
+      responseType: 'blob'
+    }
+  )
+  return data
+}
+
 /**
  * Get subscription by ID
  * @param id - Subscription ID
@@ -228,6 +244,7 @@ export const subscriptionsAPI = {
   list,
   listRecords,
   recordStats,
+  exportRecords,
   getById,
   getProgress,
   assign,

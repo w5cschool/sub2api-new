@@ -549,6 +549,7 @@ func registerSubscriptionRoutes(admin *gin.RouterGroup, h *handler.Handlers) {
 	records := admin.Group("/subscription-records")
 	{
 		records.GET("", h.Admin.Subscription.ListRecords)
+		records.GET("/export", h.Admin.Subscription.ExportRecords)
 		records.GET("/stats", h.Admin.Subscription.RecordStats)
 	}
 

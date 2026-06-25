@@ -3051,6 +3051,10 @@ export default {
         totalAmount: 'Total amount',
         recordCount: '{count} records',
         failedToLoad: 'Failed to load subscription records',
+        exportCsv: 'Export CSV',
+        exporting: 'Exporting...',
+        exportSuccess: 'Subscription records exported',
+        exportFailed: 'Failed to export subscription records',
         emptyTitle: 'No subscription records',
         emptyDescription: 'Admin-assigned subscriptions will appear here.',
         columns: {

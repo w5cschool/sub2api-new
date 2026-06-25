@@ -1,7 +1,10 @@
 package admin
 
 import (
+	"bytes"
 	"context"
+	"encoding/csv"
+	"fmt"
 	"strconv"
 	"time"
 
@@ -135,6 +138,155 @@ func (h *SubscriptionHandler) RecordStats(c *gin.Context) {
 		return
 	}
 	response.Success(c, dto.SubscriptionRecordStatsFromService(stats))
+}
+
+// ExportRecords handles exporting admin subscription records as CSV.
+// GET /api/v1/admin/subscription-records/export
+func (h *SubscriptionHandler) ExportRecords(c *gin.Context) {
+	filters, ok := parseSubscriptionRecordFilters(c)
+	if !ok {
+		return
+	}
+
+	records, err := h.subscriptionService.ExportSubscriptionRecords(c.Request.Context(), filters)
+	if err != nil {
+		response.ErrorFrom(c, err)
+		return
+	}
+
+	loc := subscriptionRecordCSVLocation(c)
+	var buf bytes.Buffer
+	buf.Write([]byte{0xEF, 0xBB, 0xBF})
+	writer := csv.NewWriter(&buf)
+	if err := writer.Write([]string{
+		"record_id",
+		"operation",
+		"user_id",
+		"user_email",
+		"group_id",
+		"group_name",
+		"subscription_id",
+		"price_usd",
+		"validity_days",
+		"starts_at",
+		"expires_at",
+		"assigned_by_id",
+		"assigned_by_email",
+		"recorded_at",
+		"notes",
+	}); err != nil {
+		response.InternalError(c, "Failed to export subscription records: "+err.Error())
+		return
+	}
+
+	for i := range records {
+		record := records[i]
+		if err := writer.Write([]string{
+			strconv.FormatInt(record.ID, 10),
+			record.Operation,
+			strconv.FormatInt(record.UserID, 10),
+			subscriptionRecordUserEmail(&record),
+			strconv.FormatInt(record.GroupID, 10),
+			subscriptionRecordGroupName(&record),
+			subscriptionRecordInt64PtrString(record.SubscriptionID),
+			strconv.FormatFloat(record.PriceUSD, 'f', 2, 64),
+			strconv.Itoa(record.ValidityDays),
+			formatSubscriptionRecordCSVTime(record.StartsAt, loc),
+			formatSubscriptionRecordCSVTime(record.ExpiresAt, loc),
+			subscriptionRecordInt64PtrString(record.AssignedBy),
+			subscriptionRecordAssignedByEmail(&record),
+			formatSubscriptionRecordCSVTime(record.CreatedAt, loc),
+			record.Notes,
+		}); err != nil {
+			response.InternalError(c, "Failed to export subscription records: "+err.Error())
+			return
+		}
+	}
+
+	writer.Flush()
+	if err := writer.Error(); err != nil {
+		response.InternalError(c, "Failed to export subscription records: "+err.Error())
+		return
+	}
+
+	filename := subscriptionRecordExportFilename(filters, loc)
+	c.Header("Content-Type", "text/csv; charset=utf-8")
+	c.Header("Content-Disposition", fmt.Sprintf("attachment; filename=%s", filename))
+	c.Data(200, "text/csv; charset=utf-8", buf.Bytes())
+}
+
+func subscriptionRecordCSVLocation(c *gin.Context) *time.Location {
+	if tz := c.Query("timezone"); tz != "" {
+		if loc, err := time.LoadLocation(tz); err == nil {
+			return loc
+		}
+	}
+	return time.UTC
+}
+
+func subscriptionRecordExportFilename(filters service.SubscriptionRecordFilters, loc *time.Location) string {
+	start := "all"
+	if filters.StartTime != nil {
+		start = filters.StartTime.In(loc).Format("20060102")
+	}
+	end := "all"
+	if filters.EndTime != nil {
+		end = filters.EndTime.In(loc).Format("20060102")
+	}
+	return fmt.Sprintf("subscription-records-%s-to-%s.csv", start, end)
+}
+
+func formatSubscriptionRecordCSVTime(t time.Time, loc *time.Location) string {
+	if t.IsZero() {
+		return ""
+	}
+	return t.In(loc).Format("2006-01-02 15:04:05")
+}
+
+func subscriptionRecordInt64PtrString(v *int64) string {
+	if v == nil {
+		return ""
+	}
+	return strconv.FormatInt(*v, 10)
+}
+
+func subscriptionRecordUserEmail(record *service.SubscriptionRecord) string {
+	if record == nil {
+		return ""
+	}
+	if record.User != nil {
+		return record.User.Email
+	}
+	if record.Subscription != nil && record.Subscription.User != nil {
+		return record.Subscription.User.Email
+	}
+	return ""
+}
+
+func subscriptionRecordGroupName(record *service.SubscriptionRecord) string {
+	if record == nil {
+		return ""
+	}
+	if record.Group != nil {
+		return record.Group.Name
+	}
+	if record.Subscription != nil && record.Subscription.Group != nil {
+		return record.Subscription.Group.Name
+	}
+	return ""
+}
+
+func subscriptionRecordAssignedByEmail(record *service.SubscriptionRecord) string {
+	if record == nil {
+		return ""
+	}
+	if record.AssignedByUser != nil {
+		return record.AssignedByUser.Email
+	}
+	if record.Subscription != nil && record.Subscription.AssignedByUser != nil {
+		return record.Subscription.AssignedByUser.Email
+	}
+	return ""
 }
 
 func parseSubscriptionRecordFilters(c *gin.Context) (service.SubscriptionRecordFilters, bool) {

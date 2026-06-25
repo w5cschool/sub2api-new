@@ -217,6 +217,18 @@
               <span class="ml-3 text-gray-500 dark:text-gray-400">{{ t('admin.subscriptions.records.recordCount', { count: recordStats.record_count }) }}</span>
             </div>
             <button
+              type="button"
+              @click="exportSubscriptionRecords"
+              :disabled="exportingRecords"
+              class="btn btn-secondary"
+              :title="t('admin.subscriptions.records.exportCsv')"
+            >
+              <Icon name="download" size="md" class="sm:mr-2" />
+              <span class="hidden sm:inline">
+                {{ exportingRecords ? t('admin.subscriptions.records.exporting') : t('admin.subscriptions.records.exportCsv') }}
+              </span>
+            </button>
+            <button
               @click="loadSubscriptionRecords"
               :disabled="recordLoading"
               class="btn btn-secondary"
@@ -1031,6 +1043,7 @@ const recordStats = reactive<SubscriptionRecordStats>({
 const groups = ref<Group[]>([])
 const loading = ref(false)
 const recordLoading = ref(false)
+const exportingRecords = ref(false)
 let abortController: AbortController | null = null
 let recordAbortController: AbortController | null = null
 const activeTab = ref<SubscriptionTab>('subscriptions')
@@ -1255,6 +1268,38 @@ const loadSubscriptionRecords = async () => {
       recordLoading.value = false
       recordAbortController = null
     }
+  }
+}
+
+const buildRecordExportFilename = () => {
+  const start = recordFilters.start_date || 'all'
+  const end = recordFilters.end_date || 'all'
+  return `subscription-records-${start}-to-${end}.csv`
+}
+
+const downloadSubscriptionRecordBlob = (blob: Blob) => {
+  const url = window.URL.createObjectURL(blob)
+  const link = document.createElement('a')
+  link.href = url
+  link.download = buildRecordExportFilename()
+  document.body.appendChild(link)
+  link.click()
+  document.body.removeChild(link)
+  window.URL.revokeObjectURL(url)
+}
+
+const exportSubscriptionRecords = async () => {
+  if (exportingRecords.value) return
+  exportingRecords.value = true
+  try {
+    const blob = await adminAPI.subscriptions.exportRecords(buildRecordFilterParams())
+    downloadSubscriptionRecordBlob(blob)
+    appStore.showSuccess(t('admin.subscriptions.records.exportSuccess'))
+  } catch (error: any) {
+    appStore.showError(error?.message || error?.response?.data?.detail || t('admin.subscriptions.records.exportFailed'))
+    console.error('Error exporting subscription records:', error)
+  } finally {
+    exportingRecords.value = false
   }
 }
 

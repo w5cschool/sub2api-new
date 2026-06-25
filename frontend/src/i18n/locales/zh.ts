@@ -3127,6 +3127,10 @@ export default {
         totalAmount: '总金额',
         recordCount: '{count} 条记录',
         failedToLoad: '加载订阅记录失败',
+        exportCsv: '导出 CSV',
+        exporting: '导出中...',
+        exportSuccess: '订阅记录已导出',
+        exportFailed: '导出订阅记录失败',
         emptyTitle: '暂无订阅记录',
         emptyDescription: '后台分配订阅后会记录在这里。',
         columns: {

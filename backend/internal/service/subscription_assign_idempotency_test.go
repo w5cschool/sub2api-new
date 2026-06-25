@@ -154,6 +154,10 @@ func (s *subscriptionRecordRepoStub) List(context.Context, pagination.Pagination
 	panic("unexpected List call")
 }
 
+func (s *subscriptionRecordRepoStub) ListForExport(context.Context, SubscriptionRecordFilters, int) ([]SubscriptionRecord, error) {
+	panic("unexpected ListForExport call")
+}
+
 func (s *subscriptionRecordRepoStub) Stats(context.Context, SubscriptionRecordFilters) (*SubscriptionRecordStats, error) {
 	panic("unexpected Stats call")
 }

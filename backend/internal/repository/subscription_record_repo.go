@@ -73,6 +73,27 @@ func (r *subscriptionRecordRepository) List(ctx context.Context, params paginati
 	return subscriptionRecordEntitiesToService(records), paginationResultFromTotal(int64(total), params), nil
 }
 
+func (r *subscriptionRecordRepository) ListForExport(ctx context.Context, filters service.SubscriptionRecordFilters, limit int) ([]service.SubscriptionRecord, error) {
+	client := clientFromContext(ctx, r.client)
+	q := r.applyFilters(client.SubscriptionRecord.Query(), filters).
+		WithUser().
+		WithGroup().
+		WithSubscription(func(q *dbent.UserSubscriptionQuery) {
+			q.WithUser().WithGroup().WithAssignedByUser()
+		}).
+		WithAssignedByUser().
+		Order(dbent.Desc(subscriptionrecord.FieldCreatedAt))
+	if limit > 0 {
+		q = q.Limit(limit)
+	}
+
+	records, err := q.All(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return subscriptionRecordEntitiesToService(records), nil
+}
+
 func (r *subscriptionRecordRepository) Stats(ctx context.Context, filters service.SubscriptionRecordFilters) (*service.SubscriptionRecordStats, error) {
 	client := clientFromContext(ctx, r.client)
 
