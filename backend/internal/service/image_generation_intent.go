@@ -59,7 +59,7 @@ func IsImageGenerationIntentMap(endpoint string, requestedModel string, reqBody 
 	if isOpenAIImageGenerationModel(firstNonEmptyString(reqBody["model"])) {
 		return true
 	}
-	if hasOpenAIImageGenerationTool(reqBody) {
+	if hasOpenAIImageGenerationIntentTool(reqBody) {
 		return true
 	}
 	return openAIAnyToolChoiceSelectsImageGeneration(reqBody["tool_choice"])
@@ -107,11 +107,12 @@ func openAIJSONToolsContainImageGeneration(tools gjson.Result) bool {
 }
 
 // isImageGenNamespaceTool detects the Codex namespace-style image generation
-// tool declaration: { "type": "namespace", "name": "image_gen", ... }.
+// tool declaration: { "type": "namespace", "name"|"namespace": "image_gen", ... }.
 // Codex /image uses this instead of the flat { "type": "image_generation" }.
 func isImageGenNamespaceTool(tool gjson.Result) bool {
 	return openAIJSONString(tool.Get("type")) == "namespace" &&
-		openAIJSONString(tool.Get("name")) == "image_gen"
+		(openAIJSONString(tool.Get("name")) == "image_gen" ||
+			openAIJSONString(tool.Get("namespace")) == "image_gen")
 }
 
 // openAIJSONInputContainsImageGenTool scans Responses input items for
@@ -147,7 +148,17 @@ func openAIRequestBodyHasImageGenerationTool(body []byte) bool {
 	if len(body) == 0 || !gjson.ValidBytes(body) {
 		return false
 	}
-	return openAIJSONToolsContainImageGeneration(gjson.GetBytes(body, "tools"))
+	return openAIJSONToolsContainHostedImageGeneration(gjson.GetBytes(body, "tools"))
+}
+
+func openAIRequestBodyHasImageGenNamespaceTool(body []byte) bool {
+	if len(body) == 0 || !gjson.ValidBytes(body) {
+		return false
+	}
+	if openAIJSONToolsContainImageGenNamespace(gjson.GetBytes(body, "tools")) {
+		return true
+	}
+	return openAIJSONInputContainsImageGenTool(gjson.GetBytes(body, "input"))
 }
 
 func openAIRequestBodyImageGenerationToolNeedsNormalization(body []byte) bool {
@@ -195,6 +206,36 @@ func openAIJSONToolChoiceSelectsImageGeneration(choice gjson.Result) bool {
 	return false
 }
 
+func openAIJSONToolsContainHostedImageGeneration(tools gjson.Result) bool {
+	if !tools.IsArray() {
+		return false
+	}
+	found := false
+	tools.ForEach(func(_, item gjson.Result) bool {
+		if openAIJSONString(item.Get("type")) == "image_generation" {
+			found = true
+			return false
+		}
+		return true
+	})
+	return found
+}
+
+func openAIJSONToolsContainImageGenNamespace(tools gjson.Result) bool {
+	if !tools.IsArray() {
+		return false
+	}
+	found := false
+	tools.ForEach(func(_, item gjson.Result) bool {
+		if isImageGenNamespaceTool(item) {
+			found = true
+			return false
+		}
+		return true
+	})
+	return found
+}
+
 func openAIAnyToolChoiceSelectsImageGeneration(choice any) bool {
 	switch v := choice.(type) {
 	case string:
@@ -208,6 +249,40 @@ func openAIAnyToolChoiceSelectsImageGeneration(choice any) bool {
 		}
 		if fn, ok := v["function"].(map[string]any); ok && strings.TrimSpace(firstNonEmptyString(fn["name"])) == "image_generation" {
 			return true
+		}
+	}
+	return false
+}
+
+func openAIAnyToolChoiceSelectsImageGenNamespace(choice any) bool {
+	switch v := choice.(type) {
+	case string:
+		return strings.TrimSpace(v) == "image_gen.imagegen"
+	case map[string]any:
+		if isImageGenNamespaceToolMap(v) {
+			return true
+		}
+		if strings.TrimSpace(firstNonEmptyString(v["name"])) == "imagegen" &&
+			strings.TrimSpace(firstNonEmptyString(v["namespace"])) == "image_gen" {
+			return true
+		}
+		if strings.TrimSpace(firstNonEmptyString(v["name"])) == "image_gen.imagegen" {
+			return true
+		}
+		if strings.TrimSpace(firstNonEmptyString(v["function"])) == "image_gen.imagegen" {
+			return true
+		}
+		if tool, ok := v["tool"].(map[string]any); ok && isImageGenNamespaceToolMap(tool) {
+			return true
+		}
+		if fn, ok := v["function"].(map[string]any); ok {
+			name := strings.TrimSpace(firstNonEmptyString(fn["name"]))
+			if name == "imagegen" && strings.TrimSpace(firstNonEmptyString(v["namespace"], fn["namespace"])) == "image_gen" {
+				return true
+			}
+			if name == "image_gen.imagegen" {
+				return true
+			}
 		}
 	}
 	return false
