@@ -654,7 +654,8 @@ func toolsContainImageGenNamespace(rawTools any) bool {
 
 func isImageGenNamespaceToolMap(tool map[string]any) bool {
 	return strings.TrimSpace(firstNonEmptyString(tool["type"])) == "namespace" &&
-		strings.TrimSpace(firstNonEmptyString(tool["name"], tool["namespace"])) == "image_gen"
+		(isOpenAIImageGenNamespaceName(firstNonEmptyString(tool["name"])) ||
+			isOpenAIImageGenNamespaceName(firstNonEmptyString(tool["namespace"])))
 }
 
 func inputContainsHostedImageGenerationTool(rawInput any) bool {
@@ -802,46 +803,94 @@ func stripCodexImageGenNamespaceAdditionalTools(reqBody map[string]any) bool {
 }
 
 func stripOpenAIImageGenerationTools(reqBody map[string]any) bool {
-	rawTools, ok := reqBody["tools"]
+	if reqBody == nil {
+		return false
+	}
+	modified := stripOpenAIImageGenerationToolList(reqBody, "tools")
+	if stripOpenAIImageGenerationToolsFromInput(reqBody) {
+		modified = true
+	}
+	if openAIAnyToolChoiceSelectsImageGeneration(reqBody["tool_choice"]) {
+		delete(reqBody, "tool_choice")
+		modified = true
+	}
+	return modified
+}
+
+func stripOpenAIImageGenerationToolList(container map[string]any, key string) bool {
+	rawTools, ok := container[key]
 	if !ok || rawTools == nil {
-		if openAIAnyToolChoiceSelectsImageGeneration(reqBody["tool_choice"]) {
-			delete(reqBody, "tool_choice")
-			return true
-		}
 		return false
 	}
 	tools, ok := rawTools.([]any)
 	if !ok {
-		if openAIAnyToolChoiceSelectsImageGeneration(reqBody["tool_choice"]) {
-			delete(reqBody, "tool_choice")
-			return true
-		}
 		return false
 	}
 	filtered := make([]any, 0, len(tools))
 	removed := false
 	for _, rawTool := range tools {
 		if toolMap, ok := rawTool.(map[string]any); ok &&
-			strings.TrimSpace(firstNonEmptyString(toolMap["type"])) == "image_generation" {
+			isOpenAIImageGenerationType(firstNonEmptyString(toolMap["type"])) {
 			removed = true
 			continue
 		}
 		filtered = append(filtered, rawTool)
 	}
-	if !removed && !openAIAnyToolChoiceSelectsImageGeneration(reqBody["tool_choice"]) {
+	if !removed {
 		return false
 	}
-	if removed {
-		if len(filtered) == 0 {
-			delete(reqBody, "tools")
-		} else {
-			reqBody["tools"] = filtered
-		}
-	}
-	if openAIAnyToolChoiceSelectsImageGeneration(reqBody["tool_choice"]) {
-		delete(reqBody, "tool_choice")
+	if len(filtered) == 0 {
+		delete(container, key)
+	} else {
+		container[key] = filtered
 	}
 	return true
+}
+
+func stripOpenAIImageGenerationToolsFromInput(reqBody map[string]any) bool {
+	input, ok := reqBody["input"].([]any)
+	if !ok {
+		return false
+	}
+	modified := false
+	filtered := make([]any, 0, len(input))
+	for _, rawItem := range input {
+		item, ok := rawItem.(map[string]any)
+		if !ok || strings.TrimSpace(firstNonEmptyString(item["type"])) != "additional_tools" {
+			filtered = append(filtered, rawItem)
+			continue
+		}
+		if !stripOpenAIImageGenerationToolList(item, "tools") {
+			filtered = append(filtered, rawItem)
+			continue
+		}
+		modified = true
+		if _, hasTools := item["tools"]; hasTools {
+			filtered = append(filtered, item)
+		}
+	}
+	if modified {
+		reqBody["input"] = filtered
+	}
+	return modified
+}
+
+func stripOpenAIImageGenerationToolsFromRawPayload(payload []byte) ([]byte, bool, error) {
+	if !openAIRequestBodyHasImageGenerationDeclaration(payload) {
+		return payload, false, nil
+	}
+	var payloadMap map[string]any
+	if err := json.Unmarshal(payload, &payloadMap); err != nil {
+		return nil, false, err
+	}
+	if !stripOpenAIImageGenerationTools(payloadMap) {
+		return payload, false, nil
+	}
+	updated, err := json.Marshal(payloadMap)
+	if err != nil {
+		return nil, false, err
+	}
+	return updated, true, nil
 }
 
 // stripCodexSparkImageGenerationTools removes image_generation tool entries from
