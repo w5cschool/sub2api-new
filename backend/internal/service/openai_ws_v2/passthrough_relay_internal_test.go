@@ -204,6 +204,45 @@ func TestRunUpstreamToClient_ErrorAndDropPaths(t *testing.T) {
 	})
 }
 
+func TestRunUpstreamToClient_NormalizesImageGenerationItemForCodex(t *testing.T) {
+	t.Parallel()
+
+	exitCh := make(chan relayExitSignal, 1)
+	drop := &atomic.Bool{}
+	var written []byte
+	runUpstreamToClient(
+		context.Background(),
+		newPassthroughTestFrameConn([]passthroughTestFrame{
+			{
+				msgType: coderws.MessageText,
+				payload: []byte(`{"type":"response.output_item.done","item":{"type":"image_generation_call","result":"aW1hZ2U="}}`),
+			},
+		}, true),
+		func(_ coderws.MessageType, payload []byte) error {
+			written = append([]byte(nil), payload...)
+			return nil
+		},
+		time.Now(),
+		time.Now,
+		&relayState{},
+		nil,
+		nil,
+		nil,
+		nil,
+		drop,
+		nil,
+		nil,
+		func() {},
+		nil,
+		exitCh,
+	)
+
+	sig := <-exitCh
+	require.Equal(t, "read_upstream", sig.stage)
+	require.Equal(t, "completed", gjson.GetBytes(written, "item.status").String())
+	require.NotEmpty(t, gjson.GetBytes(written, "item.id").String())
+}
+
 func TestRunIdleWatchdog_NoTimeoutWhenDisabled(t *testing.T) {
 	t.Parallel()
 

@@ -851,6 +851,9 @@ func (s *OpenAIGatewayService) ProxyResponsesWebSocketFromClient(
 			if openAIWSEventShouldParseUsage(eventType) {
 				parseOpenAIWSResponseUsageFromCompletedEvent(upstreamMessage, &usage)
 			}
+			if normalized, changed := normalizeOpenAIImageGenerationResponsePayload(upstreamMessage); changed {
+				upstreamMessage = normalized
+			}
 			imageCounter.AddSSEData(upstreamMessage)
 
 			if eventType == "response.failed" {

@@ -10,6 +10,7 @@ import (
 	"sync/atomic"
 	"time"
 
+	"github.com/Wei-Shaw/sub2api/internal/pkg/apicompat"
 	coderws "github.com/coder/websocket"
 	"github.com/tidwall/gjson"
 )
@@ -450,6 +451,11 @@ func runUpstreamToClient(
 			return
 		}
 		markActivity()
+		if msgType == coderws.MessageText {
+			if normalized, changed := apicompat.NormalizeImageGenerationResponsePayload(payload); changed {
+				payload = normalized
+			}
+		}
 		if beforeWriteClient != nil {
 			if err := beforeWriteClient(msgType, payload, wroteDownstream); err != nil {
 				emitRelayTrace(onTrace, RelayTraceEvent{

@@ -340,6 +340,9 @@ func (s *OpenAIGatewayService) proxyOpenAIWSHTTPBridgeTurn(
 				upstreamMessage = corrected
 			}
 		}
+		if normalized, changed := normalizeOpenAIImageGenerationResponsePayload(upstreamMessage); changed {
+			upstreamMessage = normalized
+		}
 		replayCollector.AddEvent(eventType, upstreamMessage)
 
 		if !clientDisconnected {

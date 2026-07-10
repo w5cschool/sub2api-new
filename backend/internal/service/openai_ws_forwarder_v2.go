@@ -501,6 +501,9 @@ func (s *OpenAIGatewayService) forwardOpenAIWSV2(
 				}
 			}
 		}
+		if normalized, changed := normalizeOpenAIImageGenerationResponsePayload(message); changed {
+			message = normalized
+		}
 		if openAIWSEventShouldParseUsage(eventType) {
 			parseOpenAIWSResponseUsageFromCompletedEvent(message, usage)
 		}
