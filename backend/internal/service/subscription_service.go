@@ -302,6 +302,28 @@ func (s *SubscriptionService) AssignOrExtendSubscription(ctx context.Context, in
 	return sub, false, nil // false 表示是新建
 }
 
+// assignOrExtendSubscription is the transaction-aware entry point used by
+// payment fulfillment. The record-aware assignment path remains centralized in
+// AssignOrExtendSubscription; the defer flag is accepted for API compatibility
+// with the newer fulfillment flow.
+func (s *SubscriptionService) assignOrExtendSubscription(ctx context.Context, input *AssignSubscriptionInput, _ bool) (*UserSubscription, bool, error) {
+	return s.AssignOrExtendSubscription(ctx, input)
+}
+
+func (s *SubscriptionService) maybeInvalidateAssignmentCaches(userID, groupID int64, deferred bool) {
+	if deferred {
+		return
+	}
+	s.InvalidateSubCache(userID, groupID)
+	if s.billingCacheService != nil {
+		go func() {
+			cacheCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+			defer cancel()
+			_ = s.billingCacheService.InvalidateSubscription(cacheCtx, userID, groupID)
+		}()
+	}
+}
+
 func (s *SubscriptionService) updateExistingSubscriptionTerm(
 	ctx context.Context,
 	existingSub *UserSubscription,
@@ -343,6 +365,9 @@ func (s *SubscriptionService) updateExistingSubscriptionTerm(
 }
 
 func (s *SubscriptionService) withSubscriptionUpdateTx(ctx context.Context, fn func(context.Context) error) error {
+	if dbent.TxFromContext(ctx) != nil {
+		return fn(ctx)
+	}
 	if s.entClient == nil {
 		return fn(ctx)
 	}
@@ -1024,20 +1049,8 @@ func (s *SubscriptionService) adminResetQuota(ctx context.Context, subscriptionI
 	}
 	windowStart := startOfDay(time.Now())
 	if err := s.withSubscriptionUpdateTx(ctx, func(txCtx context.Context) error {
-		if resetDaily {
-			if err := s.userSubRepo.ResetDailyUsage(txCtx, sub.ID, windowStart); err != nil {
-				return err
-			}
-		}
-		if resetWeekly {
-			if err := s.userSubRepo.ResetWeeklyUsage(txCtx, sub.ID, windowStart); err != nil {
-				return err
-			}
-		}
-		if resetMonthly {
-			if err := s.userSubRepo.ResetMonthlyUsage(txCtx, sub.ID, windowStart); err != nil {
-				return err
-			}
+		if err := s.userSubRepo.ResetUsageWindows(txCtx, sub.ID, resetDaily, resetWeekly, resetMonthly, windowStart); err != nil {
+			return err
 		}
 		if recordOperation {
 			if err := s.createSubscriptionOperationRecord(txCtx, SubscriptionRecordOperationResetQuota, sub, adminID, 0, time.Now(), resetQuotaRecordNotes(resetDaily, resetWeekly, resetMonthly)); err != nil {
@@ -1067,7 +1080,7 @@ func (s *SubscriptionService) CheckAndResetWindows(ctx context.Context, sub *Use
 
 	// 日窗口重置（24小时）
 	if sub.NeedsDailyReset() {
-		if err := s.userSubRepo.ResetDailyUsage(ctx, sub.ID, windowStart); err != nil {
+		if err := s.userSubRepo.ResetDailyUsage(ctx, sub.ID, sub.DailyWindowStart, windowStart); err != nil {
 			return err
 		}
 		sub.DailyWindowStart = &windowStart
@@ -1077,7 +1090,7 @@ func (s *SubscriptionService) CheckAndResetWindows(ctx context.Context, sub *Use
 
 	// 周窗口重置（7天）
 	if sub.NeedsWeeklyReset() {
-		if err := s.userSubRepo.ResetWeeklyUsage(ctx, sub.ID, windowStart); err != nil {
+		if err := s.userSubRepo.ResetWeeklyUsage(ctx, sub.ID, sub.WeeklyWindowStart, windowStart); err != nil {
 			return err
 		}
 		sub.WeeklyWindowStart = &windowStart
@@ -1087,7 +1100,7 @@ func (s *SubscriptionService) CheckAndResetWindows(ctx context.Context, sub *Use
 
 	// 月窗口重置（30天）
 	if sub.NeedsMonthlyReset() {
-		if err := s.userSubRepo.ResetMonthlyUsage(ctx, sub.ID, windowStart); err != nil {
+		if err := s.userSubRepo.ResetMonthlyUsage(ctx, sub.ID, sub.MonthlyWindowStart, windowStart); err != nil {
 			return err
 		}
 		sub.MonthlyWindowStart = &windowStart
@@ -1104,6 +1117,28 @@ func (s *SubscriptionService) CheckAndResetWindows(ctx context.Context, sub *Use
 	}
 
 	return nil
+}
+
+// EnsureWindowMaintenance advances expired usage windows and returns a fresh
+// subscription snapshot for limit checks after a conditional reset.
+func (s *SubscriptionService) EnsureWindowMaintenance(ctx context.Context, sub *UserSubscription) (*UserSubscription, error) {
+	if sub == nil {
+		return nil, ErrSubscriptionNilInput
+	}
+	if !sub.IsWindowActivated() {
+		if err := s.CheckAndActivateWindow(ctx, sub); err != nil {
+			return nil, err
+		}
+	}
+	if err := s.CheckAndResetWindows(ctx, sub); err != nil {
+		return nil, err
+	}
+	refreshed, err := s.userSubRepo.GetByID(ctx, sub.ID)
+	if err != nil {
+		return nil, err
+	}
+	s.InvalidateSubCacheSync(sub.UserID, sub.GroupID)
+	return refreshed, nil
 }
 
 // CheckUsageLimits 检查使用限额（返回错误如果超限）
