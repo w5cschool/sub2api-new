@@ -242,6 +242,10 @@ func (s *OpenAIGatewayService) ProxyResponsesWebSocketFromClient(
 				bridgeModified = true
 				logOpenAIWSModeInfo("ingress_ws_codex_image_tool_injected account_id=%d", account.ID)
 			}
+			if stripCodexImageGenNamespaceTools(payloadMap) {
+				bridgeModified = true
+				logOpenAIWSModeInfo("ingress_ws_codex_image_gen_namespace_stripped account_id=%d", account.ID)
+			}
 			if ensureOpenAIResponsesImageGenerationToolChoiceAuto(payloadMap) {
 				bridgeModified = true
 				logOpenAIWSModeInfo("ingress_ws_codex_image_tool_choice_auto account_id=%d", account.ID)
@@ -259,6 +263,14 @@ func (s *OpenAIGatewayService) ProxyResponsesWebSocketFromClient(
 					return openAIWSClientPayload{}, NewOpenAIWSClientCloseError(coderws.StatusPolicyViolation, "invalid websocket request payload", marshalErr)
 				}
 				normalized = rebuilt
+			}
+		}
+		if !codexBridgeEnabled && openAIRequestBodyHasImageGenerationTool(normalized) && openAIRequestBodyHasImageGenNamespaceTool(normalized) {
+			if stripped, changed, stripErr := stripCodexImageGenNamespaceToolsFromRawPayload(normalized); stripErr != nil {
+				return openAIWSClientPayload{}, NewOpenAIWSClientCloseError(coderws.StatusPolicyViolation, "invalid websocket request payload", stripErr)
+			} else if changed {
+				normalized = stripped
+				logOpenAIWSModeInfo("ingress_ws_codex_image_gen_namespace_stripped account_id=%d", account.ID)
 			}
 		}
 		upstreamModel := normalizeOpenAIModelForUpstream(account, account.GetMappedModel(originalModel))

@@ -730,3 +730,18 @@ func stripOpenAIImageGenerationToolFromRawPayload(payload []byte) ([]byte, bool,
 	}
 	return rebuilt, true, nil
 }
+
+func stripCodexImageGenNamespaceToolsFromRawPayload(payload []byte) ([]byte, bool, error) {
+	payloadMap := make(map[string]any)
+	if err := json.Unmarshal(payload, &payloadMap); err != nil {
+		return payload, false, err
+	}
+	if !stripCodexImageGenNamespaceTools(payloadMap) {
+		return payload, false, nil
+	}
+	rebuilt, err := json.Marshal(payloadMap)
+	if err != nil {
+		return payload, false, err
+	}
+	return rebuilt, true, nil
+}
