@@ -11,12 +11,12 @@
 
   <div
     v-else
-    class="relative min-h-screen overflow-hidden bg-[#effcf5] text-slate-900 dark:bg-[#07110c] dark:text-emerald-50"
+    class="onlycodex-home relative min-h-screen overflow-hidden bg-[#f6f8ff] text-slate-900 dark:bg-[#0b1020] dark:text-blue-50"
   >
     <div class="pointer-events-none absolute inset-0 overflow-hidden">
-      <div class="absolute left-[-10rem] top-[3rem] h-[24rem] w-[24rem] rounded-full bg-emerald-200/45 blur-3xl dark:bg-emerald-500/16"></div>
-      <div class="absolute right-[-6rem] top-[7rem] h-[18rem] w-[18rem] rounded-full bg-lime-100/55 blur-3xl dark:bg-lime-300/10"></div>
-      <div class="absolute bottom-[12%] left-[35%] h-[16rem] w-[16rem] rounded-full bg-teal-200/25 blur-3xl dark:bg-teal-300/10"></div>
+      <div class="absolute left-[-10rem] top-[3rem] h-[24rem] w-[24rem] rounded-full bg-blue-200/45 blur-3xl dark:bg-blue-500/16"></div>
+      <div class="absolute right-[-6rem] top-[7rem] h-[18rem] w-[18rem] rounded-full bg-violet-100/55 blur-3xl dark:bg-violet-300/10"></div>
+      <div class="absolute bottom-[12%] left-[35%] h-[16rem] w-[16rem] rounded-full bg-sky-200/25 blur-3xl dark:bg-sky-300/10"></div>
       <div class="home-grid-mask absolute inset-0"></div>
       <div class="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.45),transparent_45%)] dark:bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.04),transparent_45%)]"></div>
     </div>
@@ -25,7 +25,7 @@
       :class="[
         'sticky top-0 z-30 transition-all duration-300',
         isNavScrolled
-          ? 'border-b border-emerald-200/70 bg-[#effcf5]/86 shadow-[0_10px_40px_rgba(6,78,59,0.07)] backdrop-blur-xl dark:border-emerald-900/70 dark:bg-[#07110c]/84'
+          ? 'border-b border-blue-200/70 bg-[#f6f8ff]/86 shadow-[0_10px_40px_rgba(66,104,184,0.08)] backdrop-blur-xl dark:border-blue-900/70 dark:bg-[#0b1020]/84'
           : 'bg-transparent'
       ]"
     >
@@ -35,15 +35,15 @@
             v-if="siteLogo"
             class="flex h-10 w-10 items-center justify-center overflow-hidden rounded-2xl border border-stone-200/80 bg-white/80 shadow-sm dark:border-stone-800 dark:bg-stone-900/80"
           >
-            <img :src="siteLogo" alt="Codex Gateway logo" class="h-full w-full object-contain p-1.5" />
+            <img :src="siteLogo" alt="OnlyCodex logo" class="h-full w-full object-contain p-1.5" />
           </div>
           <div class="leading-none">
             <div class="text-[1.35rem] font-black tracking-[-0.08em]">
-              <span class="text-emerald-600 dark:text-emerald-300">to</span>
-              <span>codex</span>
+              <span class="text-blue-600 dark:text-blue-300">Only</span>
+              <span>Codex</span>
             </div>
             <div class="mt-1 text-[11px] uppercase tracking-[0.24em] text-stone-500 dark:text-stone-400">
-              GPT Codex Gateway
+              AI Coding Gateway
             </div>
           </div>
         </div>
@@ -117,7 +117,7 @@
         <div class="reveal-section max-w-2xl">
           <div class="hero-wave-chip reveal-item inline-flex items-center gap-2 rounded-full border border-emerald-200/80 bg-white/80 px-4 py-2 text-sm font-semibold text-emerald-700 shadow-sm dark:border-emerald-500/20 dark:bg-slate-950 dark:text-emerald-300">
             <span class="h-2 w-2 rounded-full bg-emerald-500"></span>
-            专注 Codex · GPT-5.5 / GPT-5.4 稳定中转服务
+            专注 Codex · GPT-5.6 / GPT-5.5 / GPT-5.4 稳定中转服务
           </div>
 
           <h1 class="mt-6 max-w-3xl text-[clamp(2.4rem,6vw,4.85rem)] font-black leading-[0.92] tracking-[-0.065em] text-stone-950 dark:text-stone-50">
@@ -127,7 +127,7 @@
 
           <div class="mt-6 max-w-xl space-y-4">
             <p class="reveal-item text-base leading-8 text-stone-600 dark:text-stone-300 md:text-lg">
-              tocodex，提供高速、稳定的 Codex 中转服务代理能力，让团队更顺畅地使用 GPT-5.5 与 GPT-5.4 完成开发工作。
+              OnlyCodex，提供高速、稳定的 Codex 中转服务代理能力，让团队更顺畅地使用 GPT-5.5 与 GPT-5.4 完成开发工作。
             </p>
             <p class="reveal-item max-w-lg text-sm font-semibold uppercase tracking-[0.18em] text-stone-700 dark:text-stone-200 md:text-[0.95rem]">
               无需魔法，无需官方账号，无需国外信用卡/手机号。
@@ -175,8 +175,8 @@
                   codex
                 </div>
                 <div class="rounded-2xl border border-white/5 bg-white/5 px-4 py-3 text-stone-300">
-                  <div class="text-emerald-300">◆ Codex CLI · GPT-5.5 ready</div>
-                  <div class="mt-1 text-stone-400">✓ 已连接至 tocodex 中转节点</div>
+                  <div class="text-emerald-300">◆ Codex CLI · GPT-5.6 Sol ready</div>
+                  <div class="mt-1 text-stone-400">✓ 已连接至 OnlyCodex 中转节点</div>
                 </div>
                 <div class="text-stone-400">
                   <span class="mr-2 text-emerald-300">›</span>
@@ -207,11 +207,11 @@
                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0112 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 013 12c0-1.605.42-3.113 1.157-4.418" />
               </svg>
             </div>
-            <h3 class="text-lg font-black tracking-[-0.03em]">告别梯子</h3>
-            <p class="mt-3 text-sm leading-7 text-stone-600 dark:text-stone-300">国内直连，无需 VPN，开箱即用，一键配置。</p>
+            <h3 class="text-lg font-black tracking-[-0.03em]">全球布局</h3>
+            <p class="mt-3 text-sm leading-7 text-stone-600 dark:text-stone-300">部署线路服务器，自动负载均衡确保快速响应。</p>
             <div class="mt-5 flex flex-wrap gap-2">
-              <span class="rounded-full border border-stone-200/80 px-3 py-1 text-xs font-medium text-stone-500 dark:border-stone-700 dark:text-stone-400">国内直连</span>
-              <span class="rounded-full border border-stone-200/80 px-3 py-1 text-xs font-medium text-stone-500 dark:border-stone-700 dark:text-stone-400">无需 VPN</span>
+              <span class="rounded-full border border-stone-200/80 px-3 py-1 text-xs font-medium text-stone-500 dark:border-stone-700 dark:text-stone-400">全球用户快速响应</span>
+              <span class="rounded-full border border-stone-200/80 px-3 py-1 text-xs font-medium text-stone-500 dark:border-stone-700 dark:text-stone-400">自动负载均衡</span>
             </div>
           </article>
 
@@ -261,8 +261,52 @@
       </section>
 
       <section class="reveal-section mx-auto max-w-6xl px-6 py-10">
+        <div class="reveal-item overflow-hidden rounded-[2rem] border border-blue-100/90 bg-white/78 shadow-[0_20px_70px_rgba(62,99,172,0.10)] backdrop-blur-sm dark:border-blue-400/15 dark:bg-slate-950/70">
+          <div class="border-b border-blue-100/80 px-6 py-7 dark:border-white/10 md:px-8">
+            <div>
+              <div class="text-xs font-semibold uppercase tracking-[0.3em] text-blue-600 dark:text-blue-300">按量计费 · 价格对比</div>
+              <h2 class="mt-3 text-3xl font-black tracking-[-0.05em] md:text-4xl">官方价格，OnlyCodex 仅需 <span class="text-blue-600 dark:text-blue-300">1.25 折</span></h2>
+              <p class="mt-3 text-sm leading-7 text-stone-600 dark:text-stone-300">每 1M Tokens；上方为官方按量价格，下方为 OnlyCodex 对应价格，平均节省 87.5%。</p>
+            </div>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="usage-price-table w-full min-w-[850px] border-collapse text-left">
+              <thead>
+                <tr class="border-b border-blue-100/80 text-xs font-semibold uppercase tracking-[0.12em] text-stone-500 dark:border-white/10 dark:text-stone-400">
+                  <th scope="col" class="px-6 py-4 md:px-8">模型</th>
+                  <th scope="col" class="px-4 py-4">输入</th>
+                  <th scope="col" class="px-4 py-4">缓存输入</th>
+                  <th scope="col" class="px-4 py-4">缓存写入</th>
+                  <th scope="col" class="px-4 py-4">输出</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="rate in usagePricing" :key="rate.model" class="border-b border-stone-100 last:border-b-0 dark:border-white/5">
+                  <th scope="row" class="whitespace-nowrap px-6 py-4 text-sm font-black tracking-[-0.025em] text-stone-800 dark:text-stone-100 md:px-8">{{ rate.model }}</th>
+                  <td v-for="field in usagePriceFields" :key="`${rate.model}-${field.key}`" class="px-4 py-3">
+                    <div v-if="rate.standard[field.key] !== null" class="price-compare-cell">
+                      <span class="price-official"><span>官方</span>{{ formatUsd(rate.standard[field.key]) }}</span>
+                      <span class="price-onlycodex"><span>OnlyCodex</span>{{ formatUsd(onlyCodexPrice(rate.standard[field.key])) }}</span>
+                    </div>
+                    <span v-else class="text-sm text-stone-300 dark:text-stone-600">—</span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="flex flex-col gap-2 bg-blue-50/65 px-6 py-4 text-xs text-blue-800 dark:bg-blue-500/10 dark:text-blue-200 md:flex-row md:items-center md:justify-between md:px-8">
+            <span>说明：所示官方价为你提供的参考单价；OnlyCodex 按对应官方价格的 12.5% 计算。</span>
+            <span class="font-semibold">价格单位：USD / 1M Tokens</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="reveal-section mx-auto max-w-6xl px-6 py-10">
         <div class="reveal-item text-center">
-          <div class="text-xs font-semibold uppercase tracking-[0.3em] text-stone-500 dark:text-stone-400">透明定价</div>
+          <div class="text-xs font-semibold uppercase tracking-[0.3em] text-stone-500 dark:text-stone-400">订阅制 · 透明定价</div>
+          <h2 class="mt-4 text-3xl font-black tracking-[-0.05em] md:text-4xl">按月订阅，稳定使用</h2>
+          <p class="mt-3 text-base text-stone-600 dark:text-stone-300">适合长期高频使用 Codex 的个人与团队。</p>
         </div>
 
         <div class="mx-auto mt-8 grid max-w-6xl gap-5 lg:grid-cols-3">
@@ -277,15 +321,18 @@
               {{ card.badge }}
             </div>
             <div class="mt-3 text-3xl font-black tracking-[-0.05em]">{{ card.model }}</div>
-            <div class="mt-6 flex items-end justify-center gap-1.5 text-center">
-              <span class="text-[2.8rem] font-black tracking-[-0.07em]">{{ card.price }}</span>
-              <span class="pb-1 text-sm font-semibold text-stone-500 dark:text-stone-400">/月</span>
+            <div v-if="card.officialPrice" class="mt-5 flex items-center justify-center gap-2 text-sm text-stone-500 dark:text-stone-400">
+              <span>官方订阅</span>
+              <span class="font-semibold line-through decoration-stone-400/80">{{ card.officialPrice }}</span>
+              <span>/ 月</span>
             </div>
-            <p class="mx-auto mt-2 max-w-sm text-center text-xs leading-5 text-stone-600 dark:text-stone-300">
-              付费之后，我们会单独为你开启一个 Pro 套餐，支持 GPT-5.5 与 GPT-5.4 模型稳定调用。
-            </p>
+            <div class="mt-2 flex items-end justify-center gap-1.5 text-center">
+              <span class="pb-1 text-xs font-bold uppercase tracking-[0.12em] text-blue-600 dark:text-blue-300">OnlyCodex</span>
+              <span class="text-[2.8rem] font-black tracking-[-0.07em]">{{ card.price }}</span>
+              <span class="pb-1 text-sm font-semibold text-stone-500 dark:text-stone-400">/ 月</span>
+            </div>
 
-            <div class="mt-6 border-t border-stone-200/80 pt-5 dark:border-stone-800">
+            <div class="mt-5 border-t border-stone-200/80 pt-5 dark:border-stone-800">
               <div
                 v-for="row in card.facts"
                 :key="`${card.model}-${row.label}`"
@@ -363,11 +410,11 @@
                   <span class="h-2.5 w-2.5 rounded-full bg-stone-300 dark:bg-stone-700"></span>
                   <span class="h-2.5 w-2.5 rounded-full bg-stone-300 dark:bg-stone-700"></span>
                   <span class="h-2.5 w-2.5 rounded-full bg-stone-300 dark:bg-stone-700"></span>
-                  <span class="ml-2">tocodex/register</span>
+                  <span class="ml-2">onlycodex/register</span>
                 </div>
                 <div class="space-y-4 p-5">
                   <div class="text-2xl font-black tracking-[-0.06em]">
-                    <span class="text-emerald-600 dark:text-emerald-300">to</span>codex
+                    <span class="text-blue-600 dark:text-blue-300">Only</span>Codex
                   </div>
                   <div>
                     <div class="mb-2 text-xs uppercase tracking-[0.18em] text-stone-400">邮箱</div>
@@ -425,8 +472,8 @@
                 <div class="space-y-3 px-4 py-5 font-mono text-sm text-stone-200">
                   <div class="text-stone-500"><span class="mr-2 text-emerald-300">$</span>export OPENAI_BASE_URL="{{ gatewayBaseUrl }}"</div>
                   <div class="text-stone-500"><span class="mr-2 text-emerald-300">$</span>codex --model gpt-5.5</div>
-                  <div class="text-emerald-300">◆ Codex CLI · GPT-5.5 ready</div>
-                  <div class="text-stone-400">✓ 已连接至 tocodex 中转节点</div>
+                  <div class="text-emerald-300">◆ Codex CLI · GPT-5.6 Sol ready</div>
+                  <div class="text-stone-400">✓ 已连接至 OnlyCodex 中转节点</div>
                   <div class="text-stone-400"><span class="mr-2 text-emerald-300">›</span>帮我重构这个模块的...</div>
                   <div><span class="mr-2 text-emerald-300">$</span><span class="cursor-blink inline-block h-5 w-2 rounded-sm bg-emerald-300/80 align-middle"></span></div>
                 </div>
@@ -535,9 +582,9 @@
           <div class="absolute bottom-0 right-8 h-32 w-32 rounded-full bg-stone-950/10 blur-2xl"></div>
           <div class="relative">
             <div class="text-xs font-semibold uppercase tracking-[0.32em] text-stone-900/70">准备好了吗</div>
-            <h2 class="mt-4 text-3xl font-black tracking-[-0.06em] md:text-5xl">现在就开始一键接入 GPT-5.5 与 GPT-5.4 Codex 模型</h2>
+            <h2 class="mt-4 text-3xl font-black tracking-[-0.06em] md:text-5xl">现在就开始一键接入 GPT-5.6 与 GPT-5.5 Codex 模型</h2>
             <p class="mx-auto mt-4 max-w-2xl text-base leading-8 text-stone-900/80">
-              注册账号并配置好环境变量，就能直接开始使用 tocodex。
+              注册账号并配置好环境变量，就能直接开始使用 OnlyCodex。
             </p>
             <router-link
               :to="heroPrimaryTarget"
@@ -554,7 +601,7 @@
     </main>
 
     <footer class="relative z-10 border-t border-stone-200/70 px-6 py-8 text-center text-sm text-stone-500 dark:border-stone-800 dark:text-stone-400">
-      © {{ currentYear }} tocodex. {{ t('home.footer.allRightsReserved') }}
+      © {{ currentYear }} OnlyCodex. {{ t('home.footer.allRightsReserved') }}
     </footer>
 
     <Transition name="modal-fade">
@@ -632,6 +679,7 @@ type PricingCard = {
   badge: string
   model: string
   price: string
+  officialPrice?: string
   facts: PricingFact[]
   features: string[]
   badgeClass: string
@@ -659,6 +707,18 @@ type FeatureCard = {
   iconPath: string
 }
 
+type UsagePrice = {
+  input: number | null
+  cachedInput: number | null
+  cacheWrite: number | null
+  output: number | null
+}
+
+type UsagePricing = {
+  model: string
+  standard: UsagePrice
+}
+
 const { t } = useI18n()
 
 const authStore = useAuthStore()
@@ -668,7 +728,8 @@ const pricingCards: PricingCard[] = [
   {
     badge: '推荐',
     model: 'Pro 5X',
-    price: '¥560',
+    price: '$56',
+    officialPrice: '$100',
     badgeClass: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-300',
     borderClass: 'border-emerald-300/80 dark:border-emerald-500/30',
     featured: true,
@@ -679,6 +740,7 @@ const pricingCards: PricingCard[] = [
       { label: '每月限制：', value: '1440美元/月' }
     ],
     features: [
+      'GPT-5.6 可用',
       'GPT-5.5 可用',
       'GPT-5.4 可用',
       '独享API Key & 高速通道'
@@ -687,7 +749,7 @@ const pricingCards: PricingCard[] = [
   {
     badge: '进阶',
     model: 'Pro 10X',
-    price: '¥900',
+    price: '$90',
     badgeClass: 'bg-lime-100 text-lime-700 dark:bg-lime-500/10 dark:text-lime-300',
     borderClass: 'border-lime-200/80 dark:border-lime-500/20',
     facts: [
@@ -697,6 +759,7 @@ const pricingCards: PricingCard[] = [
       { label: '每月限制：', value: '2880美元/月' }
     ],
     features: [
+      'GPT-5.6 可用',
       'GPT-5.5 可用',
       'GPT-5.4 可用',
       '独享API Key & 高速通道'
@@ -705,7 +768,8 @@ const pricingCards: PricingCard[] = [
   {
     badge: '顶级',
     model: 'Pro 20X',
-    price: '¥1800',
+    price: '$180',
+    officialPrice: '$200',
     badgeClass: 'bg-teal-100 text-teal-700 dark:bg-teal-500/10 dark:text-teal-300',
     borderClass: 'border-teal-200/80 dark:border-teal-500/20',
     facts: [
@@ -715,6 +779,7 @@ const pricingCards: PricingCard[] = [
       { label: '每月限制：', value: '5760美元/月' }
     ],
     features: [
+      'GPT-5.6 可用',
       'GPT-5.5 可用',
       'GPT-5.4 可用',
       '独享API Key & 高速通道'
@@ -726,7 +791,7 @@ const stepItems: StepItem[] = [
   {
     badge: '步骤 01',
     title: '注册账号',
-    description: '访问 tocodex 首页，填写邮箱和密码即可完成注册，全程不超过 1 分钟。',
+    description: '访问 OnlyCodex 首页，填写邮箱和密码即可完成注册，全程不超过 1 分钟。',
     checks: ['无需信用卡，免费注册', '支持邮箱一键登录'],
     mockType: 'register'
   },
@@ -780,6 +845,25 @@ const featureCards: FeatureCard[] = [
   }
 ]
 
+const usagePriceFields: Array<{ key: keyof UsagePrice }> = [
+  { key: 'input' },
+  { key: 'cachedInput' },
+  { key: 'cacheWrite' },
+  { key: 'output' }
+]
+
+const usagePricing: UsagePricing[] = [
+  { model: 'gpt-5.6-sol', standard: { input: 5, cachedInput: 0.5, cacheWrite: 6.25, output: 30 } },
+  { model: 'gpt-5.6-terra', standard: { input: 2.5, cachedInput: 0.25, cacheWrite: 3.125, output: 15 } },
+  { model: 'gpt-5.6-luna', standard: { input: 1, cachedInput: 0.1, cacheWrite: 1.25, output: 6 } },
+  { model: 'gpt-5.5', standard: { input: 5, cachedInput: 0.5, cacheWrite: null, output: 30 } },
+  { model: 'gpt-5.5-pro', standard: { input: 30, cachedInput: null, cacheWrite: null, output: 180 } },
+  { model: 'gpt-5.4', standard: { input: 2.5, cachedInput: 0.25, cacheWrite: null, output: 15 } },
+  { model: 'gpt-5.4-mini', standard: { input: 0.75, cachedInput: 0.075, cacheWrite: null, output: 4.5 } },
+  { model: 'gpt-5.4-nano', standard: { input: 0.2, cachedInput: 0.02, cacheWrite: null, output: 1.25 } },
+  { model: 'gpt-5.4-pro', standard: { input: 30, cachedInput: null, cacheWrite: null, output: 180 } }
+]
+
 const mockKeys = [
   { name: '我的第一个 Key', value: 'sk-tocodex-Kx9m••••••••••••' },
   { name: '项目 B', value: 'sk-tocodex-Rp3n••••••••••••' }
@@ -788,8 +872,8 @@ const mockKeys = [
 const siteLogo = computed(() => sanitizeUrl(appStore.cachedPublicSettings?.site_logo || appStore.siteLogo || '', { allowRelative: true, allowDataUrl: true }))
 const docUrl = computed(() => sanitizeUrl(appStore.cachedPublicSettings?.doc_url || appStore.docUrl || ''))
 const homeContent = computed(() => appStore.cachedPublicSettings?.home_content || '')
-const gatewayBaseUrl = computed(() => appStore.cachedPublicSettings?.api_base_url || appStore.apiBaseUrl || 'https://tocodex.cc')
-const contactValue = computed(() => appStore.cachedPublicSettings?.contact_info?.trim() || 'Icanmeetu')
+const gatewayBaseUrl = computed(() => appStore.cachedPublicSettings?.api_base_url || appStore.apiBaseUrl || 'https://onlycodex.dev')
+const contactValue = computed(() => appStore.cachedPublicSettings?.contact_info?.trim() || 'itwillbe626')
 
 const isHomeContentUrl = computed(() => {
   const content = homeContent.value.trim()
@@ -819,6 +903,15 @@ function toggleTheme() {
   isDark.value = !isDark.value
   document.documentElement.classList.toggle('dark', isDark.value)
   localStorage.setItem('theme', isDark.value ? 'dark' : 'light')
+}
+
+function onlyCodexPrice(value: number | null): number | null {
+  return value === null ? null : value * 0.125
+}
+
+function formatUsd(value: number | null): string {
+  if (value === null) return '—'
+  return `$${value.toFixed(4).replace(/\.?0+$/, '')}`
 }
 
 function initTheme() {
@@ -893,10 +986,110 @@ onBeforeUnmount(() => {
 </script>
 
 <style scoped>
+.onlycodex-home {
+  --onlycodex-blue-50: 239 246 255;
+  --onlycodex-blue-100: 219 234 254;
+  --onlycodex-blue-200: 191 219 254;
+  --onlycodex-blue-300: 147 197 253;
+  --onlycodex-blue-400: 96 165 250;
+  --onlycodex-blue-500: 79 143 240;
+  --onlycodex-blue-600: 55 119 223;
+  --onlycodex-blue-700: 40 94 194;
+  --onlycodex-blue-950: 23 37 84;
+}
+
+/* Keep the existing information architecture, while translating its former green
+   accents into the airy blue / violet OnlyCodex visual system. */
+.onlycodex-home :deep([class~='bg-emerald-50']),
+.onlycodex-home :deep([class~='bg-emerald-100']) { background-color: rgb(var(--onlycodex-blue-50) / var(--tw-bg-opacity, 1)) !important; }
+.onlycodex-home :deep([class~='bg-emerald-400']),
+.onlycodex-home :deep([class~='bg-emerald-500']) { background-color: rgb(var(--onlycodex-blue-500) / var(--tw-bg-opacity, 1)) !important; }
+.onlycodex-home :deep([class~='bg-emerald-500/10']),
+.onlycodex-home :deep([class~='bg-emerald-500/15']) { background-color: rgb(var(--onlycodex-blue-500) / .12) !important; }
+.onlycodex-home :deep([class~='dark:bg-emerald-300']) { background-color: rgb(var(--onlycodex-blue-300)) !important; }
+.onlycodex-home :deep([class~='dark:bg-emerald-500/10']),
+.onlycodex-home :deep([class~='dark:bg-emerald-500/15']) { background-color: rgb(var(--onlycodex-blue-500) / .16) !important; }
+.onlycodex-home :deep([class~='bg-lime-100']),
+.onlycodex-home :deep([class~='bg-lime-500/15']) { background-color: rgb(139 92 246 / .12) !important; }
+.onlycodex-home :deep([class~='bg-teal-100']),
+.onlycodex-home :deep([class~='bg-teal-500/15']) { background-color: rgb(56 189 248 / .12) !important; }
+
+.onlycodex-home :deep([class~='text-emerald-300']),
+.onlycodex-home :deep([class~='text-emerald-400']) { color: rgb(var(--onlycodex-blue-300)) !important; }
+.onlycodex-home :deep([class~='text-emerald-500']),
+.onlycodex-home :deep([class~='text-emerald-600']),
+.onlycodex-home :deep([class~='text-emerald-700']) { color: rgb(var(--onlycodex-blue-600)) !important; }
+.onlycodex-home :deep([class~='text-emerald-950']) { color: rgb(var(--onlycodex-blue-950)) !important; }
+.onlycodex-home :deep([class~='dark:text-emerald-300']) { color: rgb(var(--onlycodex-blue-300)) !important; }
+.onlycodex-home :deep([class~='dark:text-emerald-400']) { color: rgb(var(--onlycodex-blue-400)) !important; }
+.onlycodex-home :deep([class~='dark:text-emerald-950']) { color: rgb(var(--onlycodex-blue-950)) !important; }
+.onlycodex-home :deep([class~='text-lime-300']) { color: rgb(196 181 253) !important; }
+.onlycodex-home :deep([class~='text-lime-700']) { color: rgb(109 40 217) !important; }
+.onlycodex-home :deep([class~='text-teal-300']),
+.onlycodex-home :deep([class~='text-teal-700']) { color: rgb(14 116 144) !important; }
+
+.onlycodex-home :deep([class~='border-emerald-200']),
+.onlycodex-home :deep([class~='border-emerald-300']) { border-color: rgb(var(--onlycodex-blue-200) / var(--tw-border-opacity, 1)) !important; }
+.onlycodex-home :deep([class~='border-emerald-200/70']),
+.onlycodex-home :deep([class~='border-emerald-200/80']),
+.onlycodex-home :deep([class~='border-emerald-300/60']),
+.onlycodex-home :deep([class~='border-emerald-300/80']) { border-color: rgb(var(--onlycodex-blue-200) / .8) !important; }
+.onlycodex-home :deep([class~='border-emerald-500/20']),
+.onlycodex-home :deep([class~='border-emerald-500/30']) { border-color: rgb(var(--onlycodex-blue-500) / .25) !important; }
+.onlycodex-home :deep([class~='border-lime-200']) { border-color: rgb(221 214 254 / var(--tw-border-opacity, 1)) !important; }
+.onlycodex-home :deep([class~='border-teal-200']) { border-color: rgb(186 230 253 / var(--tw-border-opacity, 1)) !important; }
+
+.onlycodex-home :deep([class~='from-emerald-300']) { --tw-gradient-from: rgb(var(--onlycodex-blue-300)) var(--tw-gradient-from-position) !important; --tw-gradient-to: rgb(var(--onlycodex-blue-300) / 0) var(--tw-gradient-to-position) !important; }
+.onlycodex-home :deep([class~='from-emerald-600']) { --tw-gradient-from: rgb(var(--onlycodex-blue-600)) var(--tw-gradient-from-position) !important; --tw-gradient-to: rgb(var(--onlycodex-blue-600) / 0) var(--tw-gradient-to-position) !important; }
+.onlycodex-home :deep([class~='via-emerald-300']) { --tw-gradient-stops: var(--tw-gradient-from), rgb(var(--onlycodex-blue-300)) var(--tw-gradient-via-position), var(--tw-gradient-to) !important; }
+.onlycodex-home :deep([class~='via-lime-400']) { --tw-gradient-stops: var(--tw-gradient-from), rgb(167 139 250) var(--tw-gradient-via-position), var(--tw-gradient-to) !important; }
+.onlycodex-home :deep([class~='to-emerald-500']) { --tw-gradient-to: rgb(var(--onlycodex-blue-500)) var(--tw-gradient-to-position) !important; }
+.onlycodex-home :deep([class~='to-teal-300']) { --tw-gradient-to: rgb(125 211 252) var(--tw-gradient-to-position) !important; }
+.onlycodex-home :deep([class~='to-lime-200']) { --tw-gradient-to: rgb(221 214 254) var(--tw-gradient-to-position) !important; }
+.onlycodex-home :deep([class~='via-lime-200']) { --tw-gradient-stops: var(--tw-gradient-from), rgb(221 214 254) var(--tw-gradient-via-position), var(--tw-gradient-to) !important; }
+
+.price-compare-cell {
+  display: grid;
+  min-width: 8.3rem;
+  gap: .35rem;
+  border-left: 2px solid rgb(219 234 254);
+  padding-left: .7rem;
+}
+
+.price-official,
+.price-onlycodex {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: .65rem;
+  font-variant-numeric: tabular-nums;
+  font-size: .82rem;
+  font-weight: 700;
+}
+
+.price-official { color: #64748b; }
+.price-onlycodex { color: #2563eb; }
+
+.price-official span,
+.price-onlycodex span {
+  font-size: .64rem;
+  font-weight: 700;
+  letter-spacing: .03em;
+}
+
+.price-official span { color: #94a3b8; }
+.price-onlycodex span { color: #5b8fe8; }
+
+:global(.dark) .price-compare-cell { border-color: rgb(96 165 250 / .28); }
+:global(.dark) .price-official { color: #94a3b8; }
+:global(.dark) .price-onlycodex { color: #93c5fd; }
+:global(.dark) .price-official span { color: #64748b; }
+:global(.dark) .price-onlycodex span { color: #93c5fd; }
+
 .home-grid-mask {
   background-image:
-    linear-gradient(rgba(120, 113, 108, 0.08) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(120, 113, 108, 0.08) 1px, transparent 1px);
+    linear-gradient(rgba(79, 143, 240, 0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(79, 143, 240, 0.08) 1px, transparent 1px);
   background-size: 40px 40px;
   mask-image: radial-gradient(circle at center, black 25%, transparent 82%);
 }
@@ -1027,5 +1220,12 @@ onBeforeUnmount(() => {
   .hero-wave-text::after {
     opacity: 0 !important;
   }
+}
+
+@media (max-width: 640px) {
+  .usage-price-table th:first-child,
+  .usage-price-table td:first-child { position: sticky; left: 0; z-index: 1; background: rgb(255 255 255 / .96); }
+  :global(.dark) .usage-price-table th:first-child,
+  :global(.dark) .usage-price-table td:first-child { background: rgb(15 23 42 / .96); }
 }
 </style>
