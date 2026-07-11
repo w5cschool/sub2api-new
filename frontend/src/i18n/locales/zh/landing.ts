@@ -111,6 +111,49 @@ export default {
     },
     footer: {
       allRightsReserved: '保留所有权利。'
+    },
+    onlyCodex: {
+      hero: {
+        eyebrow: '专注 Codex · GPT-5.6 / GPT-5.5 / GPT-5.4 稳定中转服务',
+        titlePrefix: '让团队更顺畅地接入',
+        description: 'OnlyCodex，提供高速、稳定的 Codex 中转服务代理能力，让团队更顺畅地使用 GPT-5.5 与 GPT-5.4 完成开发工作。',
+        note: '无需魔法，无需官方账号，无需国外信用卡/手机号。'
+      },
+      actions: { signUpAndTry: '免费注册，立即体验', viewSetupGuide: '查看配置教程', contactNow: '立即咨询', signUpNow: '立即注册', signUpFree: '免费注册', copy: '复制', close: '关闭' },
+      terminal: { connected: '✓ 已连接至 OnlyCodex 中转节点', optimizePrompt: '帮我优化这段代码的性能...', refactorPrompt: '帮我重构这个模块的...' },
+      advantages: {
+        eyebrow: '核心优势', titlePrefix: '为什么开发者', titleHighlight: '选择我们', titleSuffix: '？',
+        global: { title: '全球布局', description: '部署线路服务器，自动负载均衡确保快速响应。', tag1: '全球用户快速响应', tag2: '自动负载均衡' },
+        speed: { title: '极致速度', description: 'CN2 GIA 高质量链路，跨境 RTT 最低 60 ms，带宽 200 Mbps 弹性扩容，高峰依然流畅。', tag: '60ms 低延迟' },
+        reliability: { title: '稳定如磐', description: '亚太两地互备，5s 内自动切换，SLA 99.99%，全年宕机 < 52 分钟。', tag: '双地互备' },
+        security: { title: '数据安全', description: '传输采用 HTTPS 加密。数据平面与管理平面分离，不截留、不分析用户数据。关键数据 AES 算法加密。', tag1: 'HTTPS 加密', tag2: 'AES 加密' }
+      },
+      usagePricing: {
+        eyebrow: '按量计费 · 价格对比', titlePrefix: '官方价格，OnlyCodex 仅需 ', titleHighlight: '1.25 折', description: '每 1M Tokens；上方为官方按量价格，下方为 OnlyCodex 对应价格，平均节省 87.5%。',
+        columns: { model: '模型', input: '输入', cachedInput: '缓存输入', cacheWrite: '缓存写入', output: '输出' }, official: '官方', note: '说明：所示官方价为你提供的参考单价；OnlyCodex 按对应官方价格的 12.5% 计算。', unit: '价格单位：USD / 1M Tokens'
+      },
+      subscription: { eyebrow: '订阅制 · 透明定价', title: '按月订阅，稳定使用', description: '适合长期高频使用 Codex 的个人与团队。', official: '官方订阅', perMonth: '/ 月' },
+      plans: {
+        usageExperience: '使用体验：', dailyLimit: '每日限制：', weeklyLimit: '每周限制：', monthlyLimit: '每月限制：', gpt56Available: 'GPT-5.6 可用', gpt55Available: 'GPT-5.5 可用', gpt54Available: 'GPT-5.4 可用', dedicatedKey: '独享 API Key & 高速通道',
+        pro5x: { badge: '推荐', experience: '每天 8 小时高强度使用', dailyLimit: '60 美元/日', weeklyLimit: '360 美元/周', monthlyLimit: '1440 美元/月' },
+        pro10x: { badge: '进阶', experience: '每天 16 小时高强度使用', dailyLimit: '120 美元/日', weeklyLimit: '720 美元/周', monthlyLimit: '2880 美元/月' },
+        pro20x: { badge: '顶级', experience: '肆无忌惮的高强度使用', dailyLimit: '240 美元/日', weeklyLimit: '1440 美元/周', monthlyLimit: '5760 美元/月' }
+      },
+      quickStart: { eyebrow: '快速上手', title: '三步开始使用', description: '不需要懂技术，按步骤做就行' },
+      steps: {
+        register: { badge: '步骤 01', title: '注册账号', description: '访问 OnlyCodex 首页，填写邮箱和密码即可完成注册，全程不超过 1 分钟。', check1: '无需信用卡，免费注册', check2: '支持邮箱一键登录' },
+        key: { badge: '步骤 02', title: '获取 API Key', description: '登录控制台，在 API Keys 页面点击新建，几秒钟就能创建好一个专属密钥。', check1: '一键创建，即刻生效', check2: '可创建多个 Key 分项目', check3: '随时禁用或删除' },
+        launch: { badge: '步骤 03', title: '启动 Codex', description: '设置环境变量，然后运行 codex，即刻连接到 GPT-5.5 或 GPT-5.4，开始你的编码之旅。', check1: '支持 Mac / Windows / Linux', check2: '配置一次，长期可用' }
+      },
+      mock: { email: '邮箱', password: '密码', createKey: '+ 新建密钥', firstKey: '我的第一个 Key', projectB: '项目 B' },
+      metrics: {
+        eyebrow: '核心优势', title: '数据说话', description: '只做 Codex 中转，每一项指标都认真对待',
+        uptime: { title: '稳定在线率', description: '专为 Codex 优化的中转线路，7×24 小时监控，低延迟、不掉线，告别连接焦虑。', tag1: '多节点冗余', tag2: '自动故障切换' },
+        latency: { title: '平均响应延迟', description: '国内优化线路，请求直达，响应快速。你专注写代码，网络延迟的事交给我们。', tag1: '国内优化', tag2: '低延迟线路' },
+        onboarding: { title: '新手上手时间', description: '两个环境变量搞定一切，提供图文教程和一键配置脚本，完全不懂技术也能轻松完成。', tag1: '图文教程', tag2: '一键配置' }
+      },
+      contact: { eyebrow: '联系我们', title: '加入社区，一起交流', description: '遇到问题、想反馈建议，或只是想和其他开发者聊聊 AI 写代码。', method: '联系方式（微信）', hint: '如果后台已经配置了联系信息，这里会直接读取并展示；没有配置时会显示默认支持邮箱。', modalTitle: '联系咨询', modalDescription: '请加微信：', copyContact: '复制微信号联系咨询' },
+      cta: { eyebrow: '准备好了吗', title: '现在就开始一键接入 GPT-5.6 与 GPT-5.5 Codex 模型', description: '注册账号并配置好环境变量，就能直接开始使用 OnlyCodex。' }
     }
   },
 

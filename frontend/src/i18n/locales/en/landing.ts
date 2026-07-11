@@ -111,6 +111,49 @@ export default {
     },
     footer: {
       allRightsReserved: 'All rights reserved.'
+    },
+    onlyCodex: {
+      hero: {
+        eyebrow: 'Built for Codex · Reliable GPT-5.6 / GPT-5.5 / GPT-5.4 Gateway',
+        titlePrefix: 'Give your team a smoother path to',
+        description: 'OnlyCodex provides a fast, reliable Codex gateway so teams can use GPT-5.5 and GPT-5.4 more smoothly for development.',
+        note: 'No VPN, official account, or international card and phone number required.'
+      },
+      actions: { signUpAndTry: 'Sign up free and try it now', viewSetupGuide: 'View setup guide', contactNow: 'Contact us', signUpNow: 'Sign up now', signUpFree: 'Sign up free', copy: 'Copy', close: 'Close' },
+      terminal: { connected: '✓ Connected to an OnlyCodex gateway node', optimizePrompt: 'Help me optimize the performance of this code...', refactorPrompt: 'Help me refactor this module...' },
+      advantages: {
+        eyebrow: 'CORE ADVANTAGES', titlePrefix: 'Why developers ', titleHighlight: 'choose us', titleSuffix: '',
+        global: { title: 'Global Coverage', description: 'Globally deployed servers with automatic load balancing for fast responses.', tag1: 'Fast global responses', tag2: 'Automatic load balancing' },
+        speed: { title: 'Exceptional Speed', description: 'Premium CN2 GIA routes, cross-border RTT as low as 60 ms, and elastic 200 Mbps bandwidth keep things smooth at peak.', tag: '60 ms low latency' },
+        reliability: { title: 'Rock-Solid Reliability', description: 'Active-active redundancy across Asia Pacific, automatic failover within 5 seconds, 99.99% SLA, and under 52 minutes of annual downtime.', tag: 'Dual-site redundancy' },
+        security: { title: 'Data Security', description: 'HTTPS encryption in transit, separated data and management planes, no retention or analysis of user data, and AES encryption for critical data.', tag1: 'HTTPS encryption', tag2: 'AES encryption' }
+      },
+      usagePricing: {
+        eyebrow: 'USAGE-BASED BILLING · PRICE COMPARISON', titlePrefix: 'Official pricing at just ', titleHighlight: '12.5%', description: 'Per 1M tokens. Official usage pricing is shown above, with corresponding OnlyCodex pricing below—an average savings of 87.5%.',
+        columns: { model: 'Model', input: 'Input', cachedInput: 'Cached Input', cacheWrite: 'Cache Write', output: 'Output' }, official: 'Official', note: 'Note: Official prices are the reference unit rates provided; OnlyCodex is calculated at 12.5% of each official rate.', unit: 'Pricing unit: USD / 1M tokens'
+      },
+      subscription: { eyebrow: 'SUBSCRIPTIONS · TRANSPARENT PRICING', title: 'Subscribe monthly, use reliably', description: 'For individuals and teams who use Codex heavily over the long term.', official: 'Official subscription', perMonth: '/ month' },
+      plans: {
+        usageExperience: 'Usage profile:', dailyLimit: 'Daily limit:', weeklyLimit: 'Weekly limit:', monthlyLimit: 'Monthly limit:', gpt56Available: 'GPT-5.6 included', gpt55Available: 'GPT-5.5 included', gpt54Available: 'GPT-5.4 included', dedicatedKey: 'Dedicated API key & fast lane',
+        pro5x: { badge: 'Recommended', experience: 'Up to 8 hours of intensive use daily', dailyLimit: '$60/day', weeklyLimit: '$360/week', monthlyLimit: '$1,440/month' },
+        pro10x: { badge: 'Advanced', experience: 'Up to 16 hours of intensive use daily', dailyLimit: '$120/day', weeklyLimit: '$720/week', monthlyLimit: '$2,880/month' },
+        pro20x: { badge: 'Ultimate', experience: 'Unrestricted intensive use', dailyLimit: '$240/day', weeklyLimit: '$1,440/week', monthlyLimit: '$5,760/month' }
+      },
+      quickStart: { eyebrow: 'QUICK START', title: 'Start in three steps', description: 'No technical expertise needed—just follow the steps.' },
+      steps: {
+        register: { badge: 'STEP 01', title: 'Create an account', description: 'Open the OnlyCodex home page and register with your email and password in under one minute.', check1: 'No card required; sign up free', check2: 'One-click email sign-in' },
+        key: { badge: 'STEP 02', title: 'Get an API key', description: 'Sign in to the dashboard and create your dedicated key from the API Keys page in seconds.', check1: 'Create instantly; active right away', check2: 'Create multiple keys for projects', check3: 'Disable or delete at any time' },
+        launch: { badge: 'STEP 03', title: 'Launch Codex', description: 'Set your environment variables, then run codex to connect to GPT-5.5 or GPT-5.4 and start coding.', check1: 'Supports Mac / Windows / Linux', check2: 'Set it up once, use it long term' }
+      },
+      mock: { email: 'Email', password: 'Password', createKey: '+ New key', firstKey: 'My first key', projectB: 'Project B' },
+      metrics: {
+        eyebrow: 'CORE ADVANTAGES', title: 'The numbers speak', description: 'A Codex-only gateway where every metric is taken seriously.',
+        uptime: { title: 'Uptime', description: 'Codex-optimized gateway routes with 24/7 monitoring, low latency, and reliable connectivity.', tag1: 'Multi-node redundancy', tag2: 'Automatic failover' },
+        latency: { title: 'Average Response Latency', description: 'Optimized routes deliver requests directly and respond quickly, so you can focus on writing code.', tag1: 'Optimized routes', tag2: 'Low-latency network' },
+        onboarding: { title: 'Time to Get Started', description: 'Two environment variables are all you need, with illustrated guides and one-click setup scripts for an easy start.', tag1: 'Illustrated guide', tag2: 'One-click setup' }
+      },
+      contact: { eyebrow: 'CONTACT US', title: 'Join the community and connect', description: 'Get help, share feedback, or simply talk with other developers about coding with AI.', method: 'Contact (WeChat)', hint: 'If contact information is configured in the admin panel, it is shown here; otherwise the default support email is displayed.', modalTitle: 'Get in touch', modalDescription: 'Add us on WeChat:', copyContact: 'Copy WeChat ID to get in touch' },
+      cta: { eyebrow: 'READY?', title: 'Connect to GPT-5.6 and GPT-5.5 Codex models in one step', description: 'Create an account, set your environment variables, and start using OnlyCodex.' }
     }
   },
 

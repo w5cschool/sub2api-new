@@ -117,20 +117,20 @@
         <div class="reveal-section max-w-2xl">
           <div class="hero-wave-chip reveal-item inline-flex items-center gap-2 rounded-full border border-emerald-200/80 bg-white/80 px-4 py-2 text-sm font-semibold text-emerald-700 shadow-sm dark:border-emerald-500/20 dark:bg-slate-950 dark:text-emerald-300">
             <span class="h-2 w-2 rounded-full bg-emerald-500"></span>
-            专注 Codex · GPT-5.6 / GPT-5.5 / GPT-5.4 稳定中转服务
+            {{ t('home.onlyCodex.hero.eyebrow') }}
           </div>
 
           <h1 class="mt-6 max-w-3xl text-[clamp(2.4rem,6vw,4.85rem)] font-black leading-[0.92] tracking-[-0.065em] text-stone-950 dark:text-stone-50">
-            <span class="reveal-item block text-stone-500 dark:text-stone-400">让团队更顺畅地接入</span>
+            <span class="reveal-item block text-stone-500 dark:text-stone-400">{{ t('home.onlyCodex.hero.titlePrefix') }}</span>
             <span class="hero-wave-text reveal-item mt-2 inline-block bg-gradient-to-r from-emerald-600 via-lime-400 to-teal-300 bg-clip-text text-transparent dark:from-emerald-200 dark:via-lime-200 dark:to-emerald-500">Codex</span>
           </h1>
 
           <div class="mt-6 max-w-xl space-y-4">
             <p class="reveal-item text-base leading-8 text-stone-600 dark:text-stone-300 md:text-lg">
-              OnlyCodex，提供高速、稳定的 Codex 中转服务代理能力，让团队更顺畅地使用 GPT-5.5 与 GPT-5.4 完成开发工作。
+              {{ t('home.onlyCodex.hero.description') }}
             </p>
             <p class="reveal-item max-w-lg text-sm font-semibold uppercase tracking-[0.18em] text-stone-700 dark:text-stone-200 md:text-[0.95rem]">
-              无需魔法，无需官方账号，无需国外信用卡/手机号。
+              {{ t('home.onlyCodex.hero.note') }}
             </p>
           </div>
 
@@ -139,7 +139,7 @@
               :to="heroPrimaryTarget"
               class="inline-flex items-center gap-2 rounded-full bg-emerald-400 px-6 py-3 text-sm font-semibold text-emerald-950 shadow-[0_18px_45px_rgba(52,211,153,0.28)] transition hover:-translate-y-0.5 hover:bg-emerald-300"
             >
-              {{ isAuthenticated ? t('home.goToDashboard') : '免费注册，立即体验' }}
+              {{ isAuthenticated ? t('home.goToDashboard') : t('home.onlyCodex.actions.signUpAndTry') }}
               <svg class="h-4 w-4" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.9">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M4 10h12M12 6l4 4-4 4" />
               </svg>
@@ -151,7 +151,7 @@
               rel="noopener noreferrer"
               class="inline-flex items-center gap-2 rounded-full border border-stone-300/80 bg-white/80 px-5 py-3 text-sm font-medium text-stone-700 transition hover:-translate-y-0.5 hover:border-stone-400 dark:border-stone-700 dark:bg-stone-900/80 dark:text-stone-200 dark:hover:border-stone-600"
             >
-              查看配置教程
+              {{ t('home.onlyCodex.actions.viewSetupGuide') }}
             </a>
           </div>
         </div>
@@ -176,11 +176,11 @@
                 </div>
                 <div class="rounded-2xl border border-white/5 bg-white/5 px-4 py-3 text-stone-300">
                   <div class="text-emerald-300">◆ Codex CLI · GPT-5.6 Sol ready</div>
-                  <div class="mt-1 text-stone-400">✓ 已连接至 OnlyCodex 中转节点</div>
+                  <div class="mt-1 text-stone-400">{{ t('home.onlyCodex.terminal.connected') }}</div>
                 </div>
                 <div class="text-stone-400">
                   <span class="mr-2 text-emerald-300">›</span>
-                  帮我优化这段代码的性能...
+                  {{ t('home.onlyCodex.terminal.optimizePrompt') }}
                 </div>
                 <div>
                   <span class="mr-2 text-emerald-300">$</span>
@@ -194,9 +194,9 @@
 
       <section class="reveal-section mx-auto max-w-6xl px-6 py-10">
         <div class="reveal-item text-center">
-          <div class="text-xs font-semibold uppercase tracking-[0.3em] text-stone-500 dark:text-stone-400">核心优势</div>
+          <div class="text-xs font-semibold uppercase tracking-[0.3em] text-stone-500 dark:text-stone-400">{{ t('home.onlyCodex.advantages.eyebrow') }}</div>
           <h2 class="mt-4 text-3xl font-black tracking-[-0.05em] md:text-4xl">
-            为什么开发者<span class="text-emerald-600 dark:text-emerald-300">选择我们</span>？
+            {{ t('home.onlyCodex.advantages.titlePrefix') }}<span class="text-emerald-600 dark:text-emerald-300">{{ t('home.onlyCodex.advantages.titleHighlight') }}</span>{{ t('home.onlyCodex.advantages.titleSuffix') }}
           </h2>
         </div>
 
@@ -207,11 +207,11 @@
                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0112 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 013 12c0-1.605.42-3.113 1.157-4.418" />
               </svg>
             </div>
-            <h3 class="text-lg font-black tracking-[-0.03em]">全球布局</h3>
-            <p class="mt-3 text-sm leading-7 text-stone-600 dark:text-stone-300">部署线路服务器，自动负载均衡确保快速响应。</p>
+            <h3 class="text-lg font-black tracking-[-0.03em]">{{ t('home.onlyCodex.advantages.global.title') }}</h3>
+            <p class="mt-3 text-sm leading-7 text-stone-600 dark:text-stone-300">{{ t('home.onlyCodex.advantages.global.description') }}</p>
             <div class="mt-5 flex flex-wrap gap-2">
-              <span class="rounded-full border border-stone-200/80 px-3 py-1 text-xs font-medium text-stone-500 dark:border-stone-700 dark:text-stone-400">全球用户快速响应</span>
-              <span class="rounded-full border border-stone-200/80 px-3 py-1 text-xs font-medium text-stone-500 dark:border-stone-700 dark:text-stone-400">自动负载均衡</span>
+              <span class="rounded-full border border-stone-200/80 px-3 py-1 text-xs font-medium text-stone-500 dark:border-stone-700 dark:text-stone-400">{{ t('home.onlyCodex.advantages.global.tag1') }}</span>
+              <span class="rounded-full border border-stone-200/80 px-3 py-1 text-xs font-medium text-stone-500 dark:border-stone-700 dark:text-stone-400">{{ t('home.onlyCodex.advantages.global.tag2') }}</span>
             </div>
           </article>
 
@@ -222,10 +222,10 @@
                 <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" />
               </svg>
             </div>
-            <h3 class="text-lg font-black tracking-[-0.03em]">极致速度</h3>
-            <p class="mt-3 text-sm leading-7 text-stone-600 dark:text-stone-300">CN2 GIA 高质量链路，跨境 RTT 最低 60 ms，带宽 200 Mbps 弹性扩容，高峰依然流畅。</p>
+            <h3 class="text-lg font-black tracking-[-0.03em]">{{ t('home.onlyCodex.advantages.speed.title') }}</h3>
+            <p class="mt-3 text-sm leading-7 text-stone-600 dark:text-stone-300">{{ t('home.onlyCodex.advantages.speed.description') }}</p>
             <div class="mt-5 flex flex-wrap gap-2">
-              <span class="rounded-full border border-emerald-300/80 bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-700 dark:border-emerald-500/30 dark:bg-emerald-500/10 dark:text-emerald-300">60ms 低延迟</span>
+              <span class="rounded-full border border-emerald-300/80 bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-700 dark:border-emerald-500/30 dark:bg-emerald-500/10 dark:text-emerald-300">{{ t('home.onlyCodex.advantages.speed.tag') }}</span>
               <span class="rounded-full border border-emerald-300/80 bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-700 dark:border-emerald-500/30 dark:bg-emerald-500/10 dark:text-emerald-300">200 Mbps</span>
             </div>
           </article>
@@ -236,11 +236,11 @@
                 <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
               </svg>
             </div>
-            <h3 class="text-lg font-black tracking-[-0.03em]">稳定如磐</h3>
-            <p class="mt-3 text-sm leading-7 text-stone-600 dark:text-stone-300">亚太两地互备，5s 内自动切换，SLA 99.99%，全年宕机 &lt; 52 分钟。</p>
+            <h3 class="text-lg font-black tracking-[-0.03em]">{{ t('home.onlyCodex.advantages.reliability.title') }}</h3>
+            <p class="mt-3 text-sm leading-7 text-stone-600 dark:text-stone-300">{{ t('home.onlyCodex.advantages.reliability.description') }}</p>
             <div class="mt-5 flex flex-wrap gap-2">
               <span class="rounded-full border border-stone-200/80 px-3 py-1 text-xs font-medium text-stone-500 dark:border-stone-700 dark:text-stone-400">SLA 99.99%</span>
-              <span class="rounded-full border border-stone-200/80 px-3 py-1 text-xs font-medium text-stone-500 dark:border-stone-700 dark:text-stone-400">双地互备</span>
+              <span class="rounded-full border border-stone-200/80 px-3 py-1 text-xs font-medium text-stone-500 dark:border-stone-700 dark:text-stone-400">{{ t('home.onlyCodex.advantages.reliability.tag') }}</span>
             </div>
           </article>
 
@@ -250,11 +250,11 @@
                 <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
               </svg>
             </div>
-            <h3 class="text-lg font-black tracking-[-0.03em]">数据安全</h3>
-            <p class="mt-3 text-sm leading-7 text-stone-600 dark:text-stone-300">传输采用 HTTPS 加密。数据平面与管理平面分离，不截留、不分析用户数据。关键数据 AES 算法加密。</p>
+            <h3 class="text-lg font-black tracking-[-0.03em]">{{ t('home.onlyCodex.advantages.security.title') }}</h3>
+            <p class="mt-3 text-sm leading-7 text-stone-600 dark:text-stone-300">{{ t('home.onlyCodex.advantages.security.description') }}</p>
             <div class="mt-5 flex flex-wrap gap-2">
-              <span class="rounded-full border border-stone-200/80 px-3 py-1 text-xs font-medium text-stone-500 dark:border-stone-700 dark:text-stone-400">HTTPS 加密</span>
-              <span class="rounded-full border border-stone-200/80 px-3 py-1 text-xs font-medium text-stone-500 dark:border-stone-700 dark:text-stone-400">AES 加密</span>
+              <span class="rounded-full border border-stone-200/80 px-3 py-1 text-xs font-medium text-stone-500 dark:border-stone-700 dark:text-stone-400">{{ t('home.onlyCodex.advantages.security.tag1') }}</span>
+              <span class="rounded-full border border-stone-200/80 px-3 py-1 text-xs font-medium text-stone-500 dark:border-stone-700 dark:text-stone-400">{{ t('home.onlyCodex.advantages.security.tag2') }}</span>
             </div>
           </article>
         </div>
@@ -264,9 +264,9 @@
         <div class="reveal-item overflow-hidden rounded-[2rem] border border-blue-100/90 bg-white/78 shadow-[0_20px_70px_rgba(62,99,172,0.10)] backdrop-blur-sm dark:border-blue-400/15 dark:bg-slate-950/70">
           <div class="border-b border-blue-100/80 px-6 py-7 dark:border-white/10 md:px-8">
             <div>
-              <div class="text-xs font-semibold uppercase tracking-[0.3em] text-blue-600 dark:text-blue-300">按量计费 · 价格对比</div>
-              <h2 class="mt-3 text-3xl font-black tracking-[-0.05em] md:text-4xl">官方价格，OnlyCodex 仅需 <span class="text-blue-600 dark:text-blue-300">1.25 折</span></h2>
-              <p class="mt-3 text-sm leading-7 text-stone-600 dark:text-stone-300">每 1M Tokens；上方为官方按量价格，下方为 OnlyCodex 对应价格，平均节省 87.5%。</p>
+              <div class="text-xs font-semibold uppercase tracking-[0.3em] text-blue-600 dark:text-blue-300">{{ t('home.onlyCodex.usagePricing.eyebrow') }}</div>
+              <h2 class="mt-3 text-3xl font-black tracking-[-0.05em] md:text-4xl">{{ t('home.onlyCodex.usagePricing.titlePrefix') }}<span class="text-blue-600 dark:text-blue-300">{{ t('home.onlyCodex.usagePricing.titleHighlight') }}</span></h2>
+              <p class="mt-3 text-sm leading-7 text-stone-600 dark:text-stone-300">{{ t('home.onlyCodex.usagePricing.description') }}</p>
             </div>
           </div>
 
@@ -274,11 +274,11 @@
             <table class="usage-price-table w-full min-w-[850px] border-collapse text-left">
               <thead>
                 <tr class="border-b border-blue-100/80 text-xs font-semibold uppercase tracking-[0.12em] text-stone-500 dark:border-white/10 dark:text-stone-400">
-                  <th scope="col" class="px-6 py-4 md:px-8">模型</th>
-                  <th scope="col" class="px-4 py-4">输入</th>
-                  <th scope="col" class="px-4 py-4">缓存输入</th>
-                  <th scope="col" class="px-4 py-4">缓存写入</th>
-                  <th scope="col" class="px-4 py-4">输出</th>
+                  <th scope="col" class="px-6 py-4 md:px-8">{{ t('home.onlyCodex.usagePricing.columns.model') }}</th>
+                  <th scope="col" class="px-4 py-4">{{ t('home.onlyCodex.usagePricing.columns.input') }}</th>
+                  <th scope="col" class="px-4 py-4">{{ t('home.onlyCodex.usagePricing.columns.cachedInput') }}</th>
+                  <th scope="col" class="px-4 py-4">{{ t('home.onlyCodex.usagePricing.columns.cacheWrite') }}</th>
+                  <th scope="col" class="px-4 py-4">{{ t('home.onlyCodex.usagePricing.columns.output') }}</th>
                 </tr>
               </thead>
               <tbody>
@@ -286,7 +286,7 @@
                   <th scope="row" class="whitespace-nowrap px-6 py-4 text-sm font-black tracking-[-0.025em] text-stone-800 dark:text-stone-100 md:px-8">{{ rate.model }}</th>
                   <td v-for="field in usagePriceFields" :key="`${rate.model}-${field.key}`" class="px-4 py-3">
                     <div v-if="rate.standard[field.key] !== null" class="price-compare-cell">
-                      <span class="price-official"><span>官方</span>{{ formatUsd(rate.standard[field.key]) }}</span>
+                      <span class="price-official"><span>{{ t('home.onlyCodex.usagePricing.official') }}</span>{{ formatUsd(rate.standard[field.key]) }}</span>
                       <span class="price-onlycodex"><span>OnlyCodex</span>{{ formatUsd(onlyCodexPrice(rate.standard[field.key])) }}</span>
                     </div>
                     <span v-else class="text-sm text-stone-300 dark:text-stone-600">—</span>
@@ -296,17 +296,17 @@
             </table>
           </div>
           <div class="flex flex-col gap-2 bg-blue-50/65 px-6 py-4 text-xs text-blue-800 dark:bg-blue-500/10 dark:text-blue-200 md:flex-row md:items-center md:justify-between md:px-8">
-            <span>说明：所示官方价为你提供的参考单价；OnlyCodex 按对应官方价格的 12.5% 计算。</span>
-            <span class="font-semibold">价格单位：USD / 1M Tokens</span>
+            <span>{{ t('home.onlyCodex.usagePricing.note') }}</span>
+            <span class="font-semibold">{{ t('home.onlyCodex.usagePricing.unit') }}</span>
           </div>
         </div>
       </section>
 
       <section class="reveal-section mx-auto max-w-6xl px-6 py-10">
         <div class="reveal-item text-center">
-          <div class="text-xs font-semibold uppercase tracking-[0.3em] text-stone-500 dark:text-stone-400">订阅制 · 透明定价</div>
-          <h2 class="mt-4 text-3xl font-black tracking-[-0.05em] md:text-4xl">按月订阅，稳定使用</h2>
-          <p class="mt-3 text-base text-stone-600 dark:text-stone-300">适合长期高频使用 Codex 的个人与团队。</p>
+          <div class="text-xs font-semibold uppercase tracking-[0.3em] text-stone-500 dark:text-stone-400">{{ t('home.onlyCodex.subscription.eyebrow') }}</div>
+          <h2 class="mt-4 text-3xl font-black tracking-[-0.05em] md:text-4xl">{{ t('home.onlyCodex.subscription.title') }}</h2>
+          <p class="mt-3 text-base text-stone-600 dark:text-stone-300">{{ t('home.onlyCodex.subscription.description') }}</p>
         </div>
 
         <div class="mx-auto mt-8 grid max-w-6xl gap-5 lg:grid-cols-3">
@@ -322,14 +322,14 @@
             </div>
             <div class="mt-3 text-3xl font-black tracking-[-0.05em]">{{ card.model }}</div>
             <div v-if="card.officialPrice" class="mt-5 flex items-center justify-center gap-2 text-sm text-stone-500 dark:text-stone-400">
-              <span>官方订阅</span>
+              <span>{{ t('home.onlyCodex.subscription.official') }}</span>
               <span class="font-semibold line-through decoration-stone-400/80">{{ card.officialPrice }}</span>
-              <span>/ 月</span>
+              <span>{{ t('home.onlyCodex.subscription.perMonth') }}</span>
             </div>
             <div class="mt-2 flex items-end justify-center gap-1.5 text-center">
               <span class="pb-1 text-xs font-bold uppercase tracking-[0.12em] text-blue-600 dark:text-blue-300">OnlyCodex</span>
               <span class="text-[2.8rem] font-black tracking-[-0.07em]">{{ card.price }}</span>
-              <span class="pb-1 text-sm font-semibold text-stone-500 dark:text-stone-400">/ 月</span>
+              <span class="pb-1 text-sm font-semibold text-stone-500 dark:text-stone-400">{{ t('home.onlyCodex.subscription.perMonth') }}</span>
             </div>
 
             <div class="mt-5 border-t border-stone-200/80 pt-5 dark:border-stone-800">
@@ -363,7 +363,7 @@
               class="mt-6 inline-flex w-full items-center justify-center rounded-full border border-emerald-300 bg-emerald-400 px-6 py-2.5 text-sm font-semibold text-emerald-950 shadow-[0_18px_40px_rgba(52,211,153,0.25)] transition hover:-translate-y-0.5 hover:bg-emerald-300"
               @click="showWechatModal = true"
             >
-              立即咨询
+              {{ t('home.onlyCodex.actions.contactNow') }}
             </button>
           </article>
         </div>
@@ -371,9 +371,9 @@
 
       <section class="reveal-section mx-auto max-w-6xl px-6 py-10">
         <div class="reveal-item text-center">
-          <div class="text-xs font-semibold uppercase tracking-[0.3em] text-stone-500 dark:text-stone-400">快速上手</div>
-          <h2 class="mt-4 text-3xl font-black tracking-[-0.05em] md:text-4xl">三步开始使用</h2>
-          <p class="mt-3 text-base text-stone-600 dark:text-stone-300">不需要懂技术，按步骤做就行</p>
+          <div class="text-xs font-semibold uppercase tracking-[0.3em] text-stone-500 dark:text-stone-400">{{ t('home.onlyCodex.quickStart.eyebrow') }}</div>
+          <h2 class="mt-4 text-3xl font-black tracking-[-0.05em] md:text-4xl">{{ t('home.onlyCodex.quickStart.title') }}</h2>
+          <p class="mt-3 text-base text-stone-600 dark:text-stone-300">{{ t('home.onlyCodex.quickStart.description') }}</p>
         </div>
 
         <div class="mt-10 space-y-6">
@@ -417,19 +417,19 @@
                     <span class="text-blue-600 dark:text-blue-300">Only</span>Codex
                   </div>
                   <div>
-                    <div class="mb-2 text-xs uppercase tracking-[0.18em] text-stone-400">邮箱</div>
+                    <div class="mb-2 text-xs uppercase tracking-[0.18em] text-stone-400">{{ t('home.onlyCodex.mock.email') }}</div>
                     <div class="rounded-2xl border border-stone-200/80 bg-white px-4 py-3 text-sm text-stone-600 dark:border-stone-800 dark:bg-stone-900 dark:text-stone-300">
                       your@email.com
                     </div>
                   </div>
                   <div>
-                    <div class="mb-2 text-xs uppercase tracking-[0.18em] text-stone-400">密码</div>
+                    <div class="mb-2 text-xs uppercase tracking-[0.18em] text-stone-400">{{ t('home.onlyCodex.mock.password') }}</div>
                     <div class="rounded-2xl border border-stone-200/80 bg-white px-4 py-3 text-sm text-stone-600 dark:border-stone-800 dark:bg-stone-900 dark:text-stone-300">
                       ••••••••••
                     </div>
                   </div>
                   <div class="rounded-2xl bg-emerald-400 px-4 py-3 text-center text-sm font-semibold text-emerald-950">
-                    立即注册
+                    {{ t('home.onlyCodex.actions.signUpNow') }}
                   </div>
                 </div>
               </div>
@@ -440,7 +440,7 @@
               >
                 <div class="flex items-center justify-between border-b border-stone-200/80 px-4 py-3 dark:border-stone-800">
                   <span class="text-sm font-semibold">API Keys</span>
-                  <span class="rounded-full bg-emerald-400 px-3 py-1 text-xs font-semibold text-emerald-950">+ 新建密钥</span>
+                  <span class="rounded-full bg-emerald-400 px-3 py-1 text-xs font-semibold text-emerald-950">{{ t('home.onlyCodex.mock.createKey') }}</span>
                 </div>
                 <div class="space-y-3 p-4">
                   <div
@@ -453,7 +453,7 @@
                       <div class="mt-1 text-xs text-stone-500 dark:text-stone-400">{{ key.value }}</div>
                     </div>
                     <span class="rounded-full border border-stone-200 px-3 py-1 text-xs text-stone-500 dark:border-stone-700 dark:text-stone-400">
-                      复制
+                      {{ t('home.onlyCodex.actions.copy') }}
                     </span>
                   </div>
                 </div>
@@ -473,8 +473,8 @@
                   <div class="text-stone-500"><span class="mr-2 text-emerald-300">$</span>export OPENAI_BASE_URL="{{ gatewayBaseUrl }}"</div>
                   <div class="text-stone-500"><span class="mr-2 text-emerald-300">$</span>codex --model gpt-5.5</div>
                   <div class="text-emerald-300">◆ Codex CLI · GPT-5.6 Sol ready</div>
-                  <div class="text-stone-400">✓ 已连接至 OnlyCodex 中转节点</div>
-                  <div class="text-stone-400"><span class="mr-2 text-emerald-300">›</span>帮我重构这个模块的...</div>
+                  <div class="text-stone-400">{{ t('home.onlyCodex.terminal.connected') }}</div>
+                  <div class="text-stone-400"><span class="mr-2 text-emerald-300">›</span>{{ t('home.onlyCodex.terminal.refactorPrompt') }}</div>
                   <div><span class="mr-2 text-emerald-300">$</span><span class="cursor-blink inline-block h-5 w-2 rounded-sm bg-emerald-300/80 align-middle"></span></div>
                 </div>
               </div>
@@ -485,9 +485,9 @@
 
       <section class="reveal-section mx-auto max-w-6xl px-6 py-10">
         <div class="reveal-item text-center">
-          <div class="text-xs font-semibold uppercase tracking-[0.3em] text-stone-500 dark:text-stone-400">核心优势</div>
-          <h2 class="mt-4 text-3xl font-black tracking-[-0.05em] md:text-4xl">数据说话</h2>
-          <p class="mt-3 text-base text-stone-600 dark:text-stone-300">只做 Codex 中转，每一项指标都认真对待</p>
+          <div class="text-xs font-semibold uppercase tracking-[0.3em] text-stone-500 dark:text-stone-400">{{ t('home.onlyCodex.metrics.eyebrow') }}</div>
+          <h2 class="mt-4 text-3xl font-black tracking-[-0.05em] md:text-4xl">{{ t('home.onlyCodex.metrics.title') }}</h2>
+          <p class="mt-3 text-base text-stone-600 dark:text-stone-300">{{ t('home.onlyCodex.metrics.description') }}</p>
         </div>
 
         <div class="mt-10 grid gap-6 lg:grid-cols-3">
@@ -525,16 +525,16 @@
       <section class="reveal-section mx-auto max-w-6xl px-6 py-10">
         <div class="overflow-hidden rounded-[2.4rem] border border-stone-200/80 bg-white/78 p-8 shadow-[0_24px_80px_rgba(28,25,23,0.1)] backdrop-blur-sm dark:border-stone-800 dark:bg-stone-900 md:p-10">
           <div class="reveal-item text-center">
-            <div class="text-xs font-semibold uppercase tracking-[0.3em] text-stone-500 dark:text-stone-400">联系我们</div>
-            <h2 class="mt-4 text-3xl font-black tracking-[-0.05em] md:text-4xl">加入社区，一起交流</h2>
+            <div class="text-xs font-semibold uppercase tracking-[0.3em] text-stone-500 dark:text-stone-400">{{ t('home.onlyCodex.contact.eyebrow') }}</div>
+            <h2 class="mt-4 text-3xl font-black tracking-[-0.05em] md:text-4xl">{{ t('home.onlyCodex.contact.title') }}</h2>
             <p class="mt-3 text-base text-stone-600 dark:text-stone-300">
-              遇到问题、想反馈建议，或只是想和其他开发者聊聊 AI 写代码。
+              {{ t('home.onlyCodex.contact.description') }}
             </p>
           </div>
 
           <div class="mt-8 flex justify-center">
             <article class="reveal-item w-full max-w-xl rounded-[1.8rem] border border-stone-200/80 bg-stone-50/90 p-6 dark:border-stone-800 dark:bg-stone-950/60">
-              <div class="text-xs font-semibold uppercase tracking-[0.22em] text-stone-400">联系方式（微信）</div>
+              <div class="text-xs font-semibold uppercase tracking-[0.22em] text-stone-400">{{ t('home.onlyCodex.contact.method') }}</div>
               <div class="mt-4 flex flex-wrap items-center gap-3">
                 <code class="rounded-2xl bg-white px-4 py-3 text-sm font-medium text-stone-700 shadow-sm dark:bg-stone-900 dark:text-stone-200">
                   {{ contactValue }}
@@ -565,11 +565,11 @@
                     <rect x="6" y="6" width="10" height="10" rx="2" />
                     <path stroke-linecap="round" stroke-linejoin="round" d="M4 14V5a1 1 0 0 1 1-1h9" />
                   </svg>
-                  <span>{{ copySucceeded ? t('common.copied') : '复制' }}</span>
+                  <span>{{ copySucceeded ? t('common.copied') : t('home.onlyCodex.actions.copy') }}</span>
                 </button>
               </div>
               <p class="mt-4 text-sm leading-7 text-stone-600 dark:text-stone-300">
-                如果后台已经配置了联系信息，这里会直接读取并展示；没有配置时会显示默认支持邮箱。
+                {{ t('home.onlyCodex.contact.hint') }}
               </p>
             </article>
           </div>
@@ -581,16 +581,16 @@
           <div class="absolute left-10 top-8 h-28 w-28 rounded-full bg-white/12 blur-2xl"></div>
           <div class="absolute bottom-0 right-8 h-32 w-32 rounded-full bg-stone-950/10 blur-2xl"></div>
           <div class="relative">
-            <div class="text-xs font-semibold uppercase tracking-[0.32em] text-stone-900/70">准备好了吗</div>
-            <h2 class="mt-4 text-3xl font-black tracking-[-0.06em] md:text-5xl">现在就开始一键接入 GPT-5.6 与 GPT-5.5 Codex 模型</h2>
+            <div class="text-xs font-semibold uppercase tracking-[0.32em] text-stone-900/70">{{ t('home.onlyCodex.cta.eyebrow') }}</div>
+            <h2 class="mt-4 text-3xl font-black tracking-[-0.06em] md:text-5xl">{{ t('home.onlyCodex.cta.title') }}</h2>
             <p class="mx-auto mt-4 max-w-2xl text-base leading-8 text-stone-900/80">
-              注册账号并配置好环境变量，就能直接开始使用 OnlyCodex。
+              {{ t('home.onlyCodex.cta.description') }}
             </p>
             <router-link
               :to="heroPrimaryTarget"
               class="mt-8 inline-flex items-center gap-2 rounded-full bg-stone-950 px-6 py-3 text-sm font-semibold text-white transition hover:-translate-y-0.5 hover:bg-stone-800"
             >
-              {{ isAuthenticated ? t('home.goToDashboard') : '免费注册' }}
+              {{ isAuthenticated ? t('home.goToDashboard') : t('home.onlyCodex.actions.signUpFree') }}
               <svg class="h-4 w-4" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.9">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M4 10h12M12 6l4 4-4 4" />
               </svg>
@@ -617,8 +617,8 @@
               <path d="M12 2C6.477 2 2 6.224 2 11.5c0 2.79 1.23 5.3 3.2 7.05L4 22l3.83-1.56A10.64 10.64 0 0 0 12 21c5.523 0 10-4.224 10-9.5S17.523 2 12 2Z"/>
             </svg>
           </div>
-          <h3 class="text-lg font-bold text-stone-900 dark:text-stone-50">联系咨询</h3>
-          <p class="mt-3 text-sm text-stone-600 dark:text-stone-300">请加微信：</p>
+          <h3 class="text-lg font-bold text-stone-900 dark:text-stone-50">{{ t('home.onlyCodex.contact.modalTitle') }}</h3>
+          <p class="mt-3 text-sm text-stone-600 dark:text-stone-300">{{ t('home.onlyCodex.contact.modalDescription') }}</p>
           <div class="mt-4 flex flex-col items-center gap-3">
             <p class="text-xl font-bold text-emerald-500">{{ contactValue }}</p>
             <button
@@ -647,7 +647,7 @@
                 <rect x="6" y="6" width="10" height="10" rx="2" />
                 <path stroke-linecap="round" stroke-linejoin="round" d="M4 14V5a1 1 0 0 1 1-1h9" />
               </svg>
-              <span>{{ copySucceeded ? t('common.copied') : '复制微信号联系咨询' }}</span>
+              <span>{{ copySucceeded ? t('common.copied') : t('home.onlyCodex.contact.copyContact') }}</span>
             </button>
           </div>
           <button
@@ -655,7 +655,7 @@
             class="mt-6 inline-flex w-full items-center justify-center rounded-full bg-emerald-400 px-6 py-2.5 text-sm font-semibold text-emerald-950 transition hover:-translate-y-0.5 hover:bg-emerald-300"
             @click="showWechatModal = false"
           >
-            关闭
+            {{ t('home.onlyCodex.actions.close') }}
           </button>
         </div>
       </div>
@@ -724,9 +724,9 @@ const { t } = useI18n()
 const authStore = useAuthStore()
 const appStore = useAppStore()
 
-const pricingCards: PricingCard[] = [
+const pricingCards = computed<PricingCard[]>(() => [
   {
-    badge: '推荐',
+    badge: t('home.onlyCodex.plans.pro5x.badge'),
     model: 'Pro 5X',
     price: '$56',
     officialPrice: '$100',
@@ -734,90 +734,90 @@ const pricingCards: PricingCard[] = [
     borderClass: 'border-emerald-300/80 dark:border-emerald-500/30',
     featured: true,
     facts: [
-      { label: '使用体验：', value: '每天8小时高强度使用' },
-      { label: '每日限制：', value: '60美元/日' },
-      { label: '每周限制：', value: '360美元/周' },
-      { label: '每月限制：', value: '1440美元/月' }
+      { label: t('home.onlyCodex.plans.usageExperience'), value: t('home.onlyCodex.plans.pro5x.experience') },
+      { label: t('home.onlyCodex.plans.dailyLimit'), value: t('home.onlyCodex.plans.pro5x.dailyLimit') },
+      { label: t('home.onlyCodex.plans.weeklyLimit'), value: t('home.onlyCodex.plans.pro5x.weeklyLimit') },
+      { label: t('home.onlyCodex.plans.monthlyLimit'), value: t('home.onlyCodex.plans.pro5x.monthlyLimit') }
     ],
     features: [
-      'GPT-5.6 可用',
-      'GPT-5.5 可用',
-      'GPT-5.4 可用',
-      '独享API Key & 高速通道'
+      t('home.onlyCodex.plans.gpt56Available'),
+      t('home.onlyCodex.plans.gpt55Available'),
+      t('home.onlyCodex.plans.gpt54Available'),
+      t('home.onlyCodex.plans.dedicatedKey')
     ]
   },
   {
-    badge: '进阶',
+    badge: t('home.onlyCodex.plans.pro10x.badge'),
     model: 'Pro 10X',
     price: '$90',
     badgeClass: 'bg-lime-100 text-lime-700 dark:bg-lime-500/10 dark:text-lime-300',
     borderClass: 'border-lime-200/80 dark:border-lime-500/20',
     facts: [
-      { label: '使用体验：', value: '每天16小时高强度使用' },
-      { label: '每日限制：', value: '120美元/日' },
-      { label: '每周限制：', value: '720美元/周' },
-      { label: '每月限制：', value: '2880美元/月' }
+      { label: t('home.onlyCodex.plans.usageExperience'), value: t('home.onlyCodex.plans.pro10x.experience') },
+      { label: t('home.onlyCodex.plans.dailyLimit'), value: t('home.onlyCodex.plans.pro10x.dailyLimit') },
+      { label: t('home.onlyCodex.plans.weeklyLimit'), value: t('home.onlyCodex.plans.pro10x.weeklyLimit') },
+      { label: t('home.onlyCodex.plans.monthlyLimit'), value: t('home.onlyCodex.plans.pro10x.monthlyLimit') }
     ],
     features: [
-      'GPT-5.6 可用',
-      'GPT-5.5 可用',
-      'GPT-5.4 可用',
-      '独享API Key & 高速通道'
+      t('home.onlyCodex.plans.gpt56Available'),
+      t('home.onlyCodex.plans.gpt55Available'),
+      t('home.onlyCodex.plans.gpt54Available'),
+      t('home.onlyCodex.plans.dedicatedKey')
     ]
   },
   {
-    badge: '顶级',
+    badge: t('home.onlyCodex.plans.pro20x.badge'),
     model: 'Pro 20X',
     price: '$180',
     officialPrice: '$200',
     badgeClass: 'bg-teal-100 text-teal-700 dark:bg-teal-500/10 dark:text-teal-300',
     borderClass: 'border-teal-200/80 dark:border-teal-500/20',
     facts: [
-      { label: '使用体验：', value: '肆无忌惮的高强度使用' },
-      { label: '每日限制：', value: '240美元/日' },
-      { label: '每周限制：', value: '1440美元/周' },
-      { label: '每月限制：', value: '5760美元/月' }
+      { label: t('home.onlyCodex.plans.usageExperience'), value: t('home.onlyCodex.plans.pro20x.experience') },
+      { label: t('home.onlyCodex.plans.dailyLimit'), value: t('home.onlyCodex.plans.pro20x.dailyLimit') },
+      { label: t('home.onlyCodex.plans.weeklyLimit'), value: t('home.onlyCodex.plans.pro20x.weeklyLimit') },
+      { label: t('home.onlyCodex.plans.monthlyLimit'), value: t('home.onlyCodex.plans.pro20x.monthlyLimit') }
     ],
     features: [
-      'GPT-5.6 可用',
-      'GPT-5.5 可用',
-      'GPT-5.4 可用',
-      '独享API Key & 高速通道'
+      t('home.onlyCodex.plans.gpt56Available'),
+      t('home.onlyCodex.plans.gpt55Available'),
+      t('home.onlyCodex.plans.gpt54Available'),
+      t('home.onlyCodex.plans.dedicatedKey')
     ]
   }
-]
+])
 
-const stepItems: StepItem[] = [
+const stepItems = computed<StepItem[]>(() => [
   {
-    badge: '步骤 01',
-    title: '注册账号',
-    description: '访问 OnlyCodex 首页，填写邮箱和密码即可完成注册，全程不超过 1 分钟。',
-    checks: ['无需信用卡，免费注册', '支持邮箱一键登录'],
+    badge: t('home.onlyCodex.steps.register.badge'),
+    title: t('home.onlyCodex.steps.register.title'),
+    description: t('home.onlyCodex.steps.register.description'),
+    checks: [t('home.onlyCodex.steps.register.check1'), t('home.onlyCodex.steps.register.check2')],
     mockType: 'register'
   },
   {
-    badge: '步骤 02',
-    title: '获取 API Key',
-    description: '登录控制台，在 API Keys 页面点击新建，几秒钟就能创建好一个专属密钥。',
-    checks: ['一键创建，即刻生效', '可创建多个 Key 分项目', '随时禁用或删除'],
+    badge: t('home.onlyCodex.steps.key.badge'),
+    title: t('home.onlyCodex.steps.key.title'),
+    description: t('home.onlyCodex.steps.key.description'),
+    checks: [t('home.onlyCodex.steps.key.check1'), t('home.onlyCodex.steps.key.check2'), t('home.onlyCodex.steps.key.check3')],
     mockType: 'keys',
     reverse: true
   },
   {
-    badge: '步骤 03',
-    title: '启动 Codex',
-    description: '设置环境变量，然后运行 codex，即刻连接到 GPT-5.5 或 GPT-5.4，开始你的编码之旅。',
-    checks: ['支持 Mac / Windows / Linux', '配置一次，长期可用'],
+    badge: t('home.onlyCodex.steps.launch.badge'),
+    title: t('home.onlyCodex.steps.launch.title'),
+    description: t('home.onlyCodex.steps.launch.description'),
+    checks: [t('home.onlyCodex.steps.launch.check1'), t('home.onlyCodex.steps.launch.check2')],
     mockType: 'terminal'
   }
-]
+])
 
-const featureCards: FeatureCard[] = [
+const featureCards = computed<FeatureCard[]>(() => [
   {
     metric: '99.9%',
-    title: '稳定在线率',
-    description: '专为 Codex 优化的中转线路，7×24 小时监控，低延迟、不掉线，告别连接焦虑。',
-    tags: ['多节点冗余', '自动故障切换'],
+    title: t('home.onlyCodex.metrics.uptime.title'),
+    description: t('home.onlyCodex.metrics.uptime.description'),
+    tags: [t('home.onlyCodex.metrics.uptime.tag1'), t('home.onlyCodex.metrics.uptime.tag2')],
     iconClass: 'bg-lime-500/15 text-lime-700 dark:text-lime-300',
     barClass: 'bg-lime-400',
     barWidth: '100%',
@@ -825,9 +825,9 @@ const featureCards: FeatureCard[] = [
   },
   {
     metric: '<50ms',
-    title: '平均响应延迟',
-    description: '国内优化线路，请求直达，响应快速。你专注写代码，网络延迟的事交给我们。',
-    tags: ['国内优化', '低延迟线路'],
+    title: t('home.onlyCodex.metrics.latency.title'),
+    description: t('home.onlyCodex.metrics.latency.description'),
+    tags: [t('home.onlyCodex.metrics.latency.tag1'), t('home.onlyCodex.metrics.latency.tag2')],
     iconClass: 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-300',
     barClass: 'bg-emerald-500',
     barWidth: '30%',
@@ -835,15 +835,15 @@ const featureCards: FeatureCard[] = [
   },
   {
     metric: '10min',
-    title: '新手上手时间',
-    description: '两个环境变量搞定一切，提供图文教程和一键配置脚本，完全不懂技术也能轻松完成。',
-    tags: ['图文教程', '一键配置'],
+    title: t('home.onlyCodex.metrics.onboarding.title'),
+    description: t('home.onlyCodex.metrics.onboarding.description'),
+    tags: [t('home.onlyCodex.metrics.onboarding.tag1'), t('home.onlyCodex.metrics.onboarding.tag2')],
     iconClass: 'bg-sky-500/15 text-sky-600 dark:text-sky-300',
     barClass: 'bg-sky-500',
     barWidth: '15%',
     iconPath: 'M6.75 7.5l3 2.25-3 2.25m4.5 0h3m-9 8.25h13.5A2.25 2.25 0 0021 18V6a2.25 2.25 0 00-2.25-2.25H5.25A2.25 2.25 0 003 6v12a2.25 2.25 0 002.25 2.25z'
   }
-]
+])
 
 const usagePriceFields: Array<{ key: keyof UsagePrice }> = [
   { key: 'input' },
@@ -864,10 +864,10 @@ const usagePricing: UsagePricing[] = [
   { model: 'gpt-5.4-pro', standard: { input: 30, cachedInput: null, cacheWrite: null, output: 180 } }
 ]
 
-const mockKeys = [
-  { name: '我的第一个 Key', value: 'sk-tocodex-Kx9m••••••••••••' },
-  { name: '项目 B', value: 'sk-tocodex-Rp3n••••••••••••' }
-]
+const mockKeys = computed(() => [
+  { name: t('home.onlyCodex.mock.firstKey'), value: 'sk-tocodex-Kx9m••••••••••••' },
+  { name: t('home.onlyCodex.mock.projectB'), value: 'sk-tocodex-Rp3n••••••••••••' }
+])
 
 const siteLogo = computed(() => sanitizeUrl(appStore.cachedPublicSettings?.site_logo || appStore.siteLogo || '', { allowRelative: true, allowDataUrl: true }))
 const docUrl = computed(() => sanitizeUrl(appStore.cachedPublicSettings?.doc_url || appStore.docUrl || ''))
