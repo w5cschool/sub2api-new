@@ -117,7 +117,7 @@ export default {
         eyebrow: '专注 Codex · GPT-5.6 / GPT-5.5 / GPT-5.4 稳定中转服务',
         titlePrefix: '让团队更顺畅地接入',
         description: 'OnlyCodex，提供高速、稳定的 Codex 中转服务代理能力，让团队更顺畅地使用 GPT-5.5 与 GPT-5.4 完成开发工作。',
-        note: '无需魔法，无需官方账号，无需国外信用卡/手机号。'
+        note: '我们仅收取官方价格的 12.5%，为你节省 87.5%。'
       },
       actions: { signUpAndTry: '免费注册，立即体验', viewSetupGuide: '查看配置教程', contactNow: '立即咨询', signUpNow: '立即注册', signUpFree: '免费注册', copy: '复制', close: '关闭' },
       terminal: { connected: '✓ 已连接至 OnlyCodex 中转节点', optimizePrompt: '帮我优化这段代码的性能...', refactorPrompt: '帮我重构这个模块的...' },

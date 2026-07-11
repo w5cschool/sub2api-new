@@ -117,7 +117,7 @@ export default {
         eyebrow: 'Built for Codex · Reliable GPT-5.6 / GPT-5.5 / GPT-5.4 Gateway',
         titlePrefix: 'Give your team a smoother path to',
         description: 'OnlyCodex provides a fast, reliable Codex gateway so teams can use GPT-5.5 and GPT-5.4 more smoothly for development.',
-        note: 'No VPN, official account, or international card and phone number required.'
+        note: 'We charge just 12.5% of the official price, saving you 87.5%.'
       },
       actions: { signUpAndTry: 'Sign up free and try it now', viewSetupGuide: 'View setup guide', contactNow: 'Contact us', signUpNow: 'Sign up now', signUpFree: 'Sign up free', copy: 'Copy', close: 'Close' },
       terminal: { connected: '✓ Connected to an OnlyCodex gateway node', optimizePrompt: 'Help me optimize the performance of this code...', refactorPrompt: 'Help me refactor this module...' },
