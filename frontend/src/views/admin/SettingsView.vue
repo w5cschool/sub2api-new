@@ -5393,19 +5393,9 @@
                 >
                   {{ t("admin.settings.site.homeContent") }}
                 </label>
-                <textarea
-                  v-model="form.home_content"
-                  rows="6"
-                  class="input font-mono text-sm"
-                  :placeholder="t('admin.settings.site.homeContentPlaceholder')"
-                ></textarea>
-                <p class="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
+                <div class="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-100">
                   {{ t("admin.settings.site.homeContentHint") }}
-                </p>
-                <!-- iframe CSP Warning -->
-                <p class="mt-2 text-xs text-amber-600 dark:text-amber-400">
-                  {{ t("admin.settings.site.homeContentIframeWarning") }}
-                </p>
+                </div>
               </div>
 
               <!-- Hide CCS Import Button -->
