@@ -15,6 +15,7 @@ This directory contains files for deploying Sub2API on Linux servers.
 |------|-------------|
 | `docker-compose.yml` | Docker Compose configuration (named volumes) |
 | `docker-compose.local.yml` | Docker Compose configuration (local directories, easy migration) |
+| `start-local.sh` | Local development launcher; releases the HTTP port before building and starting `docker-compose.dev.yml` |
 | `docker-deploy.sh` | **One-click Docker deployment script (recommended)** |
 | `.env.example` | Docker environment variables template |
 | `DOCKER.md` | Docker Hub documentation |
@@ -28,6 +29,18 @@ This directory contains files for deploying Sub2API on Linux servers.
 ---
 
 ## Docker Deployment (Recommended)
+
+## Local Development
+
+To build the current source tree and start the development Compose stack, run:
+
+```bash
+./start-local.sh
+```
+
+The script verifies that Docker is available before it stops its previous Compose stack, releases the configured `SERVER_PORT` (defaults to `8080`), and starts `docker-compose.dev.yml` in the foreground. On macOS, it opens Docker Desktop and waits for the daemon when needed. Use `./start-local.sh --detach` to run it in the background. You can override the port for one run with `SERVER_PORT=18080 ./start-local.sh`.
+
+> The script terminates the process currently listening on that local HTTP port. Use a different `SERVER_PORT` if the port belongs to another service you want to keep running.
 
 ### Method 1: One-Click Deployment (Recommended)
 
