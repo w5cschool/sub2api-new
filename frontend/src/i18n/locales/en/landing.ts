@@ -15,12 +15,12 @@ export default {
     getStarted: 'Get Started',
     goToDashboard: 'Go to Dashboard',
     // User-focused value proposition
-    heroSubtitle: 'One Key, All AI Models',
-    heroDescription: 'No need to manage multiple subscriptions. Access Claude, GPT, Gemini and more with a single API key',
+    heroSubtitle: 'Manage authorized API services',
+    heroDescription: 'Clear API access, key management, and usage auditing for development teams',
     tags: {
-      subscriptionToApi: 'Subscription to API',
-      stickySession: 'Session Persistence',
-      realtimeBilling: 'Pay As You Go'
+      subscriptionToApi: 'Access control',
+      stickySession: 'Usage audit',
+      realtimeBilling: 'Configuration management'
     },
     // Pain points section
     painPoints: {
@@ -116,12 +116,19 @@ export default {
 
   // Key Usage Query Page
   keyUsage: {
-    title: 'API Key Usage',
-    subtitle: 'Enter your API Key to view real-time spending and usage status',
-    placeholder: 'sk-ant-mirror-xxxxxxxxxxxx',
-    query: 'Query',
-    querying: 'Querying...',
-    privacyNote: 'Your Key is processed locally in the browser and will not be stored',
+    title: 'Usage',
+    subtitle: 'Usage information is shown only to the account owner in the authenticated console',
+    placeholder: '',
+    query: '',
+    querying: '',
+    privacyNote: '',
+    accessTitle: 'Usage requires sign-in.',
+    accessDescription: 'To avoid collecting, transmitting, or exposing API credentials on a public page, usage information is available only to the relevant account in the authenticated console.',
+    accessLogin: 'Sign in',
+    accessDashboard: 'Open console',
+    securityTitle: 'Credential safety',
+    securityDescription: 'Do not enter API keys, third-party account passwords, verification codes, payment details, or private keys on a public page. This page will never request them.',
+    securityReport: 'If you encounter a suspicious page, link, or credential request, stop and report it through the operator contact published on the home page.',
     dateRange: 'Date Range:',
     dateRangeToday: 'Today',
     dateRange7d: '7 Days',

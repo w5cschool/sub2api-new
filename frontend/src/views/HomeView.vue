@@ -114,14 +114,24 @@
       </section>
 
       <section class="border-t border-stone-200 bg-[#e8eee4] dark:border-stone-800 dark:bg-[#172017]">
-        <div class="mx-auto flex max-w-6xl flex-col gap-5 px-6 py-12 sm:flex-row sm:items-end sm:justify-between">
+        <div class="mx-auto grid max-w-6xl gap-8 px-6 py-12 md:grid-cols-[1fr_auto] md:items-end">
           <div>
-            <p class="text-sm font-semibold tracking-[0.14em] text-[#52694b] dark:text-[#b8d5ab]">OPERATOR CONTACT</p>
-            <h2 class="mt-3 text-2xl font-bold tracking-[-0.04em]">联系本站运营方</h2>
-            <p class="mt-3 text-sm leading-7 text-stone-600 dark:text-stone-300">服务问题、安全报告或账号协助，请使用以下公开联系方式。</p>
+            <p class="text-sm font-semibold tracking-[0.14em] text-[#52694b] dark:text-[#b8d5ab]">OPERATOR &amp; LEGAL</p>
+            <h2 class="mt-3 text-2xl font-bold tracking-[-0.04em]">Pluto Horizon LLC</h2>
+            <p class="mt-3 text-sm leading-7 text-stone-600 dark:text-stone-300">
+              注册地址：30 N Gould St #65046, Sheridan, Wyoming 82801, United States
+            </p>
+            <p class="mt-1 text-sm leading-7 text-stone-600 dark:text-stone-300">本站由 Pluto Horizon LLC 独立运营，不代表或隶属于任何第三方服务品牌。</p>
           </div>
-          <div class="rounded-lg border border-stone-300 bg-white/75 px-4 py-3 font-medium text-stone-800 dark:border-stone-700 dark:bg-stone-900/70 dark:text-stone-100">
-            {{ contactValue }}
+          <div class="space-y-3 md:text-right">
+            <div class="rounded-lg border border-stone-300 bg-white/75 px-4 py-3 font-medium text-stone-800 dark:border-stone-700 dark:bg-stone-900/70 dark:text-stone-100">
+              {{ contactValue }}
+            </div>
+            <div class="flex flex-wrap gap-x-4 gap-y-2 text-sm font-semibold text-[#42633b] dark:text-[#c5dfbb] md:justify-end">
+              <RouterLink to="/legal/terms" class="underline decoration-[#a9c89b] underline-offset-4">服务条款</RouterLink>
+              <RouterLink to="/legal/privacy-policy" class="underline decoration-[#a9c89b] underline-offset-4">隐私政策</RouterLink>
+              <RouterLink to="/legal/refund-cancellation-policy" class="underline decoration-[#a9c89b] underline-offset-4">退款与取消政策</RouterLink>
+            </div>
           </div>
         </div>
       </section>

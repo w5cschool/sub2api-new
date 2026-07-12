@@ -99,6 +99,87 @@ import enAdminCompliance from '../../../../docs/legal/admin-compliance.en.md?raw
 
 type LegalDocumentIcon = 'document' | 'shield' | 'globe' | 'cog'
 
+const operatorName = 'Pluto Horizon LLC'
+const operatorAddress = '30 N Gould St #65046, Sheridan, Wyoming 82801, United States'
+
+const publicLegalDocuments: LoginAgreementDocument[] = [
+  {
+    id: 'terms',
+    title: '服务条款',
+    content_md: `# 服务条款
+
+**运营主体：** ${operatorName}
+
+**注册地址：** ${operatorAddress}
+
+本网站及其控制台由 ${operatorName} 独立运营，用于管理已获授权的 API 接入。本站不代表、隶属于或获任何第三方模型、支付、身份或账户服务品牌授权，除非双方以书面协议明确约定。
+
+## 使用条件
+
+您仅可将本站用于您已获得授权、且符合适用法律、合同和第三方服务条款的用途。您不得利用本站冒充第三方、规避访问限制、收集他人凭据，或实施任何违法、欺诈或侵权行为。
+
+## 账户与凭据
+
+请妥善保管本站账户与 API 凭据。本站不会在公开页面要求您提交第三方账户密码、验证码、银行卡信息或私钥。发现可疑请求时，请立即停止操作并通过首页公开联系方式报告。
+
+## 政策与联系
+
+使用本站前，请一并阅读《隐私政策》及《退款与取消政策》。如您不同意这些条款，请停止使用本站服务。`,
+  },
+  {
+    id: 'privacy-policy',
+    title: '隐私政策',
+    content_md: `# 隐私政策
+
+**运营主体：** ${operatorName}
+
+**注册地址：** ${operatorAddress}
+
+本政策说明 ${operatorName} 在提供本站服务时处理信息的基本原则。
+
+## 可能处理的信息
+
+为提供账户、身份验证、访问控制、故障排查和用量管理功能，本站可能处理您提供的联系信息、登录与安全事件、API 请求所需的认证信息、使用记录以及为完成请求而提交的内容。请不要在公开页面提交任何第三方账户密码、验证码、银行卡信息或私钥。
+
+## 使用与披露
+
+信息仅用于提供、维护、保护和改进本站服务，以及履行适用法律义务。我们可能使用受授权的基础设施或服务提供商处理必要数据；除非法律要求、取得您的同意或为提供服务所必需，不会将信息出售给无关第三方。
+
+## 安全与您的选择
+
+我们采取合理的技术和组织措施保护信息，但任何网络传输或存储方式都不能保证绝对安全。您可通过首页公开的运营方联系方式咨询个人信息、账户或安全问题；在适用法律要求的范围内，我们会处理相关请求。`,
+  },
+  {
+    id: 'refund-cancellation-policy',
+    title: '退款与取消政策',
+    content_md: `# 退款与取消政策
+
+**运营主体：** ${operatorName}
+
+**注册地址：** ${operatorAddress}
+
+本政策适用于由 ${operatorName} 直接提供且明确标示为可购买的服务。
+
+## 取消
+
+如服务提供取消入口，您可以按照购买页面、订单说明或与 ${operatorName} 的书面协议办理取消。取消生效时间及已产生服务费用以购买时展示的条款或书面协议为准。
+
+## 退款申请
+
+仅当因本站原因导致无法继续提供服务时，您可以通过首页公开的运营方联系方式提交订单编号、购买账户和申请原因，申请退款。符合退款条件的订单按以下规则计算：
+
+1. 先扣除订单实付金额的 10% 作为服务费；
+2. 再按照订阅剩余天数占订阅总天数的比例，计算可退金额；
+3. 除上述情形外，其他情况均不支持退款。
+
+退款计算以订单实际支付金额、订阅周期和服务停止时点为准。
+
+## 法定权利
+
+本政策不排除或限制适用法律赋予您的任何不可放弃的消费者权利。`,
+  },
+]
+
 const route = useRoute()
 const { t } = useI18n()
 const settings = ref<PublicSettings | null>(null)
@@ -137,7 +218,9 @@ const currentDocument = computed<LoginAgreementDocument | null>(() => {
   if (!id) {
     return null
   }
-  return documents.value.find((doc) => doc.id === id) ?? null
+  return documents.value.find((doc) => doc.id === id && doc.content_md.trim())
+    ?? publicLegalDocuments.find((doc) => doc.id === id)
+    ?? null
 })
 
 const hasContent = computed(() => Boolean(currentDocument.value?.content_md?.trim()))

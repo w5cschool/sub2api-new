@@ -15,99 +15,99 @@ export default {
     getStarted: '立即开始',
     goToDashboard: '进入控制台',
     // 新增：面向用户的价值主张
-    heroSubtitle: '一个密钥，畅用多个 AI 模型',
-    heroDescription: '无需管理多个订阅账号，一站式接入 Claude、GPT、Gemini 等主流 AI 服务',
+    heroSubtitle: '管理已获授权的 API 服务',
+    heroDescription: '为开发团队提供清晰的 API 接入、密钥管理和用量审计能力',
     tags: {
-      subscriptionToApi: '订阅转 API',
-      stickySession: '会话保持',
-      realtimeBilling: '按量计费'
+      subscriptionToApi: '访问控制',
+      stickySession: '用量审计',
+      realtimeBilling: '配置管理'
     },
     // 用户痛点区块
     painPoints: {
-      title: '你是否也遇到这些问题？',
+      title: '清晰的管理边界',
       items: {
         expensive: {
-          title: '订阅费用高',
-          desc: '每个 AI 服务都要单独订阅，每月支出越来越多'
+          title: '授权范围不清晰',
+          desc: '团队需要确认每项服务都具有适当的访问权限与使用依据'
         },
         complex: {
-          title: '多账号难管理',
-          desc: '不同平台的账号、密钥分散各处，管理起来很麻烦'
+          title: '接入信息分散',
+          desc: '不同项目的密钥和配置需要统一管理与审计'
         },
         unstable: {
-          title: '服务不稳定',
-          desc: '单一账号容易触发限制，影响正常使用'
+          title: '运行状态难追踪',
+          desc: '团队需要查看请求记录并定位配置问题'
         },
         noControl: {
-          title: '用量无法控制',
-          desc: '不知道钱花在哪了，也无法限制团队成员的使用'
+          title: '责任边界不明确',
+          desc: '使用方、项目和服务范围需要保持可追溯'
         }
       }
     },
     // 解决方案区块
     solutions: {
-      title: '我们帮你解决',
-      subtitle: '简单三步，开始省心使用 AI'
+      title: '为已授权接入提供管理能力',
+      subtitle: '先确认权限与文档，再进行配置'
     },
     features: {
-      unifiedGateway: '一键接入',
-      unifiedGatewayDesc: '获取一个 API 密钥，即可调用所有已接入的 AI 模型，无需分别申请。',
-      multiAccount: '稳定可靠',
-      multiAccountDesc: '智能调度多个上游账号，自动切换和负载均衡，告别频繁报错。',
-      balanceQuota: '用多少付多少',
-      balanceQuotaDesc: '按实际使用量计费，支持设置配额上限，团队用量一目了然。'
+      unifiedGateway: '接入管理',
+      unifiedGatewayDesc: '集中管理已获授权的服务配置与访问密钥。',
+      multiAccount: '运行可见',
+      multiAccountDesc: '通过用量和请求记录协助定位运行问题。',
+      balanceQuota: '使用控制',
+      balanceQuotaDesc: '为团队配置配额和访问边界，保持使用过程可追溯。'
     },
     // 优势对比
     comparison: {
-      title: '为什么选择我们？',
+      title: '服务原则',
       headers: {
         feature: '对比项',
-        official: '官方订阅',
-        us: '本平台'
+        official: '使用方责任',
+        us: '本站服务'
       },
       items: {
         pricing: {
-          feature: '付费方式',
-          official: '固定月费，用不完也付',
-          us: '按量付费，用多少付多少'
+          feature: '授权与条款',
+          official: '确认对外部服务的使用权与责任',
+          us: '提供配置和管理能力，不替代外部服务条款'
         },
         models: {
-          feature: '模型选择',
-          official: '单一服务商',
-          us: '多模型随意切换'
+          feature: '服务范围',
+          official: '由使用方确认可用服务',
+          us: '仅为已授权的配置提供管理入口'
         },
         management: {
           feature: '账号管理',
-          official: '每个服务单独管理',
-          us: '统一密钥，一站管理'
+          official: '保护第三方账户凭据',
+          us: '不在公开页面索取第三方凭据'
         },
         stability: {
-          feature: '服务稳定性',
-          official: '单账号易触发限制',
-          us: '多账号池，自动切换'
+          feature: '运行记录',
+          official: '按外部服务规则使用',
+          us: '展示已配置服务的请求和用量记录'
         },
         control: {
-          feature: '用量控制',
-          official: '无法限制',
-          us: '可设配额、查明细'
+          feature: '数据处理',
+          official: '遵守适用法律与合同',
+          us: '以公开政策说明处理范围与支持渠道'
         }
       }
     },
     providers: {
-      title: '已支持的 AI 模型',
-      description: '一个 API，多种选择',
+      title: '可配置的 API 服务',
+      description: '仅连接已获授权的服务',
       supported: '已支持',
       soon: '即将推出',
-      claude: 'Claude',
-      gemini: 'Gemini',
-      antigravity: 'Antigravity',
-      more: '更多'
+      claude: '服务 A',
+      gemini: '服务 B',
+      antigravity: '服务 C',
+      more: '其他已授权服务'
     },
     // CTA 区块
     cta: {
-      title: '准备好开始了吗？',
-      description: '注册即可获得免费试用额度，体验一站式 AI 服务',
-      button: '免费注册'
+      title: '开始前，请先确认授权范围',
+      description: '阅读公开文档与服务政策后，再通过控制台配置已获授权的服务。',
+      button: '进入控制台'
     },
     footer: {
       allRightsReserved: '保留所有权利。'
@@ -116,12 +116,19 @@ export default {
 
   // Key Usage Query Page
   keyUsage: {
-    title: 'API Key 用量查询',
-    subtitle: '输入您的 API Key 以查看实时消费金额与使用状态',
-    placeholder: 'sk-ant-mirror-xxxxxxxxxxxx',
-    query: '查询',
-    querying: '查询中...',
-    privacyNote: '您的 Key 仅在浏览器本地处理，不会被存储',
+    title: '用量查询',
+    subtitle: '用量信息仅在登录后的控制台中向账户所有者展示',
+    placeholder: '',
+    query: '',
+    querying: '',
+    privacyNote: '',
+    accessTitle: '用量查询需要登录。',
+    accessDescription: '为了避免在公开页面收集、传输或暴露 API 凭据，用量信息仅在完成身份验证后的控制台中展示给对应账户。',
+    accessLogin: '前往登录',
+    accessDashboard: '进入控制台',
+    securityTitle: '凭据安全提示',
+    securityDescription: '不要在公开页面输入任何 API Key、第三方账户密码、验证码、支付信息或私钥。本站不会通过此页面要求这些信息。',
+    securityReport: '如发现可疑页面、链接或凭据请求，请停止操作并通过首页公开的运营方联系方式报告。',
     dateRange: '统计范围:',
     dateRangeToday: '今日',
     dateRange7d: '7 天',
