@@ -114,13 +114,13 @@ export default {
     },
     onlyCodex: {
       hero: {
-        eyebrow: 'Built for Codex · Reliable GPT-5.6 / GPT-5.5 / GPT-5.4 Gateway',
+        eyebrow: 'Built for Codex · Reliable GPT-5.6 / GPT-5.5 / GPT-5.4 API Service',
         titlePrefix: 'Give your team a smoother path to',
-        description: 'OnlyCodex provides a fast, reliable Codex gateway so teams can use GPT-5.5 and GPT-5.4 more smoothly for development.',
+        description: 'OnlyCodex provides a fast, reliable Codex API service so teams can use GPT-5.5 and GPT-5.4 more smoothly for development.',
         note: 'We charge just 12.5% of the official price, saving you 87.5%.'
       },
       actions: { signUpAndTry: 'Sign up free and try it now', viewSetupGuide: 'View setup guide', contactNow: 'Contact us', signUpNow: 'Sign up now', signUpFree: 'Sign up free', copy: 'Copy', close: 'Close' },
-      terminal: { connected: '✓ Connected to an OnlyCodex gateway node', optimizePrompt: 'Help me optimize the performance of this code...', refactorPrompt: 'Help me refactor this module...' },
+      terminal: { connected: '✓ Connected to the OnlyCodex API service', optimizePrompt: 'Help me optimize the performance of this code...', refactorPrompt: 'Help me refactor this module...' },
       advantages: {
         eyebrow: 'CORE ADVANTAGES', titlePrefix: 'Why developers ', titleHighlight: 'choose us', titleSuffix: '',
         global: { title: 'Global Coverage', description: 'Globally deployed servers with automatic load balancing for fast responses.', tag1: 'Fast global responses', tag2: 'Automatic load balancing' },
@@ -134,10 +134,10 @@ export default {
       },
       subscription: { eyebrow: 'SUBSCRIPTIONS · TRANSPARENT PRICING', title: 'Subscribe monthly, use reliably', description: 'For individuals and teams who use Codex heavily over the long term.', official: 'Official subscription', perMonth: '/ month' },
       plans: {
-        usageExperience: 'Usage profile:', dailyLimit: 'Daily limit:', weeklyLimit: 'Weekly limit:', monthlyLimit: 'Monthly limit:', gpt56Available: 'GPT-5.6 included', gpt55Available: 'GPT-5.5 included', gpt54Available: 'GPT-5.4 included', dedicatedKey: 'Dedicated API key & fast lane',
-        pro5x: { badge: 'Recommended', experience: 'Up to 8 hours of intensive use daily', dailyLimit: '$60/day', weeklyLimit: '$360/week', monthlyLimit: '$1,440/month' },
-        pro10x: { badge: 'Advanced', experience: 'Up to 16 hours of intensive use daily', dailyLimit: '$120/day', weeklyLimit: '$720/week', monthlyLimit: '$2,880/month' },
-        pro20x: { badge: 'Ultimate', experience: 'Unrestricted intensive use', dailyLimit: '$240/day', weeklyLimit: '$1,440/week', monthlyLimit: '$5,760/month' }
+        dailyLimit: 'Daily limit:', weeklyLimit: 'Weekly limit:', monthlyLimit: 'Monthly limit:', gpt56Available: 'GPT-5.6 included', gpt55Available: 'GPT-5.5 included', gpt54Available: 'GPT-5.4 included', noSpecialSetup: 'No special network setup, official account, or overseas card/phone number required',
+        pro5x: { badge: 'Recommended', dailyLimit: '$60/day', weeklyLimit: '$360/week', monthlyLimit: '$1,440/month' },
+        pro10x: { badge: 'Advanced', dailyLimit: '$120/day', weeklyLimit: '$720/week', monthlyLimit: '$2,880/month' },
+        pro20x: { badge: 'Ultimate', dailyLimit: '$240/day', weeklyLimit: '$1,440/week', monthlyLimit: '$5,760/month' }
       },
       quickStart: { eyebrow: 'QUICK START', title: 'Start in three steps', description: 'No technical expertise needed—just follow the steps.' },
       steps: {
@@ -147,8 +147,8 @@ export default {
       },
       mock: { email: 'Email', password: 'Password', createKey: '+ New key', firstKey: 'My first key', projectB: 'Project B' },
       metrics: {
-        eyebrow: 'CORE ADVANTAGES', title: 'The numbers speak', description: 'A Codex-only gateway where every metric is taken seriously.',
-        uptime: { title: 'Uptime', description: 'Codex-optimized gateway routes with 24/7 monitoring, low latency, and reliable connectivity.', tag1: 'Multi-node redundancy', tag2: 'Automatic failover' },
+        eyebrow: 'CORE ADVANTAGES', title: 'The numbers speak', description: 'A Codex API service where every metric is taken seriously.',
+        uptime: { title: 'Uptime', description: 'Codex-optimized API service with 24/7 monitoring, low latency, and reliable connectivity.', tag1: 'Multi-node redundancy', tag2: 'Automatic failover' },
         latency: { title: 'Average Response Latency', description: 'Optimized routes deliver requests directly and respond quickly, so you can focus on writing code.', tag1: 'Optimized routes', tag2: 'Low-latency network' },
         onboarding: { title: 'Time to Get Started', description: 'Two environment variables are all you need, with illustrated guides and one-click setup scripts for an easy start.', tag1: 'Illustrated guide', tag2: 'One-click setup' }
       },

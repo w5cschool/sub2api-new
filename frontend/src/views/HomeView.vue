@@ -600,8 +600,47 @@
       </section>
     </main>
 
-    <footer class="relative z-10 border-t border-stone-200/70 px-6 py-8 text-center text-sm text-stone-500 dark:border-stone-800 dark:text-stone-400">
-      © {{ currentYear }} OnlyCodex. {{ t('home.footer.allRightsReserved') }}
+    <footer class="relative z-10 bg-[#10110f] text-stone-400">
+      <div class="mx-auto max-w-6xl px-6 py-12 md:py-14">
+        <div class="grid gap-x-12 gap-y-10 sm:grid-cols-2 lg:grid-cols-[0.8fr_1.25fr_0.8fr]">
+          <section>
+            <h2 class="text-base font-bold text-stone-100">关于 OnlyCodex</h2>
+            <nav class="mt-5 flex flex-col items-start gap-3 text-sm">
+              <RouterLink to="/legal/terms" class="transition hover:text-white">服务条款</RouterLink>
+              <RouterLink to="/legal/privacy-policy" class="transition hover:text-white">隐私政策</RouterLink>
+              <RouterLink to="/legal/refund-cancellation-policy" class="transition hover:text-white">退款与取消政策</RouterLink>
+              <a
+                v-if="docUrl"
+                :href="docUrl"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="transition hover:text-white"
+              >
+                使用文档
+              </a>
+            </nav>
+          </section>
+
+          <section>
+            <h2 class="text-base font-bold text-stone-100">运营主体</h2>
+            <p class="mt-5 text-sm font-semibold text-stone-200">Pluto Horizon LLC</p>
+            <p class="mt-2 max-w-md text-sm leading-7">30 N Gould St #65046, Sheridan, Wyoming 82801, United States</p>
+            <p class="mt-3 max-w-md text-sm leading-7">本站独立运营，不代表或隶属于任何第三方服务品牌。</p>
+          </section>
+
+          <section class="sm:text-right">
+            <h2 class="text-base font-bold text-stone-100">联系我们</h2>
+            <div class="mt-5 space-y-2 text-sm leading-7">
+              <a :href="`mailto:${supportEmail}`" class="block transition hover:text-white">{{ supportEmail }}</a>
+              <span class="block">管理员微信：{{ administratorWechat }}</span>
+            </div>
+          </section>
+        </div>
+
+        <div class="mt-12 border-t border-stone-800 pt-6 text-center text-sm text-stone-500">
+          Copyright © {{ copyrightYears }} Pluto Horizon LLC. All rights reserved.
+        </div>
+      </div>
     </footer>
 
     <Transition name="modal-fade">
@@ -734,7 +773,6 @@ const pricingCards = computed<PricingCard[]>(() => [
     borderClass: 'border-emerald-300/80 dark:border-emerald-500/30',
     featured: true,
     facts: [
-      { label: t('home.onlyCodex.plans.usageExperience'), value: t('home.onlyCodex.plans.pro5x.experience') },
       { label: t('home.onlyCodex.plans.dailyLimit'), value: t('home.onlyCodex.plans.pro5x.dailyLimit') },
       { label: t('home.onlyCodex.plans.weeklyLimit'), value: t('home.onlyCodex.plans.pro5x.weeklyLimit') },
       { label: t('home.onlyCodex.plans.monthlyLimit'), value: t('home.onlyCodex.plans.pro5x.monthlyLimit') }
@@ -743,7 +781,7 @@ const pricingCards = computed<PricingCard[]>(() => [
       t('home.onlyCodex.plans.gpt56Available'),
       t('home.onlyCodex.plans.gpt55Available'),
       t('home.onlyCodex.plans.gpt54Available'),
-      t('home.onlyCodex.plans.dedicatedKey')
+      t('home.onlyCodex.plans.noSpecialSetup')
     ]
   },
   {
@@ -753,7 +791,6 @@ const pricingCards = computed<PricingCard[]>(() => [
     badgeClass: 'bg-lime-100 text-lime-700 dark:bg-lime-500/10 dark:text-lime-300',
     borderClass: 'border-lime-200/80 dark:border-lime-500/20',
     facts: [
-      { label: t('home.onlyCodex.plans.usageExperience'), value: t('home.onlyCodex.plans.pro10x.experience') },
       { label: t('home.onlyCodex.plans.dailyLimit'), value: t('home.onlyCodex.plans.pro10x.dailyLimit') },
       { label: t('home.onlyCodex.plans.weeklyLimit'), value: t('home.onlyCodex.plans.pro10x.weeklyLimit') },
       { label: t('home.onlyCodex.plans.monthlyLimit'), value: t('home.onlyCodex.plans.pro10x.monthlyLimit') }
@@ -762,7 +799,7 @@ const pricingCards = computed<PricingCard[]>(() => [
       t('home.onlyCodex.plans.gpt56Available'),
       t('home.onlyCodex.plans.gpt55Available'),
       t('home.onlyCodex.plans.gpt54Available'),
-      t('home.onlyCodex.plans.dedicatedKey')
+      t('home.onlyCodex.plans.noSpecialSetup')
     ]
   },
   {
@@ -773,7 +810,6 @@ const pricingCards = computed<PricingCard[]>(() => [
     badgeClass: 'bg-teal-100 text-teal-700 dark:bg-teal-500/10 dark:text-teal-300',
     borderClass: 'border-teal-200/80 dark:border-teal-500/20',
     facts: [
-      { label: t('home.onlyCodex.plans.usageExperience'), value: t('home.onlyCodex.plans.pro20x.experience') },
       { label: t('home.onlyCodex.plans.dailyLimit'), value: t('home.onlyCodex.plans.pro20x.dailyLimit') },
       { label: t('home.onlyCodex.plans.weeklyLimit'), value: t('home.onlyCodex.plans.pro20x.weeklyLimit') },
       { label: t('home.onlyCodex.plans.monthlyLimit'), value: t('home.onlyCodex.plans.pro20x.monthlyLimit') }
@@ -782,7 +818,7 @@ const pricingCards = computed<PricingCard[]>(() => [
       t('home.onlyCodex.plans.gpt56Available'),
       t('home.onlyCodex.plans.gpt55Available'),
       t('home.onlyCodex.plans.gpt54Available'),
-      t('home.onlyCodex.plans.dedicatedKey')
+      t('home.onlyCodex.plans.noSpecialSetup')
     ]
   }
 ])
@@ -898,6 +934,9 @@ const userInitial = computed(() => {
   return user.email.charAt(0).toUpperCase()
 })
 const currentYear = computed(() => new Date().getFullYear())
+const copyrightYears = computed(() => currentYear.value > 2026 ? `2026–${currentYear.value}` : '2026')
+const supportEmail = 'steveweng.s.w@gmail.com'
+const administratorWechat = 'Icanmeetu'
 
 function toggleTheme() {
   isDark.value = !isDark.value

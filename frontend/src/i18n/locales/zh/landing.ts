@@ -114,13 +114,13 @@ export default {
     },
     onlyCodex: {
       hero: {
-        eyebrow: '专注 Codex · GPT-5.6 / GPT-5.5 / GPT-5.4 稳定中转服务',
+        eyebrow: '专注 Codex · GPT-5.6 / GPT-5.5 / GPT-5.4 稳定 API 服务',
         titlePrefix: '让团队更顺畅地接入',
-        description: 'OnlyCodex，提供高速、稳定的 Codex 中转服务代理能力，让团队更顺畅地使用 GPT-5.5 与 GPT-5.4 完成开发工作。',
+        description: 'OnlyCodex，提供高速、稳定的 Codex API 服务，让团队更顺畅地使用 GPT-5.5 与 GPT-5.4 完成开发工作。',
         note: '我们仅收取官方价格的 12.5%，为你节省 87.5%。'
       },
       actions: { signUpAndTry: '免费注册，立即体验', viewSetupGuide: '查看配置教程', contactNow: '立即咨询', signUpNow: '立即注册', signUpFree: '免费注册', copy: '复制', close: '关闭' },
-      terminal: { connected: '✓ 已连接至 OnlyCodex 中转节点', optimizePrompt: '帮我优化这段代码的性能...', refactorPrompt: '帮我重构这个模块的...' },
+      terminal: { connected: '✓ 已连接至 OnlyCodex API 服务', optimizePrompt: '帮我优化这段代码的性能...', refactorPrompt: '帮我重构这个模块的...' },
       advantages: {
         eyebrow: '核心优势', titlePrefix: '为什么开发者', titleHighlight: '选择我们', titleSuffix: '？',
         global: { title: '全球布局', description: '部署线路服务器，自动负载均衡确保快速响应。', tag1: '全球用户快速响应', tag2: '自动负载均衡' },
@@ -134,10 +134,10 @@ export default {
       },
       subscription: { eyebrow: '订阅制 · 透明定价', title: '按月订阅，稳定使用', description: '适合长期高频使用 Codex 的个人与团队。', official: '官方订阅', perMonth: '/ 月' },
       plans: {
-        usageExperience: '使用体验：', dailyLimit: '每日限制：', weeklyLimit: '每周限制：', monthlyLimit: '每月限制：', gpt56Available: 'GPT-5.6 可用', gpt55Available: 'GPT-5.5 可用', gpt54Available: 'GPT-5.4 可用', dedicatedKey: '独享 API Key & 高速通道',
-        pro5x: { badge: '推荐', experience: '每天 8 小时高强度使用', dailyLimit: '60 美元/日', weeklyLimit: '360 美元/周', monthlyLimit: '1440 美元/月' },
-        pro10x: { badge: '进阶', experience: '每天 16 小时高强度使用', dailyLimit: '120 美元/日', weeklyLimit: '720 美元/周', monthlyLimit: '2880 美元/月' },
-        pro20x: { badge: '顶级', experience: '肆无忌惮的高强度使用', dailyLimit: '240 美元/日', weeklyLimit: '1440 美元/周', monthlyLimit: '5760 美元/月' }
+        dailyLimit: '每日限制：', weeklyLimit: '每周限制：', monthlyLimit: '每月限制：', gpt56Available: 'GPT-5.6 可用', gpt55Available: 'GPT-5.5 可用', gpt54Available: 'GPT-5.4 可用', noSpecialSetup: '无需魔法，无需官方账号，无需国外信用卡/手机号',
+        pro5x: { badge: '推荐', dailyLimit: '60 美元/日', weeklyLimit: '360 美元/周', monthlyLimit: '1440 美元/月' },
+        pro10x: { badge: '进阶', dailyLimit: '120 美元/日', weeklyLimit: '720 美元/周', monthlyLimit: '2880 美元/月' },
+        pro20x: { badge: '顶级', dailyLimit: '240 美元/日', weeklyLimit: '1440 美元/周', monthlyLimit: '5760 美元/月' }
       },
       quickStart: { eyebrow: '快速上手', title: '三步开始使用', description: '不需要懂技术，按步骤做就行' },
       steps: {
@@ -147,8 +147,8 @@ export default {
       },
       mock: { email: '邮箱', password: '密码', createKey: '+ 新建密钥', firstKey: '我的第一个 Key', projectB: '项目 B' },
       metrics: {
-        eyebrow: '核心优势', title: '数据说话', description: '只做 Codex 中转，每一项指标都认真对待',
-        uptime: { title: '稳定在线率', description: '专为 Codex 优化的中转线路，7×24 小时监控，低延迟、不掉线，告别连接焦虑。', tag1: '多节点冗余', tag2: '自动故障切换' },
+        eyebrow: '核心优势', title: '数据说话', description: '专注 Codex API 服务，每一项指标都认真对待',
+        uptime: { title: '稳定在线率', description: '专为 Codex 优化的 API 服务，7×24 小时监控，低延迟、不掉线，告别连接焦虑。', tag1: '多节点冗余', tag2: '自动故障切换' },
         latency: { title: '平均响应延迟', description: '国内优化线路，请求直达，响应快速。你专注写代码，网络延迟的事交给我们。', tag1: '国内优化', tag2: '低延迟线路' },
         onboarding: { title: '新手上手时间', description: '两个环境变量搞定一切，提供图文教程和一键配置脚本，完全不懂技术也能轻松完成。', tag1: '图文教程', tag2: '一键配置' }
       },
