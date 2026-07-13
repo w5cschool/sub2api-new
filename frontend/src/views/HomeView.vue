@@ -307,7 +307,7 @@
       <div class="mx-auto max-w-6xl px-6 py-12 md:py-14">
         <div class="grid gap-x-12 gap-y-10 sm:grid-cols-2 lg:grid-cols-[0.8fr_1.25fr_0.8fr]">
           <section>
-            <h2 class="text-base font-bold text-stone-100">关于 tocodex.space</h2>
+            <h2 class="text-base font-bold text-stone-100">关于 apiclub.cc</h2>
             <nav class="mt-5 flex flex-col items-start gap-3 text-sm">
               <RouterLink to="/legal/terms" class="transition hover:text-white">服务条款</RouterLink>
               <RouterLink to="/legal/privacy-policy" class="transition hover:text-white">隐私政策</RouterLink>
