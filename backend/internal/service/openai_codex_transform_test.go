@@ -718,6 +718,8 @@ func TestStripCodexImageGenNamespaceTools_SkipsWithoutHostedImageTool(t *testing
 	require.True(t, ok)
 	require.Len(t, tools, 1)
 	require.True(t, isImageGenNamespaceToolMap(tools[0].(map[string]any)))
+}
+
 func TestEnsureOpenAIResponsesImageGenerationTool_PreservesImageGenNamespace(t *testing.T) {
 	tests := []struct {
 		name    string
