@@ -718,6 +718,63 @@ func TestStripCodexImageGenNamespaceTools_SkipsWithoutHostedImageTool(t *testing
 	require.True(t, ok)
 	require.Len(t, tools, 1)
 	require.True(t, isImageGenNamespaceToolMap(tools[0].(map[string]any)))
+func TestEnsureOpenAIResponsesImageGenerationTool_PreservesImageGenNamespace(t *testing.T) {
+	tests := []struct {
+		name    string
+		reqBody map[string]any
+	}{
+		{
+			name: "top-level tools",
+			reqBody: map[string]any{
+				"model": "gpt-5.5",
+				"tools": []any{
+					map[string]any{
+						"type": "namespace",
+						"name": "image_gen",
+						"tools": []any{
+							map[string]any{"type": "function", "name": "imagegen"},
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "responses lite additional_tools",
+			reqBody: map[string]any{
+				"model": "gpt-5.5",
+				"input": []any{
+					map[string]any{
+						"type": "additional_tools",
+						"tools": []any{
+							map[string]any{
+								"type": "namespace",
+								"name": "image_gen",
+								"tools": []any{
+									map[string]any{"type": "function", "name": "imagegen"},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			require.True(t, hasOpenAIImageGenerationTool(tt.reqBody))
+
+			modified := ensureOpenAIResponsesImageGenerationTool(tt.reqBody)
+
+			require.False(t, modified)
+			tools, _ := tt.reqBody["tools"].([]any)
+			for _, rawTool := range tools {
+				tool, ok := rawTool.(map[string]any)
+				require.True(t, ok)
+				require.NotEqual(t, "image_generation", firstNonEmptyString(tool["type"]))
+			}
+		})
+	}
 }
 
 func TestApplyCodexImageGenerationBridgeInstructions_AppendsBridgeOnce(t *testing.T) {
