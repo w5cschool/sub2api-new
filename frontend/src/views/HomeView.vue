@@ -226,6 +226,53 @@
       </section>
 
       <section class="reveal-section mx-auto max-w-6xl px-6 py-10">
+        <div class="reveal-item overflow-hidden rounded-[2.4rem] border border-emerald-200/80 bg-emerald-950 text-emerald-50 shadow-[0_24px_80px_rgba(6,78,59,0.18)] dark:border-emerald-500/20 dark:bg-[#0b1912]">
+          <div class="grid lg:grid-cols-[0.78fr_1.22fr]">
+            <div class="relative overflow-hidden border-b border-emerald-800/80 px-7 py-8 lg:border-b-0 lg:border-r lg:px-9 lg:py-10">
+              <div class="pointer-events-none absolute -right-10 -top-14 h-44 w-44 rounded-full border-[28px] border-emerald-400/10"></div>
+              <div class="relative">
+                <div class="text-xs font-semibold uppercase tracking-[0.3em] text-emerald-300">用户奖励政策</div>
+                <h2 class="mt-4 max-w-sm text-3xl font-black tracking-[-0.05em] text-white md:text-4xl">
+                  使用越久，<br class="hidden lg:block" />分享越多
+                </h2>
+                <p class="mt-4 max-w-md text-sm leading-7 text-emerald-100/70">
+                  奖励以对应套餐的按量计费额度发放，规则清晰，权益直接到账。
+                </p>
+              </div>
+            </div>
+
+            <div class="divide-y divide-emerald-800/80">
+              <article
+                v-for="(policy, index) in rewardPolicies"
+                :key="policy.title"
+                class="group grid gap-5 px-7 py-7 transition-colors hover:bg-emerald-900/55 sm:grid-cols-[auto_1fr_auto] sm:items-center sm:px-9"
+              >
+                <div class="text-xs font-semibold tracking-[0.22em] text-emerald-400/70">
+                  {{ String(index + 1).padStart(2, '0') }}
+                </div>
+                <div>
+                  <h3 class="text-base font-bold text-white sm:text-lg">{{ policy.title }}</h3>
+                  <p class="mt-1.5 text-sm leading-6 text-emerald-100/70">{{ policy.trigger }}</p>
+                </div>
+                <div class="flex items-baseline gap-2 sm:block sm:text-right">
+                  <span class="text-4xl font-black tracking-[-0.06em] text-emerald-300">1</span>
+                  <span class="text-sm font-semibold text-emerald-100">天额度</span>
+                </div>
+              </article>
+            </div>
+          </div>
+
+          <div class="flex items-start gap-3 border-t border-emerald-800/80 bg-emerald-900/35 px-7 py-4 text-xs leading-5 text-emerald-100/65 sm:items-center sm:px-9">
+            <svg class="mt-0.5 h-4 w-4 shrink-0 text-emerald-300 sm:mt-0" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7">
+              <circle cx="10" cy="10" r="7.25" />
+              <path stroke-linecap="round" d="M10 9v4M10 6.75h.01" />
+            </svg>
+            <span>赠送额度按所续费或所购买的对应套餐计算。</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="reveal-section mx-auto max-w-6xl px-6 py-10">
         <div class="overflow-hidden rounded-[2.4rem] border border-stone-200/80 bg-white/78 p-8 shadow-[0_24px_80px_rgba(28,25,23,0.1)] backdrop-blur-sm dark:border-stone-800 dark:bg-stone-900 md:p-10">
           <div class="reveal-item text-center">
             <div class="text-xs font-semibold uppercase tracking-[0.3em] text-stone-500 dark:text-stone-400">联系我们</div>
@@ -448,6 +495,17 @@ const pricingCards: PricingCard[] = [
     borderClass: 'border-teal-200/80 dark:border-teal-500/20',
     facts: [{ label: '每日限制：', value: '240美元/日' }, { label: '每周限制：', value: '1440美元/周' }, { label: '每月限制：', value: '5760美元/月' }],
     features: ['GPT-5.6 可用', 'GPT-5.5 可用', 'GPT-5.4 可用']
+  }
+]
+
+const rewardPolicies = [
+  {
+    title: '续费优惠政策',
+    trigger: '续费任一套餐，即可获赠对应套餐的按量计费额度。'
+  },
+  {
+    title: '邀请新人购买赠送策略',
+    trigger: '成功邀请一位新用户购买套餐，即可获赠对应套餐的按量计费额度。'
   }
 ]
 
