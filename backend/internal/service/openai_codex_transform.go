@@ -83,6 +83,8 @@ type codexOAuthTransformOptions struct {
 	PreserveToolCallIDs     bool
 }
 
+const codexImageGenerationFunctionToolName = "image_gen.imagegen"
+
 const (
 	codexImageGenerationBridgeMarker = "<sub2api-codex-image-generation>"
 	codexImageGenerationBridgeText   = codexImageGenerationBridgeMarker + "\nWhen the user asks for raster image generation or editing, use the OpenAI Responses native `image_generation` tool attached to this request. The local Codex client may not expose an `image_gen` namespace, but that does not mean image generation is unavailable. Do not ask the user to switch to CLI fallback solely because `image_gen` is absent.\n</sub2api-codex-image-generation>"
@@ -315,11 +317,28 @@ func normalizeCodexToolChoice(reqBody map[string]any) bool {
 		}
 		return modified
 	}
-	if codexToolsContainType(reqBody["tools"], choiceType) {
+	if codexToolsContainType(reqBody["tools"], choiceType) || codexInputAdditionalToolsContainType(reqBody["input"], choiceType) {
 		return modified
 	}
 	reqBody["tool_choice"] = "auto"
 	return true
+}
+
+func codexInputAdditionalToolsContainType(rawInput any, toolType string) bool {
+	input, ok := rawInput.([]any)
+	if !ok || strings.TrimSpace(toolType) == "" {
+		return false
+	}
+	for _, rawItem := range input {
+		item, ok := rawItem.(map[string]any)
+		if !ok || strings.TrimSpace(firstNonEmptyString(item["type"])) != "additional_tools" {
+			continue
+		}
+		if codexToolsContainType(item["tools"], toolType) {
+			return true
+		}
+	}
+	return false
 }
 
 func codexToolsContainType(rawTools any, toolType string) bool {
@@ -596,20 +615,40 @@ func isCodexSparkModel(model string) bool {
 }
 
 func hasOpenAIImageGenerationTool(reqBody map[string]any) bool {
-	if toolsContainHostedImageGeneration(reqBody["tools"]) {
+	if toolsContainImageGeneration(reqBody["tools"]) {
 		return true
 	}
-	return inputContainsHostedImageGenerationTool(reqBody["input"])
+	return inputContainsImageGenerationTool(reqBody["input"])
 }
 
 func hasOpenAIImageGenerationIntentTool(reqBody map[string]any) bool {
-	if hasOpenAIImageGenerationTool(reqBody) {
-		return true
+	return hasOpenAIImageGenerationTool(reqBody)
+}
+
+func hasCodexImageGenerationFunctionTool(reqBody map[string]any) bool {
+	return len(reqBody) > 0 &&
+		codexToolsContainFunctionName(reqBody["tools"], codexImageGenerationFunctionToolName)
+}
+
+func toolsContainImageGeneration(rawTools any) bool {
+	if rawTools == nil {
+		return false
 	}
-	if toolsContainImageGenNamespace(reqBody["tools"]) {
-		return true
+	tools, ok := rawTools.([]any)
+	if !ok {
+		return false
 	}
-	return inputContainsImageGenNamespace(reqBody["input"])
+	for _, rawTool := range tools {
+		toolMap, ok := rawTool.(map[string]any)
+		if !ok {
+			continue
+		}
+		if isOpenAIImageGenerationType(firstNonEmptyString(toolMap["type"])) ||
+			isImageGenNamespaceToolMap(toolMap) {
+			return true
+		}
+	}
+	return false
 }
 
 func toolsContainHostedImageGeneration(rawTools any) bool {
@@ -678,6 +717,26 @@ func inputContainsHostedImageGenerationTool(rawInput any) bool {
 	return false
 }
 
+func inputContainsImageGenerationTool(rawInput any) bool {
+	input, ok := rawInput.([]any)
+	if !ok {
+		return false
+	}
+	for _, rawItem := range input {
+		item, ok := rawItem.(map[string]any)
+		if !ok {
+			continue
+		}
+		if strings.TrimSpace(firstNonEmptyString(item["type"])) != "additional_tools" {
+			continue
+		}
+		if toolsContainImageGeneration(item["tools"]) {
+			return true
+		}
+	}
+	return false
+}
+
 func inputContainsImageGenNamespace(rawInput any) bool {
 	input, ok := rawInput.([]any)
 	if !ok {
@@ -699,7 +758,9 @@ func inputContainsImageGenNamespace(rawInput any) bool {
 }
 
 func stripCodexImageGenNamespaceTools(reqBody map[string]any) bool {
-	if len(reqBody) == 0 || !hasOpenAIImageGenerationTool(reqBody) {
+	if len(reqBody) == 0 ||
+		(!toolsContainHostedImageGeneration(reqBody["tools"]) &&
+			!inputContainsHostedImageGenerationTool(reqBody["input"])) {
 		return false
 	}
 
@@ -830,7 +891,8 @@ func stripOpenAIImageGenerationToolList(container map[string]any, key string) bo
 	removed := false
 	for _, rawTool := range tools {
 		if toolMap, ok := rawTool.(map[string]any); ok &&
-			isOpenAIImageGenerationType(firstNonEmptyString(toolMap["type"])) {
+			(isOpenAIImageGenerationType(firstNonEmptyString(toolMap["type"])) ||
+				isImageGenNamespaceToolMap(toolMap)) {
 			removed = true
 			continue
 		}
@@ -983,6 +1045,9 @@ func ensureOpenAIResponsesImageGenerationTool(reqBody map[string]any) bool {
 	if isCodexSparkModel(firstNonEmptyString(reqBody["model"])) {
 		return false
 	}
+	if hasCodexImageGenerationFunctionTool(reqBody) {
+		return false
+	}
 	if hasOpenAIImageGenerationTool(reqBody) {
 		return false
 	}
@@ -1008,7 +1073,7 @@ func ensureOpenAIResponsesImageGenerationTool(reqBody map[string]any) bool {
 }
 
 func ensureOpenAIResponsesImageGenerationToolChoiceAuto(reqBody map[string]any) bool {
-	if len(reqBody) == 0 || !hasOpenAIImageGenerationTool(reqBody) {
+	if len(reqBody) == 0 || hasCodexImageGenerationFunctionTool(reqBody) || !hasOpenAIImageGenerationTool(reqBody) {
 		return false
 	}
 	if isCodexSparkModel(firstNonEmptyString(reqBody["model"])) {
@@ -1022,7 +1087,7 @@ func ensureOpenAIResponsesImageGenerationToolChoiceAuto(reqBody map[string]any) 
 }
 
 func applyCodexImageGenerationBridgeInstructions(reqBody map[string]any) bool {
-	if len(reqBody) == 0 || !hasOpenAIImageGenerationTool(reqBody) {
+	if len(reqBody) == 0 || hasCodexImageGenerationFunctionTool(reqBody) || !hasOpenAIImageGenerationTool(reqBody) {
 		return false
 	}
 	if isCodexSparkModel(firstNonEmptyString(reqBody["model"])) {
