@@ -55,6 +55,9 @@ func (teamUserRepoStub) BatchSetConcurrency(context.Context, []int64, int) (int,
 func (teamUserRepoStub) BatchAddConcurrency(context.Context, []int64, int) (int, error) {
 	return 0, nil
 }
+func (teamUserRepoStub) BatchUpdateLimits(context.Context, []int64, *int, *int) (int, error) {
+	return 0, nil
+}
 func (teamUserRepoStub) ExistsByEmail(context.Context, string) (bool, error) { return false, nil }
 func (teamUserRepoStub) RemoveGroupFromAllowedGroups(context.Context, int64) (int64, error) {
 	return 0, nil
