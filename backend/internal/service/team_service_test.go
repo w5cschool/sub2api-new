@@ -14,6 +14,9 @@ import (
 type teamUserRepoStub struct{}
 
 func (teamUserRepoStub) Create(context.Context, *User) error { return nil }
+func (teamUserRepoStub) CreateWithEmailAliasGuard(context.Context, *User) error {
+	return nil
+}
 func (teamUserRepoStub) GetByID(_ context.Context, id int64) (*User, error) {
 	return &User{ID: id, Email: "user@example.com"}, nil
 }
@@ -59,6 +62,9 @@ func (teamUserRepoStub) BatchUpdateLimits(context.Context, []int64, *int, *int) 
 	return 0, nil
 }
 func (teamUserRepoStub) ExistsByEmail(context.Context, string) (bool, error) { return false, nil }
+func (teamUserRepoStub) ExistsByEmailAlias(context.Context, string) (bool, error) {
+	return false, nil
+}
 func (teamUserRepoStub) RemoveGroupFromAllowedGroups(context.Context, int64) (int64, error) {
 	return 0, nil
 }

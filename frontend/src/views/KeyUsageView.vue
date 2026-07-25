@@ -4,7 +4,7 @@
       <nav class="mx-auto flex min-h-16 max-w-5xl items-center justify-between gap-4 px-6 py-3">
         <RouterLink to="/home" class="flex min-w-0 items-center gap-3">
           <span class="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-stone-200 bg-white p-1.5 dark:border-stone-700 dark:bg-stone-900">
-            <img :src="siteLogo || '/logo.png'" :alt="`${siteName} 标识`" class="h-full w-full object-contain" />
+            <img :src="siteLogo || '/logo.svg'" :alt="`${siteName} 标识`" class="h-full w-full object-contain" />
           </span>
           <span class="truncate text-base font-bold tracking-[-0.03em]">{{ siteName }}</span>
         </RouterLink>
