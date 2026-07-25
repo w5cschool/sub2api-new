@@ -1577,7 +1577,8 @@ func filterCodexInputWithOptions(input []any, opts codexInputFilterOptions) []an
 		if typ == "reasoning" {
 			newItem := make(map[string]any, len(m))
 			for key, value := range m {
-				if key == "id" || key == "namespace" {
+				if key == "id" {
+					// rs_* id replayed under store=false 404s; strip it.
 					continue
 				}
 				newItem[key] = value
@@ -1613,9 +1614,6 @@ func filterCodexInputWithOptions(input []any, opts codexInputFilterOptions) []an
 			}
 			newItem := make(map[string]any, len(m))
 			for key, value := range m {
-				if key == "namespace" {
-					continue
-				}
 				newItem[key] = value
 			}
 			if id, ok := newItem["id"].(string); ok && strings.HasPrefix(id, "call_") {
@@ -1661,10 +1659,6 @@ func filterCodexInputWithOptions(input []any, opts codexInputFilterOptions) []an
 		if !isCodexToolCallItemType(typ) {
 			ensureCopy()
 			delete(newItem, "call_id")
-		}
-		if _, ok := newItem["namespace"]; ok {
-			ensureCopy()
-			delete(newItem, "namespace")
 		}
 
 		if codexInputItemRequiresName(typ) {

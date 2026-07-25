@@ -308,7 +308,7 @@ func TestApplyCodexOAuthTransform_ImageAndWebSearchCallsDoNotGainCallID(t *testi
 	require.False(t, hasCallID)
 }
 
-func TestApplyCodexOAuthTransform_StripsInputNamespaceFields(t *testing.T) {
+func TestApplyCodexOAuthTransform_PreservesInputNamespaceFields(t *testing.T) {
 	reqBody := map[string]any{
 		"model": "gpt-5.4",
 		"input": []any{
@@ -328,7 +328,7 @@ func TestApplyCodexOAuthTransform_StripsInputNamespaceFields(t *testing.T) {
 	for _, rawItem := range input {
 		item, ok := rawItem.(map[string]any)
 		require.True(t, ok)
-		require.NotContains(t, item, "namespace")
+		require.Contains(t, item, "namespace")
 	}
 }
 
