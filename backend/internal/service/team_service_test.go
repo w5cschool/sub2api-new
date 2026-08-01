@@ -23,10 +23,10 @@ func (teamUserRepoStub) GetByID(_ context.Context, id int64) (*User, error) {
 func (teamUserRepoStub) GetByIDIncludeDeleted(_ context.Context, id int64) (*User, error) {
 	return &User{ID: id, Email: "user@example.com"}, nil
 }
-func (teamUserRepoStub) GetByEmail(context.Context, string) (*User, error) { return &User{}, nil }
-func (teamUserRepoStub) GetFirstAdmin(context.Context) (*User, error)      { return &User{}, nil }
-func (teamUserRepoStub) Update(context.Context, *User) error               { return nil }
-func (teamUserRepoStub) Delete(context.Context, int64) error               { return nil }
+func (teamUserRepoStub) GetByEmail(context.Context, string) (*User, error)     { return &User{}, nil }
+func (teamUserRepoStub) GetFirstAdmin(context.Context) (*User, error)          { return &User{}, nil }
+func (teamUserRepoStub) Update(context.Context, *User, UserUpdateFields) error { return nil }
+func (teamUserRepoStub) Delete(context.Context, int64) error                   { return nil }
 func (teamUserRepoStub) GetUserAvatar(context.Context, int64) (*UserAvatar, error) {
 	return nil, nil
 }
@@ -51,6 +51,12 @@ func (teamUserRepoStub) UpdateUserLastActiveAt(context.Context, int64, time.Time
 }
 func (teamUserRepoStub) UpdateBalance(context.Context, int64, float64) error { return nil }
 func (teamUserRepoStub) DeductBalance(context.Context, int64, float64) error { return nil }
+func (teamUserRepoStub) AdjustBalance(context.Context, int64, float64) (BalanceChange, error) {
+	return BalanceChange{}, nil
+}
+func (teamUserRepoStub) SetBalance(context.Context, int64, float64) (BalanceChange, error) {
+	return BalanceChange{}, nil
+}
 func (teamUserRepoStub) UpdateConcurrency(context.Context, int64, int) error { return nil }
 func (teamUserRepoStub) BatchSetConcurrency(context.Context, []int64, int) (int, error) {
 	return 0, nil
