@@ -223,6 +223,10 @@
             </button>
           </article>
         </div>
+
+        <p class="reveal-item mx-auto mt-4 max-w-6xl text-center text-xs leading-5 text-stone-500 dark:text-stone-400 sm:text-right">
+          注：每月按 4 周（28 天）计算。
+        </p>
       </section>
 
       <section class="reveal-section mx-auto max-w-6xl px-6 py-10">
