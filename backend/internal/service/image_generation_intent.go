@@ -178,7 +178,7 @@ func IsImageGenerationIntentMap(endpoint string, requestedModel string, reqBody 
 	if isOpenAIImageGenerationModel(firstNonEmptyString(reqBody["model"])) {
 		return true
 	}
-	if hasOpenAIImageGenerationIntentTool(reqBody) {
+	if hasOpenAIImageGenerationTool(reqBody) {
 		return true
 	}
 	return openAIAnyToolChoiceSelectsImageGeneration(reqBody["tool_choice"])
@@ -245,13 +245,11 @@ func isOpenAIImageGenNamespaceName(value string) bool {
 	return strings.TrimSpace(value) == "image_gen"
 }
 
-// isImageGenNamespaceTool detects the Codex namespace-style image generation
-// tool declaration: { "type": "namespace", "name"|"namespace": "image_gen", ... }.
-// Codex /image uses this instead of the flat { "type": "image_generation" }.
+// isImageGenNamespaceTool detects the namespace advertised by Codex's built-in
+// image-generation extension instead of a hosted image_generation tool.
 func isImageGenNamespaceTool(tool gjson.Result) bool {
 	return openAIJSONString(tool.Get("type")) == "namespace" &&
-		(isOpenAIImageGenNamespaceName(openAIJSONString(tool.Get("name"))) ||
-			isOpenAIImageGenNamespaceName(openAIJSONString(tool.Get("namespace"))))
+		isOpenAIImageGenNamespaceName(openAIJSONString(tool.Get("name")))
 }
 
 // openAIJSONInputContainsImageGenTool scans Responses input items for
@@ -273,25 +271,6 @@ func openAIJSONInputContainsImageGenTool(input gjson.Result) bool {
 	return found
 }
 
-func openAIRequestBodyHasImageGenerationTool(body []byte) bool {
-	if len(body) == 0 || !gjson.ValidBytes(body) {
-		return false
-	}
-	return openAIJSONToolsContainHostedImageGeneration(gjson.GetBytes(body, "tools"))
-}
-
-func openAIRequestBodyHasImageGenNamespaceTool(body []byte) bool {
-	if len(body) == 0 || !gjson.ValidBytes(body) {
-		return false
-	}
-	if openAIJSONToolsContainImageGenNamespace(gjson.GetBytes(body, "tools")) {
-		return true
-	}
-	return openAIJSONInputContainsImageGenTool(gjson.GetBytes(body, "input"))
-}
-
-// openAIRequestBodyHasImageGenerationDeclaration covers both the standard
-// image_generation tool and Codex's image_gen namespace declaration.
 func openAIRequestBodyHasImageGenerationDeclaration(body []byte) bool {
 	if len(body) == 0 || !gjson.ValidBytes(body) {
 		return false
@@ -352,36 +331,6 @@ func openAIJSONToolChoiceSelectsImageGeneration(choice gjson.Result) bool {
 	return false
 }
 
-func openAIJSONToolsContainHostedImageGeneration(tools gjson.Result) bool {
-	if !tools.IsArray() {
-		return false
-	}
-	found := false
-	tools.ForEach(func(_, item gjson.Result) bool {
-		if isOpenAIImageGenerationType(openAIJSONString(item.Get("type"))) {
-			found = true
-			return false
-		}
-		return true
-	})
-	return found
-}
-
-func openAIJSONToolsContainImageGenNamespace(tools gjson.Result) bool {
-	if !tools.IsArray() {
-		return false
-	}
-	found := false
-	tools.ForEach(func(_, item gjson.Result) bool {
-		if isImageGenNamespaceTool(item) {
-			found = true
-			return false
-		}
-		return true
-	})
-	return found
-}
-
 func openAIJSONToolChoiceSelectsExplicitImageGeneration(choice gjson.Result) bool {
 	if openAIJSONToolChoiceSelectsImageGeneration(choice) {
 		return true
@@ -440,40 +389,6 @@ func openAIAnyToolChoiceSelectsImageGeneration(choice any) bool {
 		}
 		if fn, ok := v["function"].(map[string]any); ok && isOpenAIImageGenerationType(firstNonEmptyString(fn["name"])) {
 			return true
-		}
-	}
-	return false
-}
-
-func openAIAnyToolChoiceSelectsImageGenNamespace(choice any) bool {
-	switch v := choice.(type) {
-	case string:
-		return strings.TrimSpace(v) == "image_gen.imagegen"
-	case map[string]any:
-		if isImageGenNamespaceToolMap(v) {
-			return true
-		}
-		if strings.TrimSpace(firstNonEmptyString(v["name"])) == "imagegen" &&
-			strings.TrimSpace(firstNonEmptyString(v["namespace"])) == "image_gen" {
-			return true
-		}
-		if strings.TrimSpace(firstNonEmptyString(v["name"])) == "image_gen.imagegen" {
-			return true
-		}
-		if strings.TrimSpace(firstNonEmptyString(v["function"])) == "image_gen.imagegen" {
-			return true
-		}
-		if tool, ok := v["tool"].(map[string]any); ok && isImageGenNamespaceToolMap(tool) {
-			return true
-		}
-		if fn, ok := v["function"].(map[string]any); ok {
-			name := strings.TrimSpace(firstNonEmptyString(fn["name"]))
-			if name == "imagegen" && strings.TrimSpace(firstNonEmptyString(v["namespace"], fn["namespace"])) == "image_gen" {
-				return true
-			}
-			if name == "image_gen.imagegen" {
-				return true
-			}
 		}
 	}
 	return false

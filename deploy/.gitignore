@@ -6,9 +6,6 @@
 data/
 postgres_data/
 redis_data/
-data-new/
-postgres_data-new/
-redis_data-new/
 
 # Environment configuration (contains sensitive information)
 .env

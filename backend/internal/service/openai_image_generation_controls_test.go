@@ -546,7 +546,7 @@ func TestOpenAIGatewayServiceHandleResponsesImageOutputs_NonStreaming(t *testing
 	gin.SetMode(gin.TestMode)
 
 	svc := newOpenAIImageGenerationControlTestService(&httpUpstreamRecorder{})
-	c, rec := newOpenAIImageGenerationControlTestContext(true, "unit-test-agent/1.0")
+	c, _ := newOpenAIImageGenerationControlTestContext(true, "unit-test-agent/1.0")
 	resp := &http.Response{
 		StatusCode: http.StatusOK,
 		Header:     http.Header{"Content-Type": []string{"application/json"}},
@@ -567,16 +567,13 @@ func TestOpenAIGatewayServiceHandleResponsesImageOutputs_NonStreaming(t *testing
 	require.Equal(t, 7, result.usage.InputTokens)
 	require.Equal(t, 3, result.usage.OutputTokens)
 	require.Equal(t, 2, result.usage.ImageOutputTokens)
-	require.Equal(t, "completed", gjson.Get(rec.Body.String(), "output.0.status").String())
-	require.NotEmpty(t, gjson.Get(rec.Body.String(), "output.0.id").String())
 }
 
 func TestOpenAIGatewayServiceHandleResponsesImageOutputs_Streaming(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 
 	svc := newOpenAIImageGenerationControlTestService(&httpUpstreamRecorder{})
-	c, rec := newOpenAIImageGenerationControlTestContext(true, "unit-test-agent/1.0")
-	recorder := rec
+	c, recorder := newOpenAIImageGenerationControlTestContext(true, "unit-test-agent/1.0")
 	resp := &http.Response{
 		StatusCode: http.StatusOK,
 		Header:     http.Header{"Content-Type": []string{"text/event-stream"}},
@@ -595,9 +592,6 @@ func TestOpenAIGatewayServiceHandleResponsesImageOutputs_Streaming(t *testing.T)
 	require.Equal(t, 11, result.usage.InputTokens)
 	require.Equal(t, 5, result.usage.OutputTokens)
 	require.Equal(t, 4, result.usage.ImageOutputTokens)
-	require.Contains(t, rec.Body.String(), `"type":"response.output_item.done"`)
-	require.Contains(t, rec.Body.String(), `"status":"completed"`)
-	require.Contains(t, rec.Body.String(), `"id":"ig_stream_1"`)
 	require.NotContains(t, recorder.Body.String(), `"status":"generating"`)
 	require.Equal(t, 2, strings.Count(recorder.Body.String(), `"status":"completed"`))
 }

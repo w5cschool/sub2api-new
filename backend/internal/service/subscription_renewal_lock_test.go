@@ -80,7 +80,7 @@ func TestAssignOrExtendSubscriptionUsesLockedCurrentRow(t *testing.T) {
 			Status: SubscriptionStatusSuspended, Notes: "current", DailyWindowStart: &windowStart, DailyUsageUSD: 4,
 		},
 	}
-	svc := NewSubscriptionService(&subscriptionGroupRepoStub{group: &Group{ID: 13, SubscriptionType: SubscriptionTypeSubscription}}, repo, nil, nil, nil)
+	svc := NewSubscriptionService(&subscriptionGroupRepoStub{group: &Group{ID: 13, SubscriptionType: SubscriptionTypeSubscription}}, repo, nil, nil, nil, nil)
 	svc.now = func() time.Time { return now }
 
 	sub, extended, err := svc.AssignOrExtendSubscription(context.Background(), &AssignSubscriptionInput{
@@ -102,7 +102,7 @@ func TestAssignOrExtendSubscriptionSerializedRenewalsAccumulateDays(t *testing.T
 	initialExpiry := now.AddDate(0, 0, 10)
 	stale := UserSubscription{ID: 17, UserID: 21, GroupID: 23, StartsAt: now, ExpiresAt: initialExpiry, Status: SubscriptionStatusActive}
 	repo := &lockingRenewalRepo{stale: stale, current: stale}
-	svc := NewSubscriptionService(&subscriptionGroupRepoStub{group: &Group{ID: 23, SubscriptionType: SubscriptionTypeSubscription}}, repo, nil, nil, nil)
+	svc := NewSubscriptionService(&subscriptionGroupRepoStub{group: &Group{ID: 23, SubscriptionType: SubscriptionTypeSubscription}}, repo, nil, nil, nil, nil)
 	svc.now = func() time.Time { return now }
 	input := &AssignSubscriptionInput{UserID: 21, GroupID: 23, ValidityDays: 7}
 
@@ -126,7 +126,7 @@ func TestAssignSubscriptionDoesNotReactivateRowSuspendedAfterStaleRead(t *testin
 		stale:   UserSubscription{ID: 27, UserID: 31, GroupID: 33, ExpiresAt: now.Add(-time.Hour), Status: SubscriptionStatusExpired},
 		current: current,
 	}
-	svc := NewSubscriptionService(&subscriptionGroupRepoStub{group: &Group{ID: 33, SubscriptionType: SubscriptionTypeSubscription}}, repo, nil, nil, nil)
+	svc := NewSubscriptionService(&subscriptionGroupRepoStub{group: &Group{ID: 33, SubscriptionType: SubscriptionTypeSubscription}}, repo, nil, nil, nil, nil)
 	svc.now = func() time.Time { return now }
 
 	sub, reused, err := svc.assignSubscriptionWithReuse(context.Background(), &AssignSubscriptionInput{

@@ -8,12 +8,14 @@ import (
 	"testing"
 	"time"
 
+	"github.com/Wei-Shaw/sub2api/internal/pkg/timezone"
 	"github.com/stretchr/testify/require"
 )
 
 type activateWindowUserSubRepo struct {
 	userSubRepoNoop
-	windowStart time.Time
+	dailyStart    time.Time
+	periodicStart time.Time
 }
 
 type monthlyResetUserSubRepo struct {
@@ -28,14 +30,15 @@ func (r *monthlyResetUserSubRepo) ResetMonthlyUsage(_ context.Context, _ int64, 
 	return nil
 }
 
-func (r *activateWindowUserSubRepo) ActivateWindows(_ context.Context, _ int64, start time.Time) error {
-	r.windowStart = start
+func (r *activateWindowUserSubRepo) ActivateWindows(_ context.Context, _ int64, dailyStart, periodicStart time.Time) error {
+	r.dailyStart = dailyStart
+	r.periodicStart = periodicStart
 	return nil
 }
 
 func TestDelayedFirstUseAnchorsMonthlyWindowAtActivation(t *testing.T) {
 	repo := &activateWindowUserSubRepo{}
-	svc := NewSubscriptionService(groupRepoNoop{}, repo, nil, nil, nil)
+	svc := NewSubscriptionService(groupRepoNoop{}, repo, nil, nil, nil, nil)
 	startsAt := time.Date(2026, 7, 1, 9, 0, 0, 0, time.UTC)
 	activatedAt := time.Date(2026, 7, 10, 23, 30, 0, 0, time.UTC)
 	svc.now = func() time.Time { return activatedAt }
@@ -47,8 +50,9 @@ func TestDelayedFirstUseAnchorsMonthlyWindowAtActivation(t *testing.T) {
 
 	require.NoError(t, svc.CheckAndActivateWindow(context.Background(), sub))
 
-	require.Equal(t, activatedAt, repo.windowStart)
-	monthlyWindowStart := repo.windowStart
+	require.Equal(t, activatedAt, repo.periodicStart)
+	require.Equal(t, timezone.StartOfDay(activatedAt), repo.dailyStart)
+	monthlyWindowStart := repo.periodicStart
 	resetAt, ok := sub.automaticWindowStartAt(&monthlyWindowStart, 30*24*time.Hour, activatedAt.Add(30*24*time.Hour))
 	require.True(t, ok)
 	require.Equal(t, activatedAt.Add(30*24*time.Hour), resetAt)
@@ -72,7 +76,7 @@ func TestCheckAndResetWindowsDoesNotResetExactThirtyDayLegacyMonthlyWindow(t *te
 	startsAt := time.Date(2026, 7, 1, 23, 30, 0, 0, time.UTC)
 	now := startsAt.Add(30 * 24 * time.Hour)
 	repo := &monthlyResetUserSubRepo{}
-	svc := NewSubscriptionService(groupRepoNoop{}, repo, nil, nil, nil)
+	svc := NewSubscriptionService(groupRepoNoop{}, repo, nil, nil, nil, nil)
 	svc.now = func() time.Time { return now }
 	sub := &UserSubscription{
 		ID:                 1,
@@ -95,7 +99,7 @@ func TestCheckAndResetWindowsResetsPartialFinalMonthlySubscriptions(t *testing.T
 			startsAt := time.Date(2026, 7, 1, 23, 30, 0, 0, time.UTC)
 			now := startsAt.Add(30 * 24 * time.Hour)
 			repo := &monthlyResetUserSubRepo{}
-			svc := NewSubscriptionService(groupRepoNoop{}, repo, nil, nil, nil)
+			svc := NewSubscriptionService(groupRepoNoop{}, repo, nil, nil, nil, nil)
 			svc.now = func() time.Time { return now }
 			sub := &UserSubscription{
 				ID:                 2,
@@ -159,7 +163,7 @@ func TestValidateAndCheckLimitsKeepsLegacyMonthlyUsageBeforeExpiry(t *testing.T)
 		MonthlyWindowStart: &windowStart,
 		MonthlyUsageUSD:    12,
 	}
-	svc := NewSubscriptionService(groupRepoNoop{}, userSubRepoNoop{}, nil, nil, nil)
+	svc := NewSubscriptionService(groupRepoNoop{}, userSubRepoNoop{}, nil, nil, nil, nil)
 	svc.now = func() time.Time { return now }
 
 	needsMaintenance, err := svc.ValidateAndCheckLimits(sub, &Group{MonthlyLimitUSD: &limit})
@@ -181,7 +185,7 @@ func TestValidateAndCheckLimitsResetsMonthlyUsageWithPartialFinalPeriod(t *testi
 		MonthlyWindowStart: &windowStart,
 		MonthlyUsageUSD:    12,
 	}
-	svc := NewSubscriptionService(groupRepoNoop{}, userSubRepoNoop{}, nil, nil, nil)
+	svc := NewSubscriptionService(groupRepoNoop{}, userSubRepoNoop{}, nil, nil, nil, nil)
 	svc.now = func() time.Time { return now }
 
 	needsMaintenance, err := svc.ValidateAndCheckLimits(sub, &Group{MonthlyLimitUSD: &limit})
@@ -194,7 +198,7 @@ func TestValidateAndCheckLimitsResetsMonthlyUsageWithPartialFinalPeriod(t *testi
 func TestValidateAndCheckLimitsRejectsExactExpiry(t *testing.T) {
 	now := time.Date(2026, 7, 31, 12, 0, 0, 0, time.UTC)
 	sub := &UserSubscription{Status: SubscriptionStatusActive, ExpiresAt: now}
-	svc := NewSubscriptionService(groupRepoNoop{}, userSubRepoNoop{}, nil, nil, nil)
+	svc := NewSubscriptionService(groupRepoNoop{}, userSubRepoNoop{}, nil, nil, nil, nil)
 	svc.now = func() time.Time { return now }
 
 	needsMaintenance, err := svc.ValidateAndCheckLimits(sub, &Group{})
