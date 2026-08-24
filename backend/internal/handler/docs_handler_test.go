@@ -58,6 +58,22 @@ func TestDocsHandlerLifecycle(t *testing.T) {
 	require.Equal(t, http.StatusNotFound, performRequest(router, http.MethodGet, "/docs/getting-started", nil, "").Code)
 }
 
+func TestDocsHandlerEmptyAdminListReturnsJSONArray(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+	h := NewDocsHandler(t.TempDir())
+	router := gin.New()
+	router.GET("/admin/docs", h.ListAdmin)
+
+	list := performRequest(router, http.MethodGet, "/admin/docs", nil, "")
+	require.Equal(t, http.StatusOK, list.Code)
+
+	var envelope struct {
+		Data json.RawMessage `json:"data"`
+	}
+	require.NoError(t, json.Unmarshal(list.Body.Bytes(), &envelope))
+	require.JSONEq(t, `[]`, string(envelope.Data))
+}
+
 func TestDocsHandlerUploadImage(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	h := NewDocsHandler(t.TempDir())

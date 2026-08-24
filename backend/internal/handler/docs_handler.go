@@ -139,7 +139,8 @@ func (h *DocsHandler) ListAdmin(c *gin.Context) {
 		response.InternalError(c, "Failed to load documents")
 		return
 	}
-	docs := append([]DocSummary(nil), manifest.Documents...)
+	// Keep the empty collection non-nil so JSON clients receive [] instead of null.
+	docs := append([]DocSummary{}, manifest.Documents...)
 	sortDocs(docs)
 	response.Success(c, docs)
 }

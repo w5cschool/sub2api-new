@@ -15,8 +15,8 @@ export interface DocumentImageUpload {
 }
 
 export async function list(): Promise<DocumentSummary[]> {
-  const { data } = await apiClient.get<DocumentSummary[]>('/admin/docs')
-  return data
+  const { data } = await apiClient.get<DocumentSummary[] | null>('/admin/docs')
+  return Array.isArray(data) ? data : []
 }
 
 export async function get(slug: string): Promise<DocumentDetail> {

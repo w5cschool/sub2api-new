@@ -16,8 +16,8 @@ export interface DocumentDetail extends DocumentSummary {
 }
 
 export async function listDocuments(): Promise<DocumentSummary[]> {
-  const { data } = await apiClient.get<DocumentSummary[]>('/docs')
-  return data
+  const { data } = await apiClient.get<DocumentSummary[] | null>('/docs')
+  return Array.isArray(data) ? data : []
 }
 
 export async function getDocument(slug: string): Promise<DocumentDetail> {
