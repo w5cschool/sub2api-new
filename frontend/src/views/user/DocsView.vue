@@ -1,22 +1,17 @@
 <template>
-  <component
-    :is="authStore.isAuthenticated ? AppLayout : 'div'"
-    :class="authStore.isAuthenticated ? undefined : 'min-h-screen bg-gray-50 px-4 py-6 dark:bg-dark-950 sm:px-6'"
-  >
-    <header
-      v-if="!authStore.isAuthenticated"
-      class="mx-auto mb-6 flex max-w-7xl items-center justify-between rounded-2xl border border-gray-200 bg-white px-5 py-4 shadow-sm dark:border-dark-700 dark:bg-dark-900"
+  <div class="h-screen overflow-hidden bg-white dark:bg-dark-950">
+    <div
+      class="flex h-full w-full overflow-hidden bg-white dark:bg-dark-900"
     >
-      <router-link to="/home" class="flex items-center gap-3 font-semibold text-gray-900 dark:text-white">
-        <Icon name="book" size="md" class="text-primary-500" />
-        <span>Sub2API · {{ t('docs.title') }}</span>
-      </router-link>
-      <router-link to="/login" class="btn btn-primary btn-sm">{{ t('auth.signIn') }}</router-link>
-    </header>
-
-    <div class="mx-auto flex min-h-[calc(100vh-8rem)] max-w-7xl overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm dark:border-dark-700 dark:bg-dark-900">
-      <aside class="hidden w-72 flex-shrink-0 border-r border-gray-200 bg-gray-50/70 p-4 dark:border-dark-700 dark:bg-dark-900/60 md:block">
+      <aside class="hidden w-72 flex-shrink-0 overflow-y-auto overscroll-contain border-r border-gray-200 bg-gray-50/70 p-4 dark:border-dark-700 dark:bg-dark-900/60 md:block">
         <div class="mb-4 flex items-center gap-2 px-2">
+          <router-link
+            :to="dashboardPath"
+            class="mr-1 rounded-lg px-2 py-1 text-sm font-medium text-gray-500 transition hover:bg-white hover:text-primary-600 dark:text-dark-400 dark:hover:bg-dark-800 dark:hover:text-primary-400"
+          >
+            Home
+          </router-link>
+          <span class="h-4 w-px bg-gray-200 dark:bg-dark-600"></span>
           <Icon name="book" size="md" class="text-primary-500" />
           <h2 class="font-semibold text-gray-900 dark:text-white">{{ t('docs.directory') }}</h2>
         </div>
@@ -24,35 +19,52 @@
           <div v-for="i in 4" :key="i" class="h-9 animate-pulse rounded-lg bg-gray-200 dark:bg-dark-700"></div>
         </div>
         <nav v-else class="space-y-1">
-          <button
+          <div
             v-for="item in documents"
             :key="item.slug"
-            type="button"
-            class="w-full rounded-xl px-3 py-2.5 text-left text-sm transition"
-            :class="item.slug === activeSlug
-              ? 'bg-primary-50 font-semibold text-primary-700 dark:bg-primary-900/20 dark:text-primary-300'
-              : 'text-gray-600 hover:bg-white hover:text-gray-900 dark:text-dark-300 dark:hover:bg-dark-800 dark:hover:text-white'"
-            @click="selectDocument(item.slug)"
           >
-            {{ item.title }}
-          </button>
-
-          <div v-if="headings.length" class="ml-3 mt-2 border-l border-gray-200 py-1 pl-3 dark:border-dark-600">
             <button
-              v-for="heading in headings"
-              :key="heading.id"
               type="button"
-              class="block w-full truncate py-1 text-left text-xs text-gray-500 hover:text-primary-600 dark:text-dark-400 dark:hover:text-primary-400"
-              :style="{ paddingLeft: `${Math.max(0, heading.level - 1) * 8}px` }"
-              @click="scrollToHeading(heading.id)"
+              class="flex w-full items-center justify-between gap-2 rounded-xl px-3 py-2.5 text-left text-sm transition"
+              :class="item.slug === activeSlug
+                ? 'bg-primary-50 font-semibold text-primary-700 dark:bg-primary-900/20 dark:text-primary-300'
+                : 'text-gray-600 hover:bg-white hover:text-gray-900 dark:text-dark-300 dark:hover:bg-dark-800 dark:hover:text-white'"
+              @click="selectDocument(item.slug)"
             >
-              {{ heading.text }}
+              <span class="min-w-0 flex-1 truncate">{{ item.title }}</span>
+              <svg
+                v-if="item.slug === activeSlug && headings.length"
+                class="h-3.5 w-3.5 flex-shrink-0 transition-transform"
+                :class="expandedSlug === item.slug ? 'rotate-90' : ''"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+              </svg>
             </button>
+
+            <div
+              v-if="item.slug === activeSlug && expandedSlug === item.slug && headings.length"
+              class="ml-3 mt-1 border-l border-gray-200 py-1 pl-3 dark:border-dark-600"
+            >
+              <button
+                v-for="heading in headings"
+                :key="heading.id"
+                type="button"
+                class="block w-full truncate py-1 text-left text-xs text-gray-500 hover:text-primary-600 dark:text-dark-400 dark:hover:text-primary-400"
+                :style="{ paddingLeft: `${Math.max(0, heading.level - 1) * 8}px` }"
+                @click="scrollToHeading(heading.id)"
+              >
+                {{ heading.text }}
+              </button>
+            </div>
           </div>
         </nav>
       </aside>
 
-      <main class="min-w-0 flex-1">
+      <main class="min-w-0 flex-1 overflow-y-auto overscroll-contain">
         <div class="border-b border-gray-100 p-4 dark:border-dark-700 md:hidden">
           <select v-model="activeSlug" class="input" @change="selectDocument(activeSlug)">
             <option v-for="item in documents" :key="item.slug" :value="item.slug">{{ item.title }}</option>
@@ -83,16 +95,15 @@
         </div>
       </main>
     </div>
-  </component>
+  </div>
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, watch } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
 import { docsAPI, type DocumentDetail, type DocumentSummary } from '@/api'
 import type { DocumentHeading } from '@/utils/docsMarkdown'
-import AppLayout from '@/components/layout/AppLayout.vue'
 import DocumentRenderer from '@/components/docs/DocumentRenderer.vue'
 import Icon from '@/components/icons/Icon.vue'
 import { useAppStore } from '@/stores/app'
@@ -104,10 +115,12 @@ const route = useRoute()
 const router = useRouter()
 const appStore = useAppStore()
 const authStore = useAuthStore()
+const dashboardPath = computed(() => authStore.isAdmin ? '/admin/dashboard' : '/dashboard')
 
 const documents = ref<DocumentSummary[]>([])
 const document = ref<DocumentDetail | null>(null)
 const activeSlug = ref('')
+const expandedSlug = ref('')
 const headings = ref<DocumentHeading[]>([])
 const renderer = ref<InstanceType<typeof DocumentRenderer> | null>(null)
 const loadingList = ref(true)
@@ -138,6 +151,7 @@ async function loadDocument(slug: string) {
 
 async function selectDocument(slug: string) {
   if (!slug) return
+  expandedSlug.value = expandedSlug.value === slug ? '' : slug
   if (route.params.slug !== slug) {
     await router.push(`/docs/${encodeURIComponent(slug)}`)
   } else if (document.value?.slug !== slug) {

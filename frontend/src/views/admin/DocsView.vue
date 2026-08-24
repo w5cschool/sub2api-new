@@ -1,9 +1,16 @@
 <template>
-  <AppLayout>
-    <div class="mx-auto flex min-h-[calc(100vh-8rem)] max-w-[1600px] overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm dark:border-dark-700 dark:bg-dark-900">
-      <aside class="w-72 flex-shrink-0 border-r border-gray-200 bg-gray-50/80 p-4 dark:border-dark-700 dark:bg-dark-900/60">
+  <div class="h-screen overflow-hidden bg-white dark:bg-dark-950">
+    <div class="flex h-full w-full overflow-hidden bg-white dark:bg-dark-900">
+      <aside class="w-72 flex-shrink-0 overflow-y-auto overscroll-contain border-r border-gray-200 bg-gray-50/80 p-4 dark:border-dark-700 dark:bg-dark-900/60">
         <div class="mb-4 flex items-center justify-between gap-2">
           <div class="flex items-center gap-2">
+            <router-link
+              to="/admin/dashboard"
+              class="mr-1 rounded-lg px-2 py-1 text-sm font-medium text-gray-500 transition hover:bg-white hover:text-primary-600 dark:text-dark-400 dark:hover:bg-dark-800 dark:hover:text-primary-400"
+            >
+              Home
+            </router-link>
+            <span class="h-4 w-px bg-gray-200 dark:bg-dark-600"></span>
             <Icon name="book" size="md" class="text-primary-500" />
             <h2 class="font-semibold text-gray-900 dark:text-white">{{ t('admin.docs.title') }}</h2>
           </div>
@@ -40,7 +47,7 @@
         </div>
       </aside>
 
-      <main class="min-w-0 flex-1">
+      <main class="min-w-0 flex-1 overflow-y-auto overscroll-contain">
         <div class="flex flex-wrap items-center justify-between gap-3 border-b border-gray-200 px-5 py-4 dark:border-dark-700">
           <div>
             <h1 class="text-lg font-semibold text-gray-900 dark:text-white">{{ creating ? t('admin.docs.newDocument') : form.title || t('admin.docs.editDocument') }}</h1>
@@ -112,7 +119,7 @@
         </div>
       </main>
     </div>
-  </AppLayout>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -122,7 +129,6 @@ import { adminAPI } from '@/api/admin'
 import type { DocumentMutation } from '@/api/admin/docs'
 import type { DocumentStatus, DocumentSummary } from '@/api/docs'
 import { useAppStore } from '@/stores/app'
-import AppLayout from '@/components/layout/AppLayout.vue'
 import DocumentRenderer from '@/components/docs/DocumentRenderer.vue'
 import Icon from '@/components/icons/Icon.vue'
 
