@@ -49,6 +49,16 @@
         </div>
 
         <div class="flex items-center gap-2 sm:gap-3">
+          <router-link
+            to="/docs"
+            class="inline-flex h-9 items-center gap-2 rounded-xl border border-stone-200/70 bg-white/70 px-3 text-sm font-medium text-stone-600 transition hover:-translate-y-0.5 hover:border-stone-300 hover:text-stone-900 dark:border-stone-800 dark:bg-stone-900/70 dark:text-stone-300 dark:hover:border-stone-700 dark:hover:text-white"
+          >
+            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5 4.462 5 2 6.462 2 8.266v11.468C2 17.962 4.462 16.5 7.5 16.5c1.746 0 3.332.477 4.5 1.253m0-11.5C13.168 5.477 14.754 5 16.5 5c3.038 0 5.5 1.462 5.5 3.266v11.468C22 17.962 19.538 16.5 16.5 16.5c-1.746 0-3.332.477-4.5 1.253" />
+            </svg>
+            <span>{{ t('docs.title') }}</span>
+          </router-link>
+
           <LocaleSwitcher />
 
           <a

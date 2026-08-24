@@ -229,6 +229,18 @@ const routes: RouteRecordRaw[] = [
     }
   },
   {
+    path: '/docs/:slug?',
+    name: 'Docs',
+    component: () => import('@/views/user/DocsView.vue'),
+    meta: {
+      requiresAuth: false,
+      requiresAdmin: false,
+      title: 'Documentation',
+      titleKey: 'docs.title',
+      descriptionKey: 'docs.description'
+    }
+  },
+  {
     path: '/usage',
     name: 'Usage',
     component: () => import('@/views/user/UsageView.vue'),
@@ -558,6 +570,18 @@ const routes: RouteRecordRaw[] = [
       title: 'Announcements',
       titleKey: 'admin.announcements.title',
       descriptionKey: 'admin.announcements.description'
+    }
+  },
+  {
+    path: '/admin/docs',
+    name: 'AdminDocs',
+    component: () => import('@/views/admin/DocsView.vue'),
+    meta: {
+      requiresAuth: true,
+      requiresAdmin: true,
+      title: 'Document Management',
+      titleKey: 'admin.docs.title',
+      descriptionKey: 'admin.docs.description'
     }
   },
   {

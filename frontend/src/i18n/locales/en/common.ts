@@ -210,6 +210,16 @@ export default {
     auditLogs: 'Audit Logs',
   },
 
+  docs: {
+    title: 'Help Center',
+    description: 'Guides, common questions, and explanations',
+    directory: 'Documentation',
+    lastUpdated: 'Last updated:',
+    emptyTitle: 'No published documents',
+    emptyDescription: 'Published documents will appear here.',
+    loadFailed: 'Failed to load documents. Please try again later.',
+  },
+
   // Auth
   auth: {
     welcomeBack: 'Welcome Back',

@@ -210,6 +210,16 @@ export default {
     auditLogs: '操作日志',
   },
 
+  docs: {
+    title: '帮助文档',
+    description: '使用指南、常见问题与相关说明',
+    directory: '文档目录',
+    lastUpdated: '最后更新：',
+    emptyTitle: '暂无已发布文档',
+    emptyDescription: '管理员发布文档后，会在这里显示。',
+    loadFailed: '文档加载失败，请稍后重试',
+  },
+
   // Auth
   auth: {
     welcomeBack: '欢迎回来',
