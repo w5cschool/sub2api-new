@@ -92,7 +92,19 @@
           <section class="flex min-h-[34rem] min-w-0 flex-col">
             <div class="flex items-center justify-between border-b border-gray-100 px-4 py-2.5 dark:border-dark-700">
               <span class="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-dark-400">Markdown</span>
-              <div>
+              <div class="flex items-center gap-2">
+                <select v-model="imageAlignment" class="input h-8 w-auto py-1 text-xs" :aria-label="t('admin.docs.imageAlignment')" :title="t('admin.docs.imageAlignment')">
+                  <option value="left">{{ t('admin.docs.alignLeft') }}</option>
+                  <option value="center">{{ t('admin.docs.alignCenter') }}</option>
+                  <option value="right">{{ t('admin.docs.alignRight') }}</option>
+                </select>
+                <select v-model="imageWidth" class="input h-8 w-auto py-1 text-xs" :aria-label="t('admin.docs.imageWidth')" :title="t('admin.docs.imageWidth')">
+                  <option value="auto">{{ t('admin.docs.widthAuto') }}</option>
+                  <option value="small">{{ t('admin.docs.widthSmall') }}</option>
+                  <option value="medium">{{ t('admin.docs.widthMedium') }}</option>
+                  <option value="large">{{ t('admin.docs.widthLarge') }}</option>
+                  <option value="full">{{ t('admin.docs.widthFull') }}</option>
+                </select>
                 <input ref="imageInput" type="file" accept="image/png,image/jpeg,image/webp,image/gif" class="hidden" @change="uploadImage" />
                 <button type="button" class="btn btn-secondary btn-sm" :disabled="creating || uploading" @click="imageInput?.click()">
                   <Icon name="upload" size="sm" class="mr-1" />{{ uploading ? t('admin.docs.uploading') : t('admin.docs.uploadImage') }}
@@ -140,6 +152,8 @@ const creating = ref(true)
 const loadingList = ref(true)
 const saving = ref(false)
 const uploading = ref(false)
+const imageAlignment = ref<'left' | 'center' | 'right'>('center')
+const imageWidth = ref<'auto' | 'small' | 'medium' | 'large' | 'full'>('auto')
 const editor = ref<HTMLTextAreaElement | null>(null)
 const imageInput = ref<HTMLInputElement | null>(null)
 
@@ -247,7 +261,14 @@ async function uploadImage(event: Event) {
   try {
     const result = await adminAPI.docs.uploadImage(selectedSlug.value, file)
     const textarea = editor.value
-    const insertion = `\n${result.markdown}\n`
+    const alt = file.name.replace(/\.[^.]+$/, '') || 'image'
+    const escapeAttribute = (value: string) => value
+      .replace(/&/g, '&amp;')
+      .replace(/"/g, '&quot;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+    const markup = `<img src="${escapeAttribute(result.url)}" alt="${escapeAttribute(alt)}" data-align="${imageAlignment.value}" data-width="${imageWidth.value}" />`
+    const insertion = `\n${markup}\n`
     if (textarea) {
       const start = textarea.selectionStart
       const end = textarea.selectionEnd

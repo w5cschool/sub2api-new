@@ -78,11 +78,12 @@ func TestDocsHandlerUploadImage(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	h := NewDocsHandler(t.TempDir())
 	router := gin.New()
-	router.POST("/admin/docs", h.Create)
-	router.POST("/admin/docs/:slug/images", h.UploadImage)
-	router.GET("/docs/:slug/images/*filename", h.ServeImage)
+	v1 := router.Group("/api/v1")
+	v1.POST("/admin/docs", h.Create)
+	v1.POST("/admin/docs/:slug/images", h.UploadImage)
+	v1.GET("/docs/:slug/images/*filename", h.ServeImage)
 
-	created := performDocJSONRequest(t, router, http.MethodPost, "/admin/docs", docMutationRequest{
+	created := performDocJSONRequest(t, router, http.MethodPost, "/api/v1/admin/docs", docMutationRequest{
 		Slug: "images", Title: "Images", Status: docStatusPublished, Content: "# Images",
 	})
 	require.Equal(t, http.StatusCreated, created.Code)
@@ -97,17 +98,21 @@ func TestDocsHandlerUploadImage(t *testing.T) {
 	require.NoError(t, err)
 	require.NoError(t, writer.Close())
 
-	upload := performRequest(router, http.MethodPost, "/admin/docs/images/images", &body, writer.FormDataContentType())
+	upload := performRequest(router, http.MethodPost, "/api/v1/admin/docs/images/images", &body, writer.FormDataContentType())
 	require.Equal(t, http.StatusOK, upload.Code, upload.Body.String())
 	var envelope struct {
 		Data struct {
 			Filename string `json:"filename"`
+			URL      string `json:"url"`
+			Markdown string `json:"markdown"`
 		} `json:"data"`
 	}
 	require.NoError(t, json.Unmarshal(upload.Body.Bytes(), &envelope))
 	require.NotEmpty(t, envelope.Data.Filename)
+	require.Equal(t, "/api/v1/docs/images/images/"+envelope.Data.Filename, envelope.Data.URL)
+	require.Equal(t, "![pixel]("+envelope.Data.URL+")", envelope.Data.Markdown)
 
-	image := performRequest(router, http.MethodGet, "/docs/images/images/"+envelope.Data.Filename, nil, "")
+	image := performRequest(router, http.MethodGet, "/api/v1/docs/images/images/"+envelope.Data.Filename, nil, "")
 	require.Equal(t, http.StatusOK, image.Code)
 	require.Equal(t, png, image.Body.Bytes())
 }

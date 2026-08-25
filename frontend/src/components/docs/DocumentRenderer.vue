@@ -45,6 +45,13 @@ defineExpose({ scrollToHeading })
 .document-markdown a { color: rgb(16 185 129); text-decoration: underline; text-underline-offset: 3px; }
 .document-markdown blockquote { margin: 1.2rem 0; border-left: 4px solid rgb(52 211 153); padding: 0.5rem 0 0.5rem 1rem; color: rgb(75 85 99); background: rgb(236 253 245 / 0.55); border-radius: 0 0.65rem 0.65rem 0; }
 .document-markdown img { display: block; max-width: 100%; height: auto; margin: 1.5rem auto; border-radius: 0.85rem; box-shadow: 0 8px 30px rgb(15 23 42 / 0.1); }
+.document-markdown img[data-align='left'] { margin-left: 0; margin-right: auto; }
+.document-markdown img[data-align='center'] { margin-left: auto; margin-right: auto; }
+.document-markdown img[data-align='right'] { margin-left: auto; margin-right: 0; }
+.document-markdown img[data-width='small'] { width: min(100%, 20rem); }
+.document-markdown img[data-width='medium'] { width: min(100%, 35rem); }
+.document-markdown img[data-width='large'] { width: min(100%, 50rem); }
+.document-markdown img[data-width='full'] { width: 100%; }
 .document-markdown table { display: block; width: 100%; overflow-x: auto; margin: 1.2rem 0; border-collapse: collapse; }
 .document-markdown th, .document-markdown td { border: 1px solid rgb(209 213 219); padding: 0.6rem 0.8rem; text-align: left; }
 .document-markdown th { background: rgb(249 250 251); font-weight: 700; }

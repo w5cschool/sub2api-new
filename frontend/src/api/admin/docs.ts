@@ -1,4 +1,4 @@
-import { apiClient } from '../client'
+import { apiClient, buildApiUrl } from '../client'
 import type { DocumentDetail, DocumentStatus, DocumentSummary } from '../docs'
 
 export interface DocumentMutation {
@@ -11,6 +11,7 @@ export interface DocumentMutation {
 
 export interface DocumentImageUpload {
   filename: string
+  url: string
   markdown: string
 }
 
@@ -47,7 +48,12 @@ export async function uploadImage(slug: string, file: File): Promise<DocumentIma
     form,
     { headers: { 'Content-Type': 'multipart/form-data' } },
   )
-  return data
+  return {
+    ...data,
+    // Use the frontend's configured API origin/prefix so split frontend/backend deployments
+    // also persist a link that points at the actual public image endpoint.
+    url: buildApiUrl(`/docs/${encodeURIComponent(slug)}/images/${encodeURIComponent(data.filename)}`),
+  }
 }
 
 export default { list, get, create, update, remove, uploadImage }

@@ -7,6 +7,7 @@ import (
 	"io"
 	"mime/multipart"
 	"net/http"
+	"net/url"
 	"os"
 	"path/filepath"
 	"sort"
@@ -316,10 +317,27 @@ func (h *DocsHandler) UploadImage(c *gin.Context) {
 		response.InternalError(c, "Failed to upload image")
 		return
 	}
+	publicURL := docImagePublicURL(c, slug, name)
 	response.Success(c, gin.H{
 		"filename": name,
-		"markdown": fmt.Sprintf("![%s](%s)", strings.TrimSuffix(filepath.Base(fileHeader.Filename), filepath.Ext(fileHeader.Filename)), name),
+		"url":      publicURL,
+		"markdown": fmt.Sprintf("![%s](%s)", docImageAlt(fileHeader.Filename), publicURL),
 	})
+}
+
+func docImagePublicURL(c *gin.Context, slug, name string) string {
+	prefix, found := strings.CutSuffix(c.Request.URL.Path, "/admin/docs/"+slug+"/images")
+	if !found {
+		prefix = "/api/v1"
+	}
+	return strings.TrimRight(prefix, "/") + "/docs/" + url.PathEscape(slug) + "/images/" + url.PathEscape(name)
+}
+
+func docImageAlt(filename string) string {
+	name := strings.TrimSuffix(filepath.Base(filename), filepath.Ext(filename))
+	name = strings.ReplaceAll(name, `\`, `\\`)
+	name = strings.ReplaceAll(name, "[", `\[`)
+	return strings.ReplaceAll(name, "]", `\]`)
 }
 
 var errUnsupportedDocImage = errors.New("only PNG, JPEG, WebP and GIF images are supported")
