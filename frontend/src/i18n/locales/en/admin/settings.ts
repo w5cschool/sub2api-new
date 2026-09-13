@@ -648,9 +648,11 @@ export default {
         logoTypeError: 'Please select an image file',
         logoReadError: 'Failed to read the image file',
         homeContent: 'Home Page Content Policy',
-        homeContentPlaceholder: '',
+        homeContentPlaceholder: 'Custom home page content is disabled.',
         homeContentHint: 'To keep the site identity clear and visitors safe, the home page only uses the built-in service information layout. External pages and custom HTML can no longer be embedded or rendered from this setting. Existing home page content is no longer shown to visitors.',
-        homeContentIframeWarning: '',
+        homeContentIframeWarning: 'External iframe embedding is disabled for safety.',
+        compactHome: 'Compact Home Page',
+        compactHomeHint: 'Show a restrained site identity page when no custom home page content is set.',
         hideCcsImportButton: 'Hide CCS Import Button',
         hideCcsImportButtonHint: 'When enabled, the "Import to CCS" button will be hidden on the API Keys page'
       },

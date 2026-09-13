@@ -640,10 +640,12 @@ export default {
         logoTypeError: '请选择图片文件',
         logoReadError: '读取图片文件失败',
         homeContent: '首页内容策略',
-        homeContentPlaceholder: '',
+        homeContentPlaceholder: '自定义首页内容已停用。',
         homeContentHint:
           '为保证站点身份清晰和访客安全，首页仅使用内置的服务说明页面，不再支持通过此设置嵌入外部页面或渲染自定义 HTML。已有的首页内容配置不会再对访客展示。',
-        homeContentIframeWarning: '',
+        homeContentIframeWarning: '为安全起见，已停用外部 iframe 嵌入。',
+        compactHome: '紧凑首页',
+        compactHomeHint: '未设置自定义首页内容时，显示简洁的站点身份页。',
         hideCcsImportButton: '隐藏 CCS 导入按钮',
         hideCcsImportButtonHint: '启用后将在 API Keys 页面隐藏"导入 CCS"按钮'
       },
