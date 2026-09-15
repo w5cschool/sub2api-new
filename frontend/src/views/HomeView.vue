@@ -197,7 +197,7 @@
           <div class="text-xs font-semibold uppercase tracking-[0.3em] text-stone-500 dark:text-stone-400">透明定价</div>
         </div>
 
-        <div class="mx-auto mt-8 grid max-w-6xl gap-5 lg:grid-cols-3">
+        <div class="mx-auto mt-8 grid max-w-6xl gap-5 md:grid-cols-2 xl:grid-cols-4">
           <article
             v-for="card in pricingCards"
             :key="card.model"
@@ -210,6 +210,9 @@
             <div class="mt-6 flex items-end justify-center gap-1.5 text-center">
               <span class="text-[2.8rem] font-black tracking-[-0.07em]">{{ card.price }}</span>
               <span class="pb-1 text-sm font-semibold text-stone-500 dark:text-stone-400">/月</span>
+            </div>
+            <div class="mt-1 text-center text-sm text-stone-400 dark:text-stone-500">
+              原价 <span class="line-through">{{ card.originalPrice }}</span>
             </div>
 
             <div class="mt-6 border-t border-stone-200/80 pt-5 dark:border-stone-800">
@@ -482,6 +485,7 @@ type PricingCard = {
   badge: string
   model: string
   price: string
+  originalPrice: string
   facts: Array<{ label: string; value: string }>
   features: string[]
   badgeClass: string
@@ -491,24 +495,31 @@ type PricingCard = {
 
 const pricingCards: PricingCard[] = [
   {
-    badge: '推荐', model: 'Pro 5X', price: '¥560', featured: true,
+    badge: '入门', model: 'Pro 2.5X', price: '¥200', originalPrice: '¥280',
+    badgeClass: 'bg-sky-100 text-sky-700 dark:bg-sky-500/10 dark:text-sky-300',
+    borderClass: 'border-sky-200/80 dark:border-sky-500/20',
+    facts: [{ label: '日限额：', value: '30 美元' }, { label: '周限额：', value: '150 美元' }, { label: '总额度：', value: '600 美元' }],
+    features: ['GPT-5.6 可用', 'GPT-5.5 可用', 'GPT-5.4 可用']
+  },
+  {
+    badge: '推荐', model: 'Pro 5X', price: '¥400', originalPrice: '¥560', featured: true,
     badgeClass: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-300',
     borderClass: 'border-emerald-300/80 dark:border-emerald-500/30',
-    facts: [{ label: '每日限制：', value: '60美元/日' }, { label: '每周限制：', value: '360美元/周' }, { label: '每月限制：', value: '1440美元/月' }],
+    facts: [{ label: '日限额：', value: '60 美元' }, { label: '周限额：', value: '360 美元' }, { label: '总额度：', value: '1440 美元' }],
     features: ['GPT-5.6 可用', 'GPT-5.5 可用', 'GPT-5.4 可用']
   },
   {
-    badge: '进阶', model: 'Pro 10X', price: '¥900',
+    badge: '进阶', model: 'Pro 10X', price: '¥800', originalPrice: '¥1120',
     badgeClass: 'bg-lime-100 text-lime-700 dark:bg-lime-500/10 dark:text-lime-300',
     borderClass: 'border-lime-200/80 dark:border-lime-500/20',
-    facts: [{ label: '每日限制：', value: '120美元/日' }, { label: '每周限制：', value: '720美元/周' }, { label: '每月限制：', value: '2880美元/月' }],
+    facts: [{ label: '日限额：', value: '120 美元' }, { label: '周限额：', value: '720 美元' }, { label: '总额度：', value: '2880 美元' }],
     features: ['GPT-5.6 可用', 'GPT-5.5 可用', 'GPT-5.4 可用']
   },
   {
-    badge: '顶级', model: 'Pro 20X', price: '¥1800',
+    badge: '顶级', model: 'Pro 20X', price: '¥1800', originalPrice: '¥2240',
     badgeClass: 'bg-teal-100 text-teal-700 dark:bg-teal-500/10 dark:text-teal-300',
     borderClass: 'border-teal-200/80 dark:border-teal-500/20',
-    facts: [{ label: '每日限制：', value: '240美元/日' }, { label: '每周限制：', value: '1440美元/周' }, { label: '每月限制：', value: '5760美元/月' }],
+    facts: [{ label: '日限额：', value: '240 美元' }, { label: '周限额：', value: '1440 美元' }, { label: '总额度：', value: '2880 美元' }],
     features: ['GPT-5.6 可用', 'GPT-5.5 可用', 'GPT-5.4 可用']
   }
 ]
