@@ -349,7 +349,7 @@
           <div class="absolute bottom-0 right-8 h-32 w-32 rounded-full bg-stone-950/10 blur-2xl"></div>
           <div class="relative">
             <div class="text-xs font-semibold uppercase tracking-[0.32em] text-stone-900/70">准备好了吗</div>
-            <h2 class="mt-4 text-3xl font-black tracking-[-0.06em] md:text-5xl">现在就开始一键接入 GPT-5.5 与 GPT-5.4 Codex 模型</h2>
+            <h2 class="mt-4 text-3xl font-black tracking-[-0.06em] md:text-5xl">现在就开始一键接入 GPT-6 Astra 与 GPT-5.6 Sol Codex 模型</h2>
             <p class="mx-auto mt-4 max-w-2xl text-base leading-8 text-stone-900/80">
               注册账号并配置好环境变量，就能直接开始使用 tocodex。
             </p>
@@ -499,28 +499,28 @@ const pricingCards: PricingCard[] = [
     badgeClass: 'bg-sky-100 text-sky-700 dark:bg-sky-500/10 dark:text-sky-300',
     borderClass: 'border-sky-200/80 dark:border-sky-500/20',
     facts: [{ label: '日限额：', value: '30 美元' }, { label: '周限额：', value: '150 美元' }, { label: '总额度：', value: '600 美元' }],
-    features: ['GPT-5.6 可用', 'GPT-5.5 可用', 'GPT-5.4 可用']
+    features: ['GPT-6 Astra 可用', 'GPT-5.6 可用', 'GPT-5.5 可用', 'GPT-5.4 可用']
   },
   {
     badge: '推荐', model: 'Pro 5X', price: '¥400', originalPrice: '¥560', featured: true,
     badgeClass: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-300',
     borderClass: 'border-emerald-300/80 dark:border-emerald-500/30',
     facts: [{ label: '日限额：', value: '60 美元' }, { label: '周限额：', value: '360 美元' }, { label: '总额度：', value: '1440 美元' }],
-    features: ['GPT-5.6 可用', 'GPT-5.5 可用', 'GPT-5.4 可用']
+    features: ['GPT-6 Astra 可用', 'GPT-5.6 可用', 'GPT-5.5 可用', 'GPT-5.4 可用']
   },
   {
     badge: '进阶', model: 'Pro 10X', price: '¥800', originalPrice: '¥1120',
     badgeClass: 'bg-lime-100 text-lime-700 dark:bg-lime-500/10 dark:text-lime-300',
     borderClass: 'border-lime-200/80 dark:border-lime-500/20',
     facts: [{ label: '日限额：', value: '120 美元' }, { label: '周限额：', value: '720 美元' }, { label: '总额度：', value: '2880 美元' }],
-    features: ['GPT-5.6 可用', 'GPT-5.5 可用', 'GPT-5.4 可用']
+    features: ['GPT-6 Astra 可用', 'GPT-5.6 可用', 'GPT-5.5 可用', 'GPT-5.4 可用']
   },
   {
     badge: '顶级', model: 'Pro 20X', price: '¥1800', originalPrice: '¥2240',
     badgeClass: 'bg-teal-100 text-teal-700 dark:bg-teal-500/10 dark:text-teal-300',
     borderClass: 'border-teal-200/80 dark:border-teal-500/20',
     facts: [{ label: '日限额：', value: '240 美元' }, { label: '周限额：', value: '1440 美元' }, { label: '总额度：', value: '2880 美元' }],
-    features: ['GPT-5.6 可用', 'GPT-5.5 可用', 'GPT-5.4 可用']
+    features: ['GPT-6 Astra 可用', 'GPT-5.6 可用', 'GPT-5.5 可用', 'GPT-5.4 可用']
   }
 ]
 
