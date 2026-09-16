@@ -519,7 +519,7 @@ const pricingCards: PricingCard[] = [
     badge: '顶级', model: 'Pro 20X', price: '¥1800', originalPrice: '¥2240',
     badgeClass: 'bg-teal-100 text-teal-700 dark:bg-teal-500/10 dark:text-teal-300',
     borderClass: 'border-teal-200/80 dark:border-teal-500/20',
-    facts: [{ label: '日限额：', value: '240 美元' }, { label: '周限额：', value: '1440 美元' }, { label: '总额度：', value: '2880 美元' }],
+    facts: [{ label: '日限额：', value: '240 美元' }, { label: '周限额：', value: '1440 美元' }, { label: '总额度：', value: '5760 美元' }],
     features: ['GPT-6 Astra 可用', 'GPT-5.6 可用', 'GPT-5.5 可用', 'GPT-5.4 可用']
   }
 ]
