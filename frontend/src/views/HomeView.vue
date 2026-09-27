@@ -242,7 +242,7 @@
         </p>
       </section>
 
-      <section class="reveal-section mx-auto max-w-6xl px-6 py-10">
+      <section v-if="showRewardPolicies" class="reveal-section mx-auto max-w-6xl px-6 py-10">
         <div class="reveal-item overflow-hidden rounded-[2.4rem] border border-emerald-200/80 bg-emerald-950 text-emerald-50 shadow-[0_24px_80px_rgba(6,78,59,0.18)] dark:border-emerald-500/20 dark:bg-[#0b1912]">
           <div class="grid lg:grid-cols-[0.78fr_1.22fr]">
             <div class="relative overflow-hidden border-b border-emerald-800/80 px-7 py-8 lg:border-b-0 lg:border-r lg:px-9 lg:py-10">
@@ -534,6 +534,9 @@ const rewardPolicies = [
     trigger: '成功邀请一位新用户购买套餐，即可获赠对应套餐的按量计费额度。'
   }
 ]
+
+// Temporarily hide the user reward policy section while keeping it easy to restore.
+const showRewardPolicies = false
 
 const siteLogo = computed(() => sanitizeUrl(appStore.cachedPublicSettings?.site_logo || appStore.siteLogo || '', { allowRelative: true, allowDataUrl: true }))
 const docUrl = computed(() => sanitizeUrl(appStore.cachedPublicSettings?.doc_url || appStore.docUrl || ''))
