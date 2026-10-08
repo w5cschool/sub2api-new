@@ -216,6 +216,16 @@ func (s *OpenAIGatewayService) handleCodexDirectImagesNonStreamingResponse(resp 
 	if err != nil {
 		return OpenAIUsage{}, 0, nil, err
 	}
+	if err := validateVerifiedOpenAIImagesResponseControls(parsed, body); err != nil {
+		upstreamErr := &OpenAIImagesUpstreamError{
+			StatusCode: http.StatusUnprocessableEntity,
+			ErrorType:  "image_capability_unavailable",
+			Code:       "image_capability_unavailable",
+			Message:    err.Error(),
+		}
+		writeOpenAIImagesUpstreamErrorResponse(c, upstreamErr)
+		return OpenAIUsage{}, 0, nil, upstreamErr
+	}
 	usage, _ := codexDirectImagesUsage(body)
 	if observer := upstreamResponseModelObserverFromContext(c); observer != nil {
 		observer.Observe(gjson.GetBytes(body, "model").String(), true)

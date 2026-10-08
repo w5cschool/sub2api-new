@@ -59,9 +59,11 @@ type OpenAIImagesCapability string
 const (
 	OpenAIImagesCapabilityBasic  OpenAIImagesCapability = "images-basic"
 	OpenAIImagesCapabilityNative OpenAIImagesCapability = "images-native"
-	// Exact controls require the native API-key endpoint. Codex OAuth can
-	// acknowledge size/quality and still return an auto-sized image.
+	// Models without a Codex direct Images route need an API-key account.
 	OpenAIImagesCapabilityExact OpenAIImagesCapability = "images-exact"
+	// Exact controls may also use the Codex direct Images endpoint when its
+	// output can be verified before a successful response is sent.
+	OpenAIImagesCapabilityExactDirect OpenAIImagesCapability = "images-exact-direct"
 	// Compatible provider models require the API-key Images passthrough path.
 	OpenAIImagesCapabilityAPIKey OpenAIImagesCapability = "images-apikey"
 )
@@ -528,6 +530,9 @@ func (req *OpenAIImagesRequest) RequiredCapabilityForModel(model string) OpenAII
 		return OpenAIImagesCapabilityAPIKey
 	}
 	if req.RequiresExactControls() {
+		if usesCodexDirectImages(model) {
+			return OpenAIImagesCapabilityExactDirect
+		}
 		return OpenAIImagesCapabilityExact
 	}
 	return req.RequiredCapability
@@ -626,7 +631,16 @@ func (s *OpenAIGatewayService) ForwardImages(
 		return nil, fmt.Errorf("parsed images request is required")
 	}
 	if parsed.RequiresExactControls() && account.Type != AccountTypeAPIKey {
-		return nil, fmt.Errorf("explicit image size or quality requires an API-key image account")
+		model := strings.TrimSpace(channelMappedModel)
+		if model == "" {
+			model = strings.TrimSpace(parsed.Model)
+		}
+		if model == "" {
+			model = "gpt-image-2"
+		}
+		if !usesCodexDirectImages(account.GetMappedModel(model)) {
+			return nil, fmt.Errorf("explicit image size or quality requires an API-key account or a Codex direct Images model")
+		}
 	}
 	switch account.Type {
 	case AccountTypeAPIKey:
@@ -1060,6 +1074,23 @@ func (s *OpenAIGatewayService) handleOpenAIImagesStreamingResponse(
 		if direct != nil && strings.HasSuffix(gjson.GetBytes(dataBytes, "type").String(), ".completed") {
 			if size := detectOpenAIImageResultSize(gjson.GetBytes(dataBytes, "b64_json").String()); size != "" {
 				dataBytes, _ = sjson.SetBytes(dataBytes, "size", size)
+			}
+			if direct.RequiresExactControls() && gjson.GetBytes(dataBytes, "b64_json").Exists() {
+				wrapped := []byte(`{"data":[` + string(dataBytes) + `]}`)
+				if err := validateVerifiedOpenAIImagesResponseControls(direct, wrapped); err != nil {
+					streamErr = &OpenAIImagesUpstreamError{
+						StatusCode: http.StatusUnprocessableEntity,
+						ErrorType:  "image_capability_unavailable",
+						Code:       "image_capability_unavailable",
+						Message:    err.Error(),
+					}
+					if !clientDisconnected {
+						if writeErr := s.writeOpenAIImagesStreamEvent(c, flusher, "error", buildOpenAIImagesStreamErrorBody(err.Error())); writeErr != nil {
+							clientDisconnected = true
+						}
+					}
+					return
+				}
 			}
 		}
 		mergeOpenAIUsage(&usage, dataBytes)

@@ -96,25 +96,49 @@ func reconcileOpenAIResponsesImageResultSizes(results []openAIResponsesImageResu
 // Check the actual image bytes when available; lifecycle metadata alone can
 // claim the requested size even when the image is smaller.
 func validateOpenAIImagesResponseControls(request *OpenAIImagesRequest, body []byte) error {
+	return validateOpenAIImagesResponseControlsWithEvidence(request, body, false)
+}
+
+// The Codex direct endpoint is undocumented and has previously normalized
+// explicit controls to auto. Require positive evidence for every requested
+// control before returning a successful OAuth image response.
+func validateVerifiedOpenAIImagesResponseControls(request *OpenAIImagesRequest, body []byte) error {
+	return validateOpenAIImagesResponseControlsWithEvidence(request, body, true)
+}
+
+func validateOpenAIImagesResponseControlsWithEvidence(request *OpenAIImagesRequest, body []byte, requireEvidence bool) error {
 	if request == nil || !request.RequiresExactControls() || !gjson.ValidBytes(body) {
 		return nil
 	}
 	requestedWidth, requestedHeight, exactPixels := parseImageBillingDimensions(request.Size)
 	root := gjson.ParseBytes(body)
-	for _, item := range root.Get("data").Array() {
+	items := root.Get("data").Array()
+	if requireEvidence && len(items) == 0 {
+		return fmt.Errorf("upstream returned no image to verify explicit controls")
+	}
+	for _, item := range items {
 		if explicitOpenAIImageControl(request.Quality) {
 			quality := item.Get("quality").String()
 			if quality == "" {
 				quality = root.Get("quality").String()
+			}
+			if requireEvidence && quality == "" {
+				return fmt.Errorf("upstream did not report image quality; cannot verify requested %q", request.Quality)
 			}
 			if quality != "" && !strings.EqualFold(quality, request.Quality) {
 				return fmt.Errorf("upstream image quality %q differs from requested %q", quality, request.Quality)
 			}
 		}
 		if !exactPixels {
+			if requireEvidence && explicitOpenAIImageControl(request.Size) {
+				return fmt.Errorf("cannot verify requested image size %q", request.Size)
+			}
 			continue
 		}
 		actual := detectOpenAIImageResultSize(item.Get("b64_json").String())
+		if requireEvidence && actual == "" {
+			return fmt.Errorf("upstream image bytes do not reveal dimensions; cannot verify requested %q", request.Size)
+		}
 		if actual == "" {
 			actual = strings.TrimSpace(item.Get("size").String())
 		}

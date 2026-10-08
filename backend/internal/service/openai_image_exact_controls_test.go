@@ -13,7 +13,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestExplicitImageControlsRequireAPIKey(t *testing.T) {
+func TestExplicitImageControlsRouteToVerifiableEndpoint(t *testing.T) {
 	for _, body := range []string{
 		`{"tools":[{"type":"image_generation","model":"gpt-image-2","size":"2160x3040","quality":"high"}]}`,
 		`{"tools":[{"type":"image_generation","size":"1024x1536"}]}`,
@@ -34,6 +34,7 @@ func TestExplicitImageControlsRequireAPIKey(t *testing.T) {
 	apiKey := &Account{Platform: PlatformOpenAI, Type: AccountTypeAPIKey}
 	for _, account := range []*Account{oauth, setup} {
 		require.False(t, accountSupportsOpenAICapabilities(account, "", OpenAIImagesCapabilityExact))
+		require.True(t, accountSupportsOpenAICapabilities(account, "", OpenAIImagesCapabilityExactDirect))
 		require.False(t, account.SupportsOpenAIEndpointCapability(OpenAIEndpointCapabilityResponsesImageExact))
 		require.True(t, account.SupportsOpenAIImageCapability(OpenAIImagesCapabilityNative))
 	}
@@ -69,16 +70,18 @@ func TestAPIKeyImagesRejectsReportedQualityDowngrade(t *testing.T) {
 	require.ErrorContains(t, err, `quality "auto" differs from requested "high"`)
 }
 
-func TestForwardImagesRejectsOAuthExplicitControlsBeforeUpstream(t *testing.T) {
+func TestForwardImagesRejectsOAuthExplicitControlsWithoutDirectEndpoint(t *testing.T) {
 	for _, request := range []*OpenAIImagesRequest{
 		{Size: "2160x3040", Quality: "high"},
 		{Size: "auto", Quality: "high"},
 		{Size: "2160x3040", Quality: "auto"},
 	} {
-		require.Equal(t, OpenAIImagesCapabilityExact, request.RequiredCapabilityForModel("gpt-image-2"))
+		require.Equal(t, OpenAIImagesCapabilityExactDirect, request.RequiredCapabilityForModel("gpt-image-2"))
+		request.Model = "gpt-image-1"
+		require.Equal(t, OpenAIImagesCapabilityExact, request.RequiredCapabilityForModel("gpt-image-1"))
 		_, err := (&OpenAIGatewayService{}).ForwardImages(context.Background(), nil,
 			&Account{Platform: PlatformOpenAI, Type: AccountTypeOAuth}, nil, request, "")
-		require.ErrorContains(t, err, "requires an API-key image account")
+		require.ErrorContains(t, err, "requires an API-key account or a Codex direct Images model")
 	}
 	require.Equal(t, OpenAIImagesCapabilityNative,
 		(&OpenAIImagesRequest{RequiredCapability: OpenAIImagesCapabilityNative, Size: "auto", Quality: "auto"}).RequiredCapabilityForModel("gpt-image-2"))

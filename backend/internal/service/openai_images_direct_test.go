@@ -20,7 +20,7 @@ func directImagesTestAccount() *Account {
 func TestCodexDirectImagesRouting(t *testing.T) {
 	for _, model := range []string{"gpt-image-1.5", "gpt-image-2", "gpt-image-2.5-flare", "gpt-image-2.5-sunburst", "gpt-image-2.5-flare-2026-09-08", "gpt-image-2.5-sunburst-2026-09-08"} {
 		t.Run(model, func(t *testing.T) {
-			body := []byte(fmt.Sprintf(`{"model":%q,"prompt":"  原样保留 prompt  ","quality":"max","size":"auto","response_format":"url","extra":{"preserve":true}}`, model))
+			body := []byte(fmt.Sprintf(`{"model":%q,"prompt":"  原样保留 prompt  ","quality":"auto","size":"auto","response_format":"url","extra":{"preserve":true}}`, model))
 			c, rec := newOpenAIImagesTestContext(t, body)
 			upstream := &httpUpstreamRecorder{resp: openAIImagesJSONResponse()}
 			svc := newOpenAIImagesTestService(upstream)
@@ -209,6 +209,75 @@ func TestCodexDirectImagesEmptyResponseFails(t *testing.T) {
 		_, err := parseCodexDirectImagesResponse([]byte(body))
 		require.Error(t, err)
 	}
+}
+
+func TestCodexDirectImagesExactControlsRequireVerifiedOutput(t *testing.T) {
+	image := encodeOpenAIImageTestPNG(t, 64, 96)
+	for _, tt := range []struct {
+		name, quality, image, wantError string
+	}{
+		{"verified", "high", image, ""},
+		{"downgraded_quality", "auto", image, `quality "auto" differs`},
+		{"unknown_quality", "", image, "did not report image quality"},
+		{"wrong_pixels", "high", encodeOpenAIImageTestPNG(t, 32, 48), "32x48 differs"},
+		{"unknown_pixels", "high", "aGVsbG8=", "do not reveal dimensions"},
+	} {
+		t.Run(tt.name, func(t *testing.T) {
+			body := []byte(`{"model":"gpt-image-2","prompt":"draw","size":"64x96","quality":"high"}`)
+			c, rec := newOpenAIImagesTestContext(t, body)
+			response := fmt.Sprintf(`{"data":[{"b64_json":%q,"quality":%q,"size":"64x96"}]}`, tt.image, tt.quality)
+			upstream := &httpUpstreamRecorder{resp: &http.Response{StatusCode: 200, Header: http.Header{"Content-Type": {"application/json"}}, Body: io.NopCloser(strings.NewReader(response))}}
+			svc := newOpenAIImagesTestService(upstream)
+			parsed, err := svc.ParseOpenAIImagesRequest(c, body)
+			require.NoError(t, err)
+			result, err := svc.ForwardImages(context.Background(), c, directImagesTestAccount(), body, parsed, "")
+			require.Equal(t, "64x96", gjson.GetBytes(upstream.lastBody, "size").String())
+			require.Equal(t, "high", gjson.GetBytes(upstream.lastBody, "quality").String())
+			if tt.wantError != "" {
+				require.ErrorContains(t, err, tt.wantError)
+				require.Nil(t, result)
+				require.Equal(t, http.StatusUnprocessableEntity, rec.Code)
+				require.Equal(t, "image_capability_unavailable", gjson.Get(rec.Body.String(), "error.code").String())
+				require.NotContains(t, rec.Body.String(), tt.image)
+				return
+			}
+			require.NoError(t, err)
+			require.Equal(t, "64x96", gjson.Get(rec.Body.String(), "data.0.size").String())
+		})
+	}
+}
+
+func TestCodexDirectImagesExactControlsDoNotFallBackToResponses(t *testing.T) {
+	calls := 0
+	upstream := &codexModelsHTTPUpstreamStub{do: func(req *http.Request, _ string, _ int64, _ int) (*http.Response, error) {
+		calls++
+		require.Equal(t, "/backend-api/codex/images/generations", req.URL.Path)
+		return &http.Response{StatusCode: http.StatusNotFound, Header: http.Header{}, Body: io.NopCloser(strings.NewReader(`{"error":{"message":"not found"}}`))}, nil
+	}}
+	body := []byte(`{"model":"gpt-image-2","prompt":"draw","size":"64x96"}`)
+	c, _ := newOpenAIImagesTestContext(t, body)
+	svc := newOpenAIImagesTestService(upstream)
+	parsed, err := svc.ParseOpenAIImagesRequest(c, body)
+	require.NoError(t, err)
+	_, err = svc.ForwardImages(context.Background(), c, directImagesTestAccount(), body, parsed, "")
+	require.Error(t, err)
+	require.Equal(t, 1, calls)
+}
+
+func TestCodexDirectImagesStreamRejectsUnverifiedFinalImage(t *testing.T) {
+	body := []byte(`{"model":"gpt-image-2","prompt":"draw","size":"64x96","quality":"high","stream":true}`)
+	c, rec := newOpenAIImagesTestContext(t, body)
+	image := encodeOpenAIImageTestPNG(t, 32, 48)
+	stream := fmt.Sprintf("data: {\"type\":\"image_generation.completed\",\"quality\":\"high\",\"b64_json\":%q}\n\n", image)
+	upstream := &httpUpstreamRecorder{resp: &http.Response{StatusCode: 200, Header: http.Header{"Content-Type": {"text/event-stream"}}, Body: io.NopCloser(strings.NewReader(stream))}}
+	svc := newOpenAIImagesTestService(upstream)
+	parsed, err := svc.ParseOpenAIImagesRequest(c, body)
+	require.NoError(t, err)
+	_, err = svc.ForwardImages(context.Background(), c, directImagesTestAccount(), body, parsed, "")
+	require.ErrorContains(t, err, "32x48 differs")
+	require.Contains(t, rec.Body.String(), "event: error")
+	require.NotContains(t, rec.Body.String(), "event: image_generation.completed")
+	require.NotContains(t, rec.Body.String(), image)
 }
 
 func TestCodexDirectImagesAccountTestAndWhitelist(t *testing.T) {

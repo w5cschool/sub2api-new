@@ -189,7 +189,7 @@ func (h *OpenAIGatewayHandler) Images(c *gin.Context) {
 				zap.Int("excluded_account_count", len(failedAccountIDs)),
 			)
 			if parsed.RequiresExactControls() && len(failedAccountIDs) == 0 && errors.Is(err, service.ErrNoAvailableAccounts) {
-				h.handleStreamingAwareError(c, http.StatusUnprocessableEntity, "image_capability_unavailable", "Explicit image size or quality requires an available API-key image account", streamStarted)
+				h.handleStreamingAwareError(c, http.StatusUnprocessableEntity, "image_capability_unavailable", "Explicit image controls require an available API-key account or a Codex direct Images model", streamStarted)
 				return
 			}
 			if len(failedAccountIDs) == 0 {
@@ -213,7 +213,7 @@ func (h *OpenAIGatewayHandler) Images(c *gin.Context) {
 		}
 		if selection == nil || selection.Account == nil {
 			if parsed.RequiresExactControls() && len(failedAccountIDs) == 0 {
-				h.handleStreamingAwareError(c, http.StatusUnprocessableEntity, "image_capability_unavailable", "Explicit image size or quality requires an available API-key image account", streamStarted)
+				h.handleStreamingAwareError(c, http.StatusUnprocessableEntity, "image_capability_unavailable", "Explicit image controls require an available API-key account or a Codex direct Images model", streamStarted)
 				return
 			}
 			cls := classifyNoAccountErrorFromGin(c, h.gatewayService, apiKey, clientRequestModel, routingModel, service.PlatformOpenAI)

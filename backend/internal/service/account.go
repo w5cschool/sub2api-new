@@ -2061,6 +2061,8 @@ func (a *Account) SupportsOpenAIImageCapability(capability OpenAIImagesCapabilit
 		return a.Type == AccountTypeAPIKey
 	case OpenAIImagesCapabilityExact:
 		return a.Type == AccountTypeAPIKey
+	case OpenAIImagesCapabilityExactDirect:
+		return a.Type == AccountTypeOAuth || a.Type == AccountTypeSetupToken || a.Type == AccountTypeAPIKey
 	case OpenAIImagesCapabilityBasic, OpenAIImagesCapabilityNative:
 		return a.Type == AccountTypeOAuth || a.Type == AccountTypeSetupToken || a.Type == AccountTypeAPIKey
 	default:
