@@ -103,7 +103,8 @@ const (
 	// （openai_responses_supported / openai_responses_mode），而非
 	// credentials["openai_capabilities"] 配置集。仅用于生图意图的 /v1/responses
 	// 调度，避免把请求调度到会在 forward 阶段被降级为 Chat Completions 的账号（#4417）。
-	OpenAIEndpointCapabilityResponses OpenAIEndpointCapability = "responses"
+	OpenAIEndpointCapabilityResponses           OpenAIEndpointCapability = "responses"
+	OpenAIEndpointCapabilityResponsesImageExact OpenAIEndpointCapability = "responses_image_exact"
 )
 
 const openAIEndpointCapabilitiesCredentialKey = "openai_capabilities"
@@ -1861,6 +1862,11 @@ func (a *Account) SupportsOpenAIEndpointCapability(capability OpenAIEndpointCapa
 			a.Type == AccountTypeOAuth &&
 			!a.IsOpenAIPersonalAccessToken() &&
 			!a.IsOpenAIAgentIdentity()
+	case OpenAIEndpointCapabilityResponsesImageExact:
+		if a.Type != AccountTypeAPIKey {
+			return false
+		}
+		fallthrough
 	case OpenAIEndpointCapabilityResponses:
 		// Responses 支持状态由 accounts.extra 的自动探测标记决定，而非
 		// credentials 能力集。已探测确认不支持 /v1/responses 的 APIKey 上游
@@ -2021,6 +2027,8 @@ func (a *Account) SupportsOpenAIImageCapability(capability OpenAIImagesCapabilit
 	}
 	switch capability {
 	case OpenAIImagesCapabilityAPIKey:
+		return a.Type == AccountTypeAPIKey
+	case OpenAIImagesCapabilityExact:
 		return a.Type == AccountTypeAPIKey
 	case OpenAIImagesCapabilityBasic, OpenAIImagesCapabilityNative:
 		return a.Type == AccountTypeOAuth || a.Type == AccountTypeSetupToken || a.Type == AccountTypeAPIKey

@@ -176,6 +176,10 @@ func (h *OpenAIGatewayHandler) Images(c *gin.Context) {
 				zap.Error(err),
 				zap.Int("excluded_account_count", len(failedAccountIDs)),
 			)
+			if parsed.RequiresExactControls() && len(failedAccountIDs) == 0 && errors.Is(err, service.ErrNoAvailableAccounts) {
+				h.handleStreamingAwareError(c, http.StatusUnprocessableEntity, "image_capability_unavailable", "Explicit image size or quality requires an available API-key image account", streamStarted)
+				return
+			}
 			if len(failedAccountIDs) == 0 {
 				cls := classifyNoAccountErrorFromGin(c, h.gatewayService, apiKey, clientRequestModel, routingModel, service.PlatformOpenAI)
 				if !cls.ModelNotFound {
@@ -196,6 +200,10 @@ func (h *OpenAIGatewayHandler) Images(c *gin.Context) {
 			return
 		}
 		if selection == nil || selection.Account == nil {
+			if parsed.RequiresExactControls() && len(failedAccountIDs) == 0 {
+				h.handleStreamingAwareError(c, http.StatusUnprocessableEntity, "image_capability_unavailable", "Explicit image size or quality requires an available API-key image account", streamStarted)
+				return
+			}
 			cls := classifyNoAccountErrorFromGin(c, h.gatewayService, apiKey, clientRequestModel, routingModel, service.PlatformOpenAI)
 			if !cls.ModelNotFound {
 				markOpsRoutingCapacityLimited(c)

@@ -10,6 +10,8 @@ import (
 	_ "image/png"
 	"io"
 	"strings"
+
+	"github.com/tidwall/gjson"
 )
 
 const maxOpenAIImageDimensionProbeBytes int64 = 1 << 20
@@ -89,4 +91,43 @@ func reconcileOpenAIResponsesImageResultSizes(results []openAIResponsesImageResu
 	if size := strings.TrimSpace(results[0].Size); size != "" {
 		firstMeta.Size = size
 	}
+}
+
+// Check the actual image bytes when available; lifecycle metadata alone can
+// claim the requested size even when the image is smaller.
+func validateOpenAIImagesResponseControls(request *OpenAIImagesRequest, body []byte) error {
+	if request == nil || !request.RequiresExactControls() || !gjson.ValidBytes(body) {
+		return nil
+	}
+	requestedWidth, requestedHeight, exactPixels := parseImageBillingDimensions(request.Size)
+	root := gjson.ParseBytes(body)
+	for _, item := range root.Get("data").Array() {
+		if explicitOpenAIImageControl(request.Quality) {
+			quality := item.Get("quality").String()
+			if quality == "" {
+				quality = root.Get("quality").String()
+			}
+			if quality != "" && !strings.EqualFold(quality, request.Quality) {
+				return fmt.Errorf("upstream image quality %q differs from requested %q", quality, request.Quality)
+			}
+		}
+		if !exactPixels {
+			continue
+		}
+		actual := detectOpenAIImageResultSize(item.Get("b64_json").String())
+		if actual == "" {
+			actual = strings.TrimSpace(item.Get("size").String())
+		}
+		if actual == "" {
+			actual = strings.TrimSpace(root.Get("size").String())
+		}
+		if actualWidth, actualHeight, ok := parseImageBillingDimensions(actual); ok &&
+			(actualWidth != requestedWidth || actualHeight != requestedHeight) {
+			return fmt.Errorf("upstream image size %s differs from requested %s", actual, request.Size)
+		}
+		if strings.EqualFold(actual, "auto") {
+			return fmt.Errorf("upstream image size %q differs from requested %q", actual, request.Size)
+		}
+	}
+	return nil
 }

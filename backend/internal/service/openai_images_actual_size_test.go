@@ -111,7 +111,9 @@ func runOpenAIOAuthImageActualSizeTest(t *testing.T, stream bool) openAIOAuthIma
 			"chatgpt_account_id": "acct-123",
 		},
 	}
-	result, err := svc.ForwardImages(context.Background(), c, account, body, parsed, "")
+	// Exercise the OAuth decoder directly: the public routing path rejects
+	// explicit controls on OAuth before this decoder is reached.
+	result, err := svc.forwardOpenAIImagesOAuth(context.Background(), c, account, parsed, "")
 	require.NoError(t, err)
 	require.NotNil(t, result)
 	return openAIOAuthImageActualSizeTestRun{result: result, recorder: rec, upstream: upstream}

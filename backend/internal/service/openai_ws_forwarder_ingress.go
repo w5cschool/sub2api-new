@@ -339,6 +339,13 @@ func (s *OpenAIGatewayService) ProxyResponsesWebSocketFromClient(
 			normalized = litePayload
 		}
 		apiKey := getAPIKeyFromContext(c)
+		if account.Type != AccountTypeAPIKey && HasExplicitOpenAIResponsesImageControls(normalized) {
+			return openAIWSClientPayload{}, NewOpenAIWSClientCloseError(
+				coderws.StatusPolicyViolation,
+				"explicit image size or quality requires an API-key Responses account",
+				nil,
+			)
+		}
 		imageGenerationAllowed := GroupAllowsImageGeneration(apiKeyGroup(apiKey))
 		codexImageGenerationExplicitToolPolicy := codexImageGenerationExplicitToolPolicyAllow
 		if isCodexCLI {

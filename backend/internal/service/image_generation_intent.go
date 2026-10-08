@@ -114,6 +114,23 @@ func IsExplicitImageGenerationIntent(endpoint string, requestedModel string, bod
 	return imageIntent
 }
 
+// HasExplicitOpenAIResponsesImageControls identifies image tool requests whose
+// size or quality must not be silently replaced by Codex OAuth defaults.
+func HasExplicitOpenAIResponsesImageControls(body []byte) bool {
+	if len(body) == 0 || !gjson.ValidBytes(body) {
+		return false
+	}
+	for _, tool := range gjson.GetBytes(body, "tools").Array() {
+		if tool.Get("type").String() != "image_generation" {
+			continue
+		}
+		if explicitOpenAIImageControl(tool.Get("size").String()) || explicitOpenAIImageControl(tool.Get("quality").String()) {
+			return true
+		}
+	}
+	return false
+}
+
 // IsImageGenerationIntentForPlatform applies platform-specific intent rules.
 //
 // Codex advertises the image_gen namespace on ordinary Responses requests so

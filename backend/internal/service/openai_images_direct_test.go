@@ -28,7 +28,7 @@ func TestCodexDirectImagesRouting(t *testing.T) {
 			require.NoError(t, err)
 			ctx, cancel := context.WithCancel(context.Background())
 			cancel()
-			result, err := svc.ForwardImages(ctx, c, directImagesTestAccount(), body, parsed, "")
+			result, err := svc.forwardOpenAIImagesOAuth(ctx, c, directImagesTestAccount(), parsed, "")
 			require.NoError(t, err)
 			require.Equal(t, 1, result.ImageCount)
 			require.Equal(t, 20, result.Usage.ImageOutputTokens)

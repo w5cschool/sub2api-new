@@ -830,7 +830,7 @@ func TestOpenAIGatewayServiceForwardImages_OAuthPassesNAndReturnsAllImages(t *te
 		},
 	}
 
-	result, err := svc.ForwardImages(context.Background(), c, account, body, parsed, "")
+	result, err := svc.forwardOpenAIImagesOAuth(context.Background(), c, account, parsed, "")
 	require.NoError(t, err)
 	require.NotNil(t, result)
 	require.Equal(t, "gpt-image-1", result.Model)
@@ -1850,7 +1850,7 @@ func TestOpenAIGatewayServiceForwardImages_OAuthEditsMultipartUsesResponsesAPI(t
 		},
 	}
 
-	result, err := svc.ForwardImages(context.Background(), c, account, body.Bytes(), parsed, "")
+	result, err := svc.forwardOpenAIImagesOAuth(context.Background(), c, account, parsed, "")
 	require.NoError(t, err)
 	require.NotNil(t, result)
 	require.Equal(t, 1, result.ImageCount)

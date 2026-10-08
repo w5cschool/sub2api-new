@@ -59,6 +59,9 @@ type OpenAIImagesCapability string
 const (
 	OpenAIImagesCapabilityBasic  OpenAIImagesCapability = "images-basic"
 	OpenAIImagesCapabilityNative OpenAIImagesCapability = "images-native"
+	// Exact controls require the native API-key endpoint. Codex OAuth can
+	// acknowledge size/quality and still return an auto-sized image.
+	OpenAIImagesCapabilityExact OpenAIImagesCapability = "images-exact"
 	// Compatible provider models require the API-key Images passthrough path.
 	OpenAIImagesCapabilityAPIKey OpenAIImagesCapability = "images-apikey"
 )
@@ -524,7 +527,22 @@ func (req *OpenAIImagesRequest) RequiredCapabilityForModel(model string) OpenAII
 	if isGeminiCompatibleImageModel(model) {
 		return OpenAIImagesCapabilityAPIKey
 	}
+	if req.RequiresExactControls() {
+		return OpenAIImagesCapabilityExact
+	}
 	return req.RequiredCapability
+}
+
+func (req *OpenAIImagesRequest) RequiresExactControls() bool {
+	if req == nil {
+		return false
+	}
+	return explicitOpenAIImageControl(req.Size) || explicitOpenAIImageControl(req.Quality)
+}
+
+func explicitOpenAIImageControl(value string) bool {
+	value = strings.TrimSpace(value)
+	return value != "" && !strings.EqualFold(value, "auto")
 }
 
 func normalizeOpenAIImagesEndpointPath(path string) string {
@@ -606,6 +624,9 @@ func (s *OpenAIGatewayService) ForwardImages(
 ) (*OpenAIForwardResult, error) {
 	if parsed == nil {
 		return nil, fmt.Errorf("parsed images request is required")
+	}
+	if parsed.RequiresExactControls() && account.Type != AccountTypeAPIKey {
+		return nil, fmt.Errorf("explicit image size or quality requires an API-key image account")
 	}
 	switch account.Type {
 	case AccountTypeAPIKey:
@@ -969,6 +990,9 @@ func (s *OpenAIGatewayService) handleOpenAIImagesNonStreamingResponse(
 		return OpenAIUsage{}, 0, nil, err
 	}
 	body = s.backfillOpenAIImagesB64JSON(ctx, account, parsed, body)
+	if err := validateOpenAIImagesResponseControls(parsed, body); err != nil {
+		return OpenAIUsage{}, 0, nil, err
+	}
 	responseheaders.WriteFilteredHeaders(c.Writer.Header(), resp.Header, s.responseHeaderFilter)
 	contentType := "application/json"
 	if s.cfg != nil && !s.cfg.Security.ResponseHeaders.Enabled {

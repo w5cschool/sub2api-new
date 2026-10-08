@@ -634,6 +634,9 @@ func (h *OpenAIGatewayHandler) Responses(c *gin.Context) {
 	// 该判断已排除 Codex 被动 image_gen namespace，避免 CC-only 账号被误过滤（#4476）。
 	needsResponses := nativeV2 || legacyCompact
 	requiredCapability := openAIResponsesRequiredCapabilityForRequest(imageIntent, needsResponses, requestPlatform)
+	if imageIntent && requestPlatform == service.PlatformOpenAI && service.HasExplicitOpenAIResponsesImageControls(body) {
+		requiredCapability = service.OpenAIEndpointCapabilityResponsesImageExact
+	}
 
 	// 分组利润控制：请求级装配定价上下文——pricingAt 固定本请求的
 	// D 与计费高峰因子，选号、槽位终检与全部 failover 重入共用同一门与阈值。
@@ -675,6 +678,10 @@ func (h *OpenAIGatewayHandler) Responses(c *gin.Context) {
 				zap.Int("excluded_account_count", len(failedAccountIDs)),
 			)
 			if len(failedAccountIDs) == 0 {
+				if requiredCapability == service.OpenAIEndpointCapabilityResponsesImageExact && errors.Is(err, service.ErrNoAvailableAccounts) {
+					h.handleStreamingAwareError(c, http.StatusUnprocessableEntity, "image_capability_unavailable", "Explicit image size or quality requires an available API-key Responses account", streamStarted)
+					return
+				}
 				if legacyCompact && errors.Is(err, service.ErrNoAvailableCompactAccounts) {
 					markOpsRoutingCapacityLimitedIfNoAvailable(c, err)
 					h.handleStreamingAwareError(c, http.StatusServiceUnavailable, "compact_not_supported", "No available accounts support /responses/compact", streamStarted)
@@ -696,6 +703,10 @@ func (h *OpenAIGatewayHandler) Responses(c *gin.Context) {
 			return
 		}
 		if selection == nil || selection.Account == nil {
+			if requiredCapability == service.OpenAIEndpointCapabilityResponsesImageExact && len(failedAccountIDs) == 0 {
+				h.handleStreamingAwareError(c, http.StatusUnprocessableEntity, "image_capability_unavailable", "Explicit image size or quality requires an available API-key Responses account", streamStarted)
+				return
+			}
 			cls := classifyNoAccountErrorFromGin(c, h.gatewayService, apiKey, reqModel, reqModel, requestPlatform)
 			if !cls.ModelNotFound {
 				markOpsRoutingCapacityLimited(c)
@@ -2637,6 +2648,9 @@ func (h *OpenAIGatewayHandler) ResponsesWebSocket(c *gin.Context) {
 	requiredCapability := service.OpenAIEndpointCapabilityChatCompletions
 	if service.IsExplicitImageGenerationIntent("/v1/responses", reqModel, firstMessage) && requestPlatform == service.PlatformOpenAI {
 		requiredCapability = service.OpenAIEndpointCapabilityResponses
+	}
+	if requestPlatform == service.PlatformOpenAI && service.HasExplicitOpenAIResponsesImageControls(firstMessage) {
+		requiredCapability = service.OpenAIEndpointCapabilityResponsesImageExact
 	}
 
 	// 分组利润控制：WS 桥按连接装配定价上下文并装门（选号与抢槽共用该
