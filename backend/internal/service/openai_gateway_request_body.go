@@ -1429,6 +1429,28 @@ func normalizeOpenAIResponseFormatSchemasBody(body []byte) ([]byte, bool, error)
 	return normalized, true, nil
 }
 
+// Set a default only for native image_generation tools without a model.
+// Raw JSON edits preserve the rest of large Responses payloads verbatim.
+func defaultOpenAIResponsesImageToolModelBody(body []byte) ([]byte, bool, error) {
+	tools := gjson.GetBytes(body, "tools")
+	if !tools.IsArray() {
+		return body, false, nil
+	}
+	changed := false
+	for i, tool := range tools.Array() {
+		if tool.Get("type").String() != "image_generation" || strings.TrimSpace(tool.Get("model").String()) != "" {
+			continue
+		}
+		next, err := sjson.SetBytes(body, fmt.Sprintf("tools.%d.model", i), openAIDefaultImageGenerationModel)
+		if err != nil {
+			return body, false, fmt.Errorf("default Responses image tool model: %w", err)
+		}
+		body = next
+		changed = true
+	}
+	return body, changed, nil
+}
+
 func normalizeOpenAIResponsesWebSocketCompatibilityBody(body []byte, account *Account, responsesLite bool) ([]byte, bool, error) {
 	if account == nil || !account.IsOpenAI() {
 		return body, false, nil
@@ -1441,6 +1463,12 @@ func normalizeOpenAIResponsesWebSocketCompatibilityBody(body []byte, account *Ac
 		if err != nil {
 			return body, false, err
 		}
+	}
+	if next, defaulted, err := defaultOpenAIResponsesImageToolModelBody(normalized); err != nil {
+		return body, false, err
+	} else if defaulted {
+		normalized = next
+		changed = true
 	}
 	if next, normalizedReasoningContent, err := normalizeOpenAIResponsesReasoningContentReplay(normalized); err != nil {
 		return body, false, err
@@ -1574,6 +1602,14 @@ func normalizeOpenAIPassthroughOAuthBody(body []byte, compact bool) ([]byte, boo
 	normalized, changed, err := normalizeOpenAIOAuthResponsesCompatibilityBody(body)
 	if err != nil {
 		return body, false, err
+	}
+	if !compact {
+		if next, defaulted, defaultErr := defaultOpenAIResponsesImageToolModelBody(normalized); defaultErr != nil {
+			return body, false, defaultErr
+		} else if defaulted {
+			normalized = next
+			changed = true
+		}
 	}
 	if reasoningBody, reasoningChanged, reasoningErr := normalizeOpenAIResponsesReasoningMode(normalized, ""); reasoningErr != nil {
 		return body, false, reasoningErr

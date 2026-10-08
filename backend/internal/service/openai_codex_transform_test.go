@@ -830,11 +830,20 @@ func TestNormalizeOpenAIResponsesImageGenerationTools_RewritesLegacyFields(t *te
 	first, ok := tools[0].(map[string]any)
 	require.True(t, ok)
 	require.Equal(t, "png", first["output_format"])
+	require.Equal(t, openAIDefaultImageGenerationModel, first["model"])
 	require.Equal(t, 60, first["output_compression"])
 	_, hasFormat := first["format"]
 	require.False(t, hasFormat)
 	_, hasCompression := first["compression"]
 	require.False(t, hasCompression)
+}
+
+func TestNormalizeOpenAIResponsesImageGenerationTools_DefaultsMissingModel(t *testing.T) {
+	body := []byte(`{"tools":[{"type":"image_generation"}]}`)
+	require.True(t, openAIRequestBodyImageGenerationToolNeedsNormalization(body))
+	reqBody := map[string]any{"tools": []any{map[string]any{"type": "image_generation"}}}
+	require.True(t, normalizeOpenAIResponsesImageGenerationTools(reqBody))
+	require.Equal(t, openAIDefaultImageGenerationModel, reqBody["tools"].([]any)[0].(map[string]any)["model"])
 }
 
 func TestEnsureOpenAIResponsesImageGenerationTool_NoTools(t *testing.T) {
@@ -853,6 +862,7 @@ func TestEnsureOpenAIResponsesImageGenerationTool_NoTools(t *testing.T) {
 	require.True(t, ok)
 	require.Equal(t, "image_generation", tool["type"])
 	require.Equal(t, "png", tool["output_format"])
+	require.Equal(t, openAIDefaultImageGenerationModel, tool["model"])
 }
 
 func TestEnsureOpenAIResponsesImageGenerationTool_SkipsSpark(t *testing.T) {

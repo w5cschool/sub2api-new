@@ -32,8 +32,9 @@ const (
 	openAIImagesGenerationsEndpoint = "/v1/images/generations"
 	openAIImagesEditsEndpoint       = "/v1/images/edits"
 
-	openAIImagesGenerationsURL = "https://api.openai.com/v1/images/generations"
-	openAIImagesEditsURL       = "https://api.openai.com/v1/images/edits"
+	openAIImagesGenerationsURL        = "https://api.openai.com/v1/images/generations"
+	openAIImagesEditsURL              = "https://api.openai.com/v1/images/edits"
+	openAIDefaultImageGenerationModel = "gpt-image-2.5-sunburst"
 
 	openAIChatGPTStartURL                  = "https://chatgpt.com/"
 	openAIChatGPTFilesURL                  = "https://chatgpt.com/backend-api/files"
@@ -477,7 +478,7 @@ func applyOpenAIImagesDefaults(req *OpenAIImagesRequest) {
 		req.Model = strings.TrimSpace(req.Model)
 		return
 	}
-	req.Model = "gpt-image-2"
+	req.Model = openAIDefaultImageGenerationModel
 }
 
 func isOpenAIImageGenerationModel(model string) bool {
@@ -636,7 +637,7 @@ func (s *OpenAIGatewayService) ForwardImages(
 			model = strings.TrimSpace(parsed.Model)
 		}
 		if model == "" {
-			model = "gpt-image-2"
+			model = openAIDefaultImageGenerationModel
 		}
 		if !usesCodexDirectImages(account.GetMappedModel(model)) {
 			return nil, fmt.Errorf("explicit image size or quality requires an API-key account or a Codex direct Images model")

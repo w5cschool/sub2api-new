@@ -7,6 +7,30 @@ import (
 	"github.com/tidwall/gjson"
 )
 
+func TestOpenAIResponsesImageToolDefaultsToSunburst(t *testing.T) {
+	body := []byte(`{"model":"gpt-5.4","input":"draw","tools":[{"type":"image_generation"},{"type":"image_generation","model":"gpt-image-2-codex"}]}`)
+	for _, normalize := range []struct {
+		name string
+		fn   func([]byte) ([]byte, bool, error)
+	}{
+		{"oauth_passthrough", func(b []byte) ([]byte, bool, error) { return normalizeOpenAIPassthroughOAuthBody(b, false) }},
+		{"oauth_websocket", func(b []byte) ([]byte, bool, error) {
+			return normalizeOpenAIResponsesWebSocketCompatibilityBody(b, &Account{Platform: PlatformOpenAI, Type: AccountTypeOAuth}, false)
+		}},
+		{"apikey_websocket", func(b []byte) ([]byte, bool, error) {
+			return normalizeOpenAIResponsesWebSocketCompatibilityBody(b, &Account{Platform: PlatformOpenAI, Type: AccountTypeAPIKey}, false)
+		}},
+	} {
+		t.Run(normalize.name, func(t *testing.T) {
+			normalized, changed, err := normalize.fn(body)
+			require.NoError(t, err)
+			require.True(t, changed)
+			require.Equal(t, openAIDefaultImageGenerationModel, gjson.GetBytes(normalized, "tools.0.model").String())
+			require.Equal(t, "gpt-image-2-codex", gjson.GetBytes(normalized, "tools.1.model").String())
+		})
+	}
+}
+
 func TestNormalizeOpenAIPassthroughOAuthBody_RemovesUnsupportedUser(t *testing.T) {
 	body := []byte(`{"model":"gpt-5.4","input":"hello","user":"user_123","metadata":{"user_id":"user_123"},"prompt_cache_retention":"24h","safety_identifier":"sid","stream_options":{"include_usage":true}}`)
 
